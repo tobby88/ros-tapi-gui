@@ -1,0 +1,10 @@
+Header header
+string product
+string uuid
+uint8 type
+features[] features
+names[] names
+---
+uint8 status
+string name
+uint32 heartbeat_interval
