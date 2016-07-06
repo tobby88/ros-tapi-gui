@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>tobby</name>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <description>Tobby's API</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/tobby</url> -->
+  <url type="website">https://github.com/tobby88/Hello</url>
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
