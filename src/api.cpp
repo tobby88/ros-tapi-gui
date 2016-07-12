@@ -13,7 +13,9 @@ Api::Api(NodeHandle *nodehandle)
 }
 
 Api::~Api()
-{ }
+{
+  ROS_INFO("Hello-Service has been stopped.");
+}
 
 bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloResp)
 {
