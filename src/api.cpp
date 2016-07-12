@@ -26,7 +26,7 @@ bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloRe
     unsigned long last_seq = helloReq.header.seq;
     Time last_seen_timestamp = helloReq.header.stamp;
     unsigned long heartbeat_interval = STANDARD_HEARTBEAT_INTERVAL;
-    string name = helloReq.product;
+    string product_name = helloReq.product_name;
 
     // WORK IN PROGRESS
     /*helloReq.features.empty();

@@ -1,9 +1,9 @@
 Header header
-string product
+string product_name
 string uuid
 uint8 type
 features[] features
-names[] names
+aliases[] aliases
 ---
 uint8 status
 string name
