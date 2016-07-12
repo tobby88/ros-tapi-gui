@@ -1,7 +1,7 @@
 #ifndef API_H
 #define API_H
 
-#include "hello.hpp"
+#include "tobby/hello.h"
 #include "device.hpp"
 #include "ros/ros.h"
 #include <unordered_map>
