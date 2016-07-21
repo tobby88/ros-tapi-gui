@@ -9,14 +9,16 @@ using namespace std;
 class Feature
 {
 private:
-  string feature_name; // Not necessary as this is saved in the hash-table (unordered_map)?
-  unsigned long count;
   Feature_Type type;
-  string msg_type; // TODO: Right choice to save message type? How to subscribe later on?
+  string feature_name; // Not necessary as this is saved in the hash-table (unordered_map)?
+  unsigned long id;
+  //string msg_type; // TODO: Right choice to save message type? How to subscribe later on?
 
 public:
-  Feature(string feature_name, unsigned long count, Feature_Type type, string msg_type);
+  Feature(Feature_Type type, string feature_name, unsigned long id);
   ~Feature();
+
+  unsigned long getID();
 };
 
 #endif // FEATURE_H

@@ -2,9 +2,7 @@ Header header
 string product_name
 string uuid
 uint8 type
-features[] features
-aliases[] aliases
+feature[] features
 ---
 uint8 status
-string name
 uint32 heartbeat_interval

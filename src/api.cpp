@@ -1,9 +1,12 @@
 #include "api.hpp"
-#include "ros/ros.h"
+#include "enums.hpp"
+#include "feature.hpp"
+#include "tobby/feature.h"
 
 #define STANDARD_HEARTBEAT_INTERVAL 10000L
 
 using namespace ros;
+using namespace std;
 
 Api::Api(NodeHandle *nodehandle)
 {
@@ -20,18 +23,24 @@ Api::~Api()
 bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloResp)
 {
   string uuid = helloReq.uuid;
-  if(devices.empty())
+  if(devices.empty() || devices.count(helloReq.uuid) == 0)
   {
     // New device:
     unsigned long last_seq = helloReq.header.seq;
     Time last_seen_timestamp = helloReq.header.stamp;
+    string uuid = helloReq.uuid;
+    string name = helloReq.product_name;
+    Device_Type type = (Device_Type) helloReq.type;
     unsigned long heartbeat_interval = STANDARD_HEARTBEAT_INTERVAL;
-    string product_name = helloReq.product_name;
-
-    // WORK IN PROGRESS
-    /*helloReq.features.empty();
-    unordered_map<string, Feature> features;
-    unordered_map<string, Feature> decode_features(string features);*/
+    Device device(type, name, uuid, last_seen_timestamp, heartbeat_interval);
+    devices.emplace(helloReq.uuid, device);
+    for(int i=0; i<helloReq.features.capacity(); i++)
+    {
+      Feature feature((Feature_Type)helloReq.features[i].type, helloReq.features[i].name, helloReq.features[i].id);
+      devices[helloReq.uuid].addFeature(feature);
+    }
+    helloResp.status = (unsigned short) Device_Status_Response::OK;
+    helloResp.heartbeat_interval = heartbeat_interval;
   }
   return true;
 }

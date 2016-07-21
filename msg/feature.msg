@@ -1,2 +1,3 @@
-string feature_name
-uint32 count
+uint8 type
+uint32 id
+string name

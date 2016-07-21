@@ -1,23 +1,22 @@
 #include "device.hpp"
-#include "ros/ros.h"
 
 using namespace ros;
+using namespace std;
 
-Device::Device(unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval, string name, string features)
+Device::Device(Device_Type type, string name, string uuid, Time last_seen_timestamp, unsigned long heartbeat_interval)
 {
-  this->last_seq = last_seq;
+  this->type = type;
+  this->name = name;
+  this->uuid = uuid;
   this->last_seen_timestamp = last_seen_timestamp;
   this->heartbeat_interval = heartbeat_interval;
-  this->name = name;
-  this->features = decode_features(features);
 }
 
 Device::~Device()
 { }
 
-unordered_map<string, Feature> Device::decode_features(string features)
+void Device::addFeature(Feature feature)
 {
-  // TODO: Decode the feature-String to features
-  unordered_map<string, Feature> temp;
-  return temp;
+  if (features.count(feature.getID()) == 0)
+    features.emplace(feature.getID(), feature);
 }
