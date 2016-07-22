@@ -12,7 +12,7 @@ using namespace std;
 Api::Api(NodeHandle *nodehandle)
 {
   nh = nodehandle;
-  //ServiceServer helloServ = nh->advertiseService("Hello", &Api::hello, this);
+  ServiceServer helloServ = nh->advertiseService("Hello", &Api::hello, this);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
 }
 
