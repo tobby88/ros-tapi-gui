@@ -61,7 +61,10 @@ void Api::Run()
   spin();
 #endif
 #ifdef DEBUG
-  spinOnce();
-  Debug();
+  while(ok())
+  {
+    spinOnce();
+    Debug();
+  }
 #endif
 }
