@@ -21,7 +21,7 @@ private:
   map<unsigned long, Feature> features;
 
 public:
-  Device(Device_Type type, string name, string uuid, Time last_seen_timestamp, unsigned long heartbeat_interval);
+  Device(Device_Type type, string name, string uuid, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval);
   ~Device();
   void addFeature(Feature feature);
   Device_Type getType();

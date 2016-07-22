@@ -33,7 +33,7 @@ bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloRe
     string name = helloReq.product_name;
     Device_Type type = (Device_Type) helloReq.type;
     unsigned long heartbeat_interval = STANDARD_HEARTBEAT_INTERVAL;
-    Device device(type, name, uuid, last_seen_timestamp, heartbeat_interval);
+    Device device(type, name, uuid, last_seq, last_seen_timestamp, heartbeat_interval);
     devices.emplace(helloReq.uuid, device);
     for(int i=0; i<helloReq.features.capacity(); i++)
     {
