@@ -14,10 +14,11 @@ class Api
 private:
   NodeHandle *nh;
   unordered_map<string, Device> devices;
+  ServiceServer helloServ;
   bool hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloResp);
 
 public:
-  Api(NodeHandle *nodehandle);
+  Api(NodeHandle *nh);
   ~Api();
   void Debug();
   void Run();

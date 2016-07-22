@@ -4,8 +4,8 @@
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "TobbyAPI");
-  ros::NodeHandle nodehandle("Tobby/API");
-  Api api(&nodehandle);
+  ros::NodeHandle nh;
+  Api api(&nh);
   api.Run();
 
   return 0;

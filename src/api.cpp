@@ -9,10 +9,10 @@
 using namespace ros;
 using namespace std;
 
-Api::Api(NodeHandle *nodehandle)
+Api::Api(NodeHandle *nh)
 {
-  nh = nodehandle;
-  ServiceServer helloServ = nh->advertiseService("Hello", &Api::hello, this);
+  this->nh = nh;
+  helloServ = nh->advertiseService("TobbyAPI/Hello", &Api::hello, this);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
 }
 
