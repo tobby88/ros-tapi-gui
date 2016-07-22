@@ -22,8 +22,14 @@ private:
 
 public:
   Device(Device_Type type, string name, string uuid, Time last_seen_timestamp, unsigned long heartbeat_interval);
-  void addFeature(Feature feature);
   ~Device();
+  void addFeature(Feature feature);
+  Device_Type getType();
+  string getName();
+  string getUUID();
+  unsigned long getLastSeq();
+  Time getLastSeenTimestamp();
+  unsigned long getHeartbeatInterval();
 };
 
 #endif // API_H

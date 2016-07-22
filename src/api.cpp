@@ -4,6 +4,7 @@
 #include "tobby/feature.h"
 
 #define STANDARD_HEARTBEAT_INTERVAL 10000L
+#define DEBUG
 
 using namespace ros;
 using namespace std;
@@ -11,7 +12,7 @@ using namespace std;
 Api::Api(NodeHandle *nodehandle)
 {
   nh = nodehandle;
-  ServiceServer helloServ = nh->advertiseService("Hello", &Api::hello, this);
+  //ServiceServer helloServ = nh->advertiseService("Hello", &Api::hello, this);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
 }
 
@@ -37,7 +38,7 @@ bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloRe
     for(int i=0; i<helloReq.features.capacity(); i++)
     {
       Feature feature((Feature_Type)helloReq.features[i].type, helloReq.features[i].name, helloReq.features[i].id);
-      devices[helloReq.uuid].addFeature(feature);
+      devices.at(helloReq.uuid).addFeature(feature);
     }
     helloResp.status = (unsigned short) Device_Status_Response::OK;
     helloResp.heartbeat_interval = heartbeat_interval;
@@ -45,7 +46,22 @@ bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloRe
   return true;
 }
 
+void Api::Debug()
+{
+  for(unordered_map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
+  {
+    ROS_INFO("Debug: Device-Element name: %s", it->first.c_str());
+    ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu", (unsigned short) it->second.getType(), it->second.getName().c_str(), it->second.getUUID().c_str(), it->second.getLastSeq(), it->second.getLastSeenTimestamp().toSec(), it->second.getHeartbeatInterval());
+  }
+}
+
 void Api::Run()
 {
+#ifndef DEBUG
   spin();
+#endif
+#ifdef DEBUG
+  spinOnce();
+  Debug();
+#endif
 }

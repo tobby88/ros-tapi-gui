@@ -19,6 +19,7 @@ private:
 public:
   Api(NodeHandle *nodehandle);
   ~Api();
+  void Debug();
   void Run();
 };
 

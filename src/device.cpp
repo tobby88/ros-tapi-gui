@@ -20,3 +20,33 @@ void Device::addFeature(Feature feature)
   if (features.count(feature.getID()) == 0)
     features.emplace(feature.getID(), feature);
 }
+
+Device_Type Device::getType()
+{
+  return type;
+}
+
+string Device::getName()
+{
+  return name;
+}
+
+string Device::getUUID()
+{
+  return uuid;
+}
+
+unsigned long Device::getLastSeq()
+{
+  return last_seq;
+}
+
+Time Device::getLastSeenTimestamp()
+{
+  return last_seen_timestamp;
+}
+
+unsigned long Device::getHeartbeatInterval()
+{
+  return heartbeat_interval;
+}
