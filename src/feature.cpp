@@ -10,7 +10,7 @@ Feature::Feature(Feature_Type type, string feature_name, unsigned long id)
 Feature::~Feature()
 { }
 
-string Feature::getFeatureName()
+string Feature::getName()
 {
   return feature_name;
 }

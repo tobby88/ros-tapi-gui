@@ -35,7 +35,7 @@ bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloRe
     unsigned long heartbeat_interval = STANDARD_HEARTBEAT_INTERVAL;
     Device device(type, name, uuid, last_seq, last_seen_timestamp, heartbeat_interval);
     devices.emplace(helloReq.uuid, device);
-    for(int i=0; i<helloReq.features.capacity(); i++)
+    for(unsigned int i=0; i<helloReq.features.capacity(); i++)
     {
       Feature feature((Feature_Type)helloReq.features[i].type, helloReq.features[i].name, helloReq.features[i].id);
       devices.at(helloReq.uuid).addFeature(feature);
@@ -52,6 +52,11 @@ void Api::DebugOutput()
   {
     ROS_INFO("Debug: Device-Element name: %s", it->first.c_str());
     ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu", (unsigned short) it->second.getType(), it->second.getName().c_str(), it->second.getUUID().c_str(), it->second.getLastSeq(), it->second.getLastSeenTimestamp().toSec(), it->second.getHeartbeatInterval());
+    map<unsigned long, Feature> features = it->second.getFeatureMap();
+    for(map<unsigned long, Feature>::iterator it2 = features.begin(); it2 != features.end(); it2++)
+    {
+      ROS_INFO("Debug: Device-Feature: Map-ID: %lu, ID: %lu, Feature-Type: %u, Feature-Name: %s", it2->first, it2->second.getID(), (unsigned short) it2->second.getType(), it2->second.getName().c_str());
+    }
   }
 }
 
