@@ -46,7 +46,7 @@ bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloRe
   return true;
 }
 
-void Api::Debug()
+void Api::DebugOutput()
 {
   for(unordered_map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
   {
@@ -64,7 +64,7 @@ void Api::Run()
   while(ok())
   {
     spinOnce();
-    Debug();
+    DebugOutput();
   }
 #endif
 }

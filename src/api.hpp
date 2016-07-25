@@ -20,7 +20,7 @@ private:
 public:
   Api(NodeHandle *nh);
   ~Api();
-  void Debug();
+  void DebugOutput();
   void Run();
 };
 
