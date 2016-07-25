@@ -18,7 +18,9 @@ public:
   Feature(Feature_Type type, string feature_name, unsigned long id);
   ~Feature();
 
+  string getFeatureName();
   unsigned long getID();
+  Feature_Type getType();
 };
 
 #endif // FEATURE_H
