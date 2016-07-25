@@ -26,6 +26,10 @@ Device_Type Device::getType()
 {
   return type;
 }
+map<unsigned long, Feature> Device::getFeatureMap()
+{
+  return features;
+}
 
 string Device::getName()
 {

@@ -24,6 +24,7 @@ public:
   Device(Device_Type type, string name, string uuid, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval);
   ~Device();
   void addFeature(Feature feature);
+  map<unsigned long, Feature> getFeatureMap();
   Device_Type getType();
   string getName();
   string getUUID();
