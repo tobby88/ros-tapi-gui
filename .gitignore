@@ -5,6 +5,9 @@ CMakeLists.txt.user.*
 # Build dir
 build
 
+# Devel dir
+devel
+
 # Standard .gitignore from github.com for ROS-projects:
 build/
 bin/
