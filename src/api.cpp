@@ -43,6 +43,18 @@ bool Api::hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloRe
     helloResp.status = (unsigned short) Device_Status_Response::OK;
     helloResp.heartbeat_interval = heartbeat_interval;
   }
+  else if (devices.count(helloReq.uuid) == 1)
+  {
+    unsigned long last_seq = helloReq.header.seq;
+    Time last_seen_timestamp = helloReq.header.stamp;
+    string name = helloReq.product_name;
+    Device_Type type = (Device_Type) helloReq.type;
+    unsigned long heartbeat_interval = STANDARD_HEARTBEAT_INTERVAL;
+    devices.at(helloReq.uuid).Update(type, name, last_seq, last_seen_timestamp, heartbeat_interval);
+    // TODO: Updating feature-list
+    helloResp.status = (unsigned short) Device_Status_Response::OK;
+    helloResp.heartbeat_interval = heartbeat_interval;
+  }
   return true;
 }
 

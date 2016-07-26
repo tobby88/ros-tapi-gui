@@ -31,6 +31,7 @@ public:
   unsigned long getLastSeq();
   Time getLastSeenTimestamp();
   unsigned long getHeartbeatInterval();
+  void Update(Device_Type type, string name, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval);
 };
 
 #endif // API_H

@@ -55,3 +55,12 @@ unsigned long Device::getHeartbeatInterval()
 {
   return heartbeat_interval;
 }
+
+void Device::Update(Device_Type type, string name, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval)
+{
+  this->type = type;
+  this->name = name;
+  this->last_seq = last_seq;
+  this->last_seen_timestamp = last_seen_timestamp;
+  this->heartbeat_interval = heartbeat_interval;
+}
