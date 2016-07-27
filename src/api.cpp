@@ -38,7 +38,7 @@ bool Api::hello(tobby::Hello::Request &helloReq, tobby::Hello::Response &helloRe
     devices.emplace(helloReq.uuid, device);
     for(unsigned int i=0; i<helloReq.features.capacity(); i++)
     {
-      Feature feature((FeatureType)helloReq.features[i].type, helloReq.features[i].name, helloReq.features[i].description, helloReq.features[i].id);
+      Feature feature((FeatureType)helloReq.features[i].type, helloReq.features[i].name, helloReq.features[i].description, helloReq.features[i].uuid);
       devices.at(helloReq.uuid).addFeature(feature);
     }
     helloResp.status = (unsigned short) DeviceStatusResponse::OK;
@@ -76,10 +76,10 @@ void Api::DebugOutput()
     {
       ROS_INFO("Debug: Device-Element name: %s", it->first.c_str());
       ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu", (unsigned short) it->second.getType(), it->second.getName().c_str(), it->second.getUUID().c_str(), it->second.getLastSeq(), it->second.getLastSeen().toSec(), it->second.getHeartbeat());
-      map<unsigned long, Feature> features = it->second.getFeatureMap();
-      for(map<unsigned long, Feature>::iterator it2 = features.begin(); it2 != features.end(); it2++)
+      unordered_map<string, Feature> features = it->second.getFeatureMap();
+      for(unordered_map<string, Feature>::iterator it2 = features.begin(); it2 != features.end(); it2++)
       {
-        ROS_INFO("Debug: Device-Feature: Map-ID: %lu, ID: %lu, Feature-Type: %u, Feature-Name: %s, Feature-Description: %s", it2->first, it2->second.getID(), (unsigned short) it2->second.getType(), it2->second.getName().c_str(), it2->second.getDescription().c_str());
+        ROS_INFO("Debug: Device-Feature: Map-ID: %s, ID: %s, Feature-Type: %u, Feature-Name: %s, Feature-Description: %s", it2->first.c_str(), it2->second.getUUID().c_str(), (unsigned short) it2->second.getType(), it2->second.getName().c_str(), it2->second.getDescription().c_str());
       }
     }
     changes = false;

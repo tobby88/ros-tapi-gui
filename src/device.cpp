@@ -18,15 +18,15 @@ Device::~Device()
 
 void Device::addFeature(Feature feature)
 {
-  if (features.count(feature.getID()) == 0)
-    features.emplace(feature.getID(), feature);
+  if (features.count(feature.getUUID()) == 0)
+    features.emplace(feature.getUUID(), feature);
 }
 
 DeviceType Device::getType()
 {
   return type;
 }
-map<unsigned long, Feature> Device::getFeatureMap()
+unordered_map<string, Feature> Device::getFeatureMap()
 {
   return features;
 }
