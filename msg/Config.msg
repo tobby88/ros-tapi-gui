@@ -1,0 +1,5 @@
+string receiverUUID
+string publisherUUID
+string publisherFeatureUUID
+string receiverFeatureUUID
+float64 coefficient
