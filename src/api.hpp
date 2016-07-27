@@ -2,6 +2,7 @@
 #define API_H
 
 #include "tobby/Hello.h"
+#include "connection.hpp"
 #include "device.hpp"
 #include "ros/ros.h"
 #include <unordered_map>
@@ -14,6 +15,7 @@ class Api
 private:
   NodeHandle *nh;
   unordered_map<string, Device> devices;
+  //unordered_map<string, Connection> connections;
   ServiceServer helloServ;
   Publisher configPub;
   bool hello(tobby::Hello::Request &helloReq, tobby::Hello::Response &helloResp);
