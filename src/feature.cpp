@@ -1,9 +1,10 @@
 #include "feature.hpp"
 
-Feature::Feature(Feature_Type type, string feature_name, unsigned long id)
+Feature::Feature(FeatureType type, string name, string description, unsigned long id)
 {
   this->type = type;
-  this->feature_name = feature_name;
+  this->name = name;
+  this->description = description;
   this->id = id;
 }
 
@@ -12,7 +13,12 @@ Feature::~Feature()
 
 string Feature::getName()
 {
-  return feature_name;
+  return name;
+}
+
+string Feature::getDescription()
+{
+  return description;
 }
 
 unsigned long Feature::getID()
@@ -20,7 +26,7 @@ unsigned long Feature::getID()
   return id;
 }
 
-Feature_Type Feature::getType()
+FeatureType Feature::getType()
 {
   return type;
 }

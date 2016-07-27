@@ -1,7 +1,7 @@
 #ifndef API_H
 #define API_H
 
-#include "tobby/hello.h"
+#include "tobby/Hello.h"
 #include "device.hpp"
 #include "ros/ros.h"
 #include <unordered_map>
@@ -15,7 +15,7 @@ private:
   NodeHandle *nh;
   unordered_map<string, Device> devices;
   ServiceServer helloServ;
-  bool hello(tobby::hello::Request &helloReq, tobby::hello::Response &helloResp);
+  bool hello(tobby::Hello::Request &helloReq, tobby::Hello::Response &helloResp);
 
 public:
   Api(NodeHandle *nh);

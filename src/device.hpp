@@ -12,26 +12,26 @@ using namespace std;
 class Device
 {
 private:
-  Device_Type type;
+  DeviceType type;
   string name;
   string uuid; // Not necessary as this is saved in the hash-table (unordered_map)
-  unsigned long last_seq;
-  Time last_seen_timestamp;
-  unsigned long heartbeat_interval;
+  unsigned long lastSeq;
+  Time lastSeen;
+  unsigned long heartbeat;
   map<unsigned long, Feature> features;
 
 public:
-  Device(Device_Type type, string name, string uuid, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval);
+  Device(DeviceType type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat);
   ~Device();
   void addFeature(Feature feature);
   map<unsigned long, Feature> getFeatureMap();
-  Device_Type getType();
+  DeviceType getType();
   string getName();
   string getUUID();
   unsigned long getLastSeq();
-  Time getLastSeenTimestamp();
-  unsigned long getHeartbeatInterval();
-  void Update(Device_Type type, string name, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval);
+  Time getLastSeen();
+  unsigned long getHeartbeat();
+  void Update(DeviceType type, string name, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat);
 };
 
 #endif // API_H

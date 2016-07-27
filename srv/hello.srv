@@ -1,8 +1,0 @@
-Header header
-string product_name
-string uuid
-uint8 type
-feature[] features
----
-uint8 status
-uint32 heartbeat_interval

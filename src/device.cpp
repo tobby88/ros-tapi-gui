@@ -3,14 +3,14 @@
 using namespace ros;
 using namespace std;
 
-Device::Device(Device_Type type, string name, string uuid, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval)
+Device::Device(DeviceType type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat)
 {
   this->type = type;
   this->name = name;
   this->uuid = uuid;
-  this->last_seq = last_seq;
-  this->last_seen_timestamp = last_seen_timestamp;
-  this->heartbeat_interval = heartbeat_interval;
+  this->lastSeq = lastSeq;
+  this->lastSeen = lastSeen;
+  this->heartbeat = heartbeat;
 }
 
 Device::~Device()
@@ -22,7 +22,7 @@ void Device::addFeature(Feature feature)
     features.emplace(feature.getID(), feature);
 }
 
-Device_Type Device::getType()
+DeviceType Device::getType()
 {
   return type;
 }
@@ -43,24 +43,24 @@ string Device::getUUID()
 
 unsigned long Device::getLastSeq()
 {
-  return last_seq;
+  return lastSeq;
 }
 
-Time Device::getLastSeenTimestamp()
+Time Device::getLastSeen()
 {
-  return last_seen_timestamp;
+  return lastSeen;
 }
 
-unsigned long Device::getHeartbeatInterval()
+unsigned long Device::getHeartbeat()
 {
-  return heartbeat_interval;
+  return heartbeat;
 }
 
-void Device::Update(Device_Type type, string name, unsigned long last_seq, Time last_seen_timestamp, unsigned long heartbeat_interval)
+void Device::Update(DeviceType type, string name, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat)
 {
   this->type = type;
   this->name = name;
-  this->last_seq = last_seq;
-  this->last_seen_timestamp = last_seen_timestamp;
-  this->heartbeat_interval = heartbeat_interval;
+  this->lastSeq = lastSeq;
+  this->lastSeen = lastSeen;
+  this->heartbeat = heartbeat;
 }
