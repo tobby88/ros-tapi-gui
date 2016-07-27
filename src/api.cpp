@@ -74,7 +74,7 @@ void Api::DebugOutput()
   {
     for(unordered_map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
     {
-      ROS_INFO("Debug: Device-Element name: %s", it->first.c_str());
+      ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
       ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu", (unsigned short) it->second.getType(), it->second.getName().c_str(), it->second.getUUID().c_str(), it->second.getLastSeq(), it->second.getLastSeen().toSec(), it->second.getHeartbeat());
       unordered_map<string, Feature> features = it->second.getFeatureMap();
       for(unordered_map<string, Feature>::iterator it2 = features.begin(); it2 != features.end(); it2++)
