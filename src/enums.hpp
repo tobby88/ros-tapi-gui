@@ -3,6 +3,6 @@
 
 enum class DeviceType {InputDevice, OutputDevice, Hook};
 enum class DeviceStatusResponse {OK, Error};
-enum class FeatureType {Camera, Button, Axis};
+enum class FeatureType {Images, Switch, Tristate, Axis};
 
 #endif // ENUMS_H
