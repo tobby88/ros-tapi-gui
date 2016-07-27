@@ -15,6 +15,7 @@ private:
   NodeHandle *nh;
   unordered_map<string, Device> devices;
   ServiceServer helloServ;
+  Publisher configPub;
   bool hello(tobby::Hello::Request &helloReq, tobby::Hello::Response &helloResp);
   bool changes;
 

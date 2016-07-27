@@ -1,6 +1,7 @@
 #include "api.hpp"
 #include "enums.hpp"
 #include "feature.hpp"
+#include "tobby/Config.h"
 #include "tobby/Feature.h"
 
 #define STANDARD_HEARTBEAT_INTERVAL 10000L
@@ -13,6 +14,7 @@ Api::Api(NodeHandle *nh)
 {
   this->nh = nh;
   helloServ = nh->advertiseService("TobbyAPI/HelloServ", &Api::hello, this);
+  configPub = nh->advertise<tobby::Config>("TobbyAPI/Config", 1000);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
   changes = false;
 }
