@@ -14,6 +14,7 @@ Api::Api(NodeHandle *nh)
   this->nh = nh;
   helloServ = nh->advertiseService("TobbyAPI/HelloServ", &Api::hello, this);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
+  changes = false;
 }
 
 Api::~Api()
@@ -42,6 +43,7 @@ bool Api::hello(tobby::Hello::Request &helloReq, tobby::Hello::Response &helloRe
     }
     helloResp.status = (unsigned short) DeviceStatusResponse::OK;
     helloResp.heartbeat = heartbeat;
+    changes = true;
   }
   else if (devices.count(helloReq.uuid) == 1)
   {
@@ -54,21 +56,33 @@ bool Api::hello(tobby::Hello::Request &helloReq, tobby::Hello::Response &helloRe
     // TODO: Updating feature-list
     helloResp.status = (unsigned short) DeviceStatusResponse::OK;
     helloResp.heartbeat = heartbeat;
+    changes = true;
+  }
+  else
+  {
+    ROS_ERROR("Hello message couldn't be decoded, looks like there is something wrong with the devices database. Please try to restart the Hello-Service.");
+    helloResp.status = (unsigned short) DeviceStatusResponse::Error;
+    helloResp.heartbeat = STANDARD_HEARTBEAT_INTERVAL;
+    return false;
   }
   return true;
 }
 
 void Api::DebugOutput()
 {
-  for(unordered_map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
+  if (changes)
   {
-    ROS_INFO("Debug: Device-Element name: %s", it->first.c_str());
-    ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu", (unsigned short) it->second.getType(), it->second.getName().c_str(), it->second.getUUID().c_str(), it->second.getLastSeq(), it->second.getLastSeen().toSec(), it->second.getHeartbeat());
-    map<unsigned long, Feature> features = it->second.getFeatureMap();
-    for(map<unsigned long, Feature>::iterator it2 = features.begin(); it2 != features.end(); it2++)
+    for(unordered_map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
     {
-      ROS_INFO("Debug: Device-Feature: Map-ID: %lu, ID: %lu, Feature-Type: %u, Feature-Name: %s, Feature-Description: %s", it2->first, it2->second.getID(), (unsigned short) it2->second.getType(), it2->second.getName().c_str(), it2->second.getDescription().c_str());
+      ROS_INFO("Debug: Device-Element name: %s", it->first.c_str());
+      ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu", (unsigned short) it->second.getType(), it->second.getName().c_str(), it->second.getUUID().c_str(), it->second.getLastSeq(), it->second.getLastSeen().toSec(), it->second.getHeartbeat());
+      map<unsigned long, Feature> features = it->second.getFeatureMap();
+      for(map<unsigned long, Feature>::iterator it2 = features.begin(); it2 != features.end(); it2++)
+      {
+        ROS_INFO("Debug: Device-Feature: Map-ID: %lu, ID: %lu, Feature-Type: %u, Feature-Name: %s, Feature-Description: %s", it2->first, it2->second.getID(), (unsigned short) it2->second.getType(), it2->second.getName().c_str(), it2->second.getDescription().c_str());
+      }
     }
+    changes = false;
   }
 }
 

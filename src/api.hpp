@@ -16,6 +16,7 @@ private:
   unordered_map<string, Device> devices;
   ServiceServer helloServ;
   bool hello(tobby::Hello::Request &helloReq, tobby::Hello::Response &helloResp);
+  bool changes;
 
 public:
   Api(NodeHandle *nh);
