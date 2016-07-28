@@ -35,4 +35,4 @@ public:
   void Update(DeviceType type, string name, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat);
 };
 
-#endif // API_H
+#endif // DEVICE_H
