@@ -137,7 +137,7 @@ include_directories(
 # add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(tobby src/main.cpp src/api.cpp src/connection.cpp src/device.cpp src/enums.hpp src/feature.cpp)
+add_executable(tobby src/main.cpp src/api.cpp src/assignment.cpp src/device.cpp src/enums.hpp src/feature.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above

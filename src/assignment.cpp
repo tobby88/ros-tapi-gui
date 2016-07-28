@@ -1,6 +1,6 @@
-#include "connection.hpp"
+#include "assignment.hpp"
 
-Connection::Connection(string receiverUUID, string publisherUUID, string publisherFeatureUUID, string receiverFeatureUUID, double coefficient)
+Assignment::Assignment(string receiverUUID, string publisherUUID, string publisherFeatureUUID, string receiverFeatureUUID, double coefficient)
 {
   this->receiverUUID = receiverUUID;
   this->publisherUUID = publisherUUID;
@@ -9,6 +9,6 @@ Connection::Connection(string receiverUUID, string publisherUUID, string publish
   this->coefficient = coefficient;
 }
 
-Connection::~Connection()
+Assignment::~Assignment()
 { }
 
