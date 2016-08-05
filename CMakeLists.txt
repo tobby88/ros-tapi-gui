@@ -138,32 +138,8 @@ include_directories(
 ## either from message generation or dynamic reconfigure
 # add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-# Specify files for compiling
-set(HEADER_FILES 
-  src/api.hpp
-  src/assignment.hpp
-  src/device.hpp
-  src/enums.hpp
-  src/feature.hpp
-  src/mainwindow.hpp
-)
-
-set(SOURCE_FILES
-  src/main.cpp
-  src/api.cpp
-  src/assignment.cpp
-  src/device.cpp
-  src/feature.cpp
-  src/mainwindow.cpp
-  ${MOC_FILES}
-)
-
-set(FORM_FILES 
-  src/mainwindow.ui
-)
-
 ## Declare a C++ executable
-add_executable(tobby ${SOURCE_FILES} ${MOC_SRC_H} ${MOC_GUI_H})
+add_executable(tobby src/main.cpp src/api.cpp src/assignment.cpp src/device.cpp src/feature.cpp src/mainwindow.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
