@@ -13,44 +13,16 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
+# Qt
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOMOC ON)
+# Invoke UIC automatically when needed
+set(CMAKE_AUTOUIC ON)
 
-include(${QT_USE_FILE})
-add_definitions(-DQT_NO_KEYWORDS)
-add_definitions(${QT_DEFINITIONS})
-
-set(HEADER_FILES 
-  src/api.hpp
-  src/assignment.hpp
-  src/device.hpp
-  src/enums.hpp
-  src/feature.hpp
-  src/mainwindow.hpp
-)
-
-set(SOURCE_FILES
-  src/main.cpp
-  src/api.cpp
-  src/assignment.cpp
-  src/device.cpp
-  src/feature.cpp
-  src/mainwindow.cpp
-  ${MOC_FILES}
-)
-
-set(FORM_FILES 
-  src/mainwindow.ui
-)
-
-QT4_WRAP_CPP(MOC_SRC_H
-  ${HEADER_FILES}
-)
-
-QT4_WRAP_UI(MOC_GUI_H 
-  ${FORM_FILES}
-)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+# Find the QtWidgets library
+find_package(Qt5Widgets)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -174,6 +146,30 @@ include_directories(
 ## either from message generation or dynamic reconfigure
 # add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+# Specify files for compiling
+set(HEADER_FILES 
+  src/api.hpp
+  src/assignment.hpp
+  src/device.hpp
+  src/enums.hpp
+  src/feature.hpp
+  src/mainwindow.hpp
+)
+
+set(SOURCE_FILES
+  src/main.cpp
+  src/api.cpp
+  src/assignment.cpp
+  src/device.cpp
+  src/feature.cpp
+  src/mainwindow.cpp
+  ${MOC_FILES}
+)
+
+set(FORM_FILES 
+  src/mainwindow.ui
+)
+
 ## Declare a C++ executable
 add_executable(tobby ${SOURCE_FILES} ${MOC_SRC_H} ${MOC_GUI_H})
 
@@ -183,7 +179,7 @@ add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TAR
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(tobby
-  ${QT_LIBRARIES}
+  Qt5::Widgets
   ${catkin_LIBRARIES}
 )
 
