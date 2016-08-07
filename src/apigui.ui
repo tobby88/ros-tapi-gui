@@ -1,5 +1,5 @@
 <ui version="4.0">
- <class>MainWindow</class>
+ <class>ApiGui</class>
  <widget class="QMainWindow" name="MainWindow" >
   <property name="geometry" >
    <rect>
@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>MainWindow</string>
+   <string>ApiGui</string>
   </property>
   <widget class="QMenuBar" name="menuBar" />
   <widget class="QToolBar" name="mainToolBar" />

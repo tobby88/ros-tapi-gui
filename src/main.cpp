@@ -1,5 +1,5 @@
 #include "api.hpp"
-#include "mainwindow.hpp"
+#include "apigui.hpp"
 #include "ros/ros.h"
 #include <QApplication>
 
@@ -9,7 +9,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   Api api(&nh);
   QApplication a(argc, argv);
-  MainWindow w;
+  ApiGui w;
   w.show();
 
   return a.exec();

@@ -145,13 +145,13 @@ add_executable(tobby
   msg/Config.msg
   msg/Feature.msg
   src/api.cpp
+  src/apigui.cpp
+  src/apigui.ui
   src/assignment.cpp
   src/device.cpp
   src/enums.hpp
   src/feature.cpp
   src/main.cpp
-  src/mainwindow.cpp
-  src/mainwindow.ui
   srv/Hello.srv
 )
 
