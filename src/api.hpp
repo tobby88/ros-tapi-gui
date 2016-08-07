@@ -21,6 +21,7 @@ private:
   bool hello(tobby::Hello::Request& helloReq,
              tobby::Hello::Response& helloResp);
   bool changes;
+  AsyncSpinner* spinner;
 
 public:
   Api(NodeHandle* nh);

@@ -11,9 +11,8 @@ int main(int argc, char** argv)
   QApplication a(argc, argv);
   ApiGui w;
   w.show();
-
-  return a.exec();
   api.Run();
+  a.exec();
 
   return 0;
 }

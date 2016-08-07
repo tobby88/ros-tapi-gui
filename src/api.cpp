@@ -13,13 +13,19 @@ using namespace std;
 Api::Api(NodeHandle* nh)
 {
   this->nh = nh;
+  spinner = new AsyncSpinner(1);
   helloServ = nh->advertiseService("TobbyAPI/HelloServ", &Api::hello, this);
   configPub = nh->advertise<tobby::Config>("TobbyAPI/Config", 1000);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
   changes = false;
 }
 
-Api::~Api() { ROS_INFO("Hello-Service has been stopped."); }
+Api::~Api()
+{
+  spinner->stop();
+  delete spinner;
+  ROS_INFO("Hello-Service has been stopped.");
+}
 
 bool Api::hello(tobby::Hello::Request& helloReq,
                 tobby::Hello::Response& helloResp)
@@ -69,6 +75,9 @@ bool Api::hello(tobby::Hello::Request& helloReq,
     helloResp.heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     return false;
   }
+#ifdef DEBUG
+  DebugOutput();
+#endif
   return true;
 }
 
@@ -102,16 +111,4 @@ void Api::DebugOutput()
   }
 }
 
-void Api::Run()
-{
-#ifndef DEBUG
-  spin();
-#endif
-#ifdef DEBUG
-  while (ok())
-  {
-    spinOnce();
-    DebugOutput();
-  }
-#endif
-}
+void Api::Run() { spinner->start(); }
