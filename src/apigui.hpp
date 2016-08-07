@@ -2,6 +2,7 @@
 #define APIGUI_HPP
 
 #include <QMainWindow>
+#include "api.hpp"
 
 namespace Ui
 {
@@ -13,11 +14,12 @@ class ApiGui : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit ApiGui(QWidget* parent = 0);
+  explicit ApiGui(Api* api, QWidget* parent = 0);
   ~ApiGui();
 
 private:
   Ui::ApiGui* ui;
+  Api* api;
 };
 
 #endif // APIGUI_HPP

@@ -9,7 +9,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
   Api api(&nh);
   QApplication a(argc, argv);
-  ApiGui w;
+  ApiGui w(&api);
   w.show();
   api.Run();
   a.exec();
