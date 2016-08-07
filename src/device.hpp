@@ -15,14 +15,16 @@ class Device
 private:
   DeviceType type;
   string name;
-  string uuid; // Not necessary as this is saved in the hash-table (unordered_map)
+  string
+      uuid; // Not necessary as this is saved in the hash-table (unordered_map)
   unsigned long lastSeq;
   Time lastSeen;
   unsigned long heartbeat;
   unordered_map<string, Feature> features;
 
 public:
-  Device(DeviceType type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat);
+  Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
+         Time lastSeen, unsigned long heartbeat);
   ~Device();
   void addFeature(Feature feature);
   unordered_map<string, Feature> getFeatureMap();
@@ -32,7 +34,8 @@ public:
   unsigned long getLastSeq();
   Time getLastSeen();
   unsigned long getHeartbeat();
-  void Update(DeviceType type, string name, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat);
+  void Update(DeviceType type, string name, unsigned long lastSeq,
+              Time lastSeen, unsigned long heartbeat);
 };
 
 #endif // DEVICE_H

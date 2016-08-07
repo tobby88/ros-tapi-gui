@@ -3,7 +3,7 @@
 #include "ros/ros.h"
 #include <QApplication>
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
   ros::init(argc, argv, "TobbyAPI");
   ros::NodeHandle nh;

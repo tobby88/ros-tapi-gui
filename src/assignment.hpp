@@ -15,9 +15,10 @@ private:
   double coefficient;
 
 public:
-  Assignment(string receiverUUID, string publisherUUID, string publisherFeatureUUID, string receiverFeatureUUID, double coefficient);
+  Assignment(string receiverUUID, string publisherUUID,
+             string publisherFeatureUUID, string receiverFeatureUUID,
+             double coefficient);
   ~Assignment();
-
 };
 
 #endif // ASSIGNMENT_H

@@ -8,25 +8,12 @@ Feature::Feature(FeatureType type, string name, string description, string uuid)
   this->uuid = uuid;
 }
 
-Feature::~Feature()
-{ }
+Feature::~Feature() {}
 
-string Feature::getName()
-{
-  return name;
-}
+string Feature::getName() { return name; }
 
-string Feature::getDescription()
-{
-  return description;
-}
+string Feature::getDescription() { return description; }
 
-string Feature::getUUID()
-{
-  return uuid;
-}
+string Feature::getUUID() { return uuid; }
 
-FeatureType Feature::getType()
-{
-  return type;
-}
+FeatureType Feature::getType() { return type; }
