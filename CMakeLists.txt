@@ -145,6 +145,7 @@ add_executable(tobby
   msg/Config.msg
   msg/Feature.msg
   src/api.cpp
+  src/apideviceswrapper.cpp
   src/apigui.cpp
   src/apigui.ui
   src/assignment.cpp
