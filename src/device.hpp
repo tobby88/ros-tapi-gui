@@ -5,7 +5,7 @@
 #include "feature.hpp"
 #include "ros/ros.h"
 #include <string>
-#include <unordered_map>
+#include <map>
 
 using namespace ros;
 using namespace std;
@@ -20,14 +20,14 @@ private:
   unsigned long lastSeq;
   Time lastSeen;
   unsigned long heartbeat;
-  unordered_map<string, Feature> features;
+  map<string, Feature> features;
 
 public:
   Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
          Time lastSeen, unsigned long heartbeat);
   ~Device();
   void addFeature(Feature feature);
-  unordered_map<string, Feature> getFeatureMap();
+  map<string, Feature> getFeatureMap();
   DeviceType getType();
   string getName();
   string getUUID();
