@@ -113,4 +113,9 @@ void Api::DebugOutput()
   }
 }
 
+map<string, Device> Api::GetDevices()
+{
+  return devices;
+}
+
 void Api::Run() { spinner->start(); }
