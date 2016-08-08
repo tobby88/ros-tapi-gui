@@ -29,6 +29,7 @@ public:
   ~Api();
   bool CheckPending();
   void DebugOutput();
+  map<string, Device> GetDevices();
   void Run();
 };
 
