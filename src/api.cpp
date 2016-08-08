@@ -31,36 +31,35 @@ bool Api::hello(tobby::Hello::Request& helloReq,
                 tobby::Hello::Response& helloResp)
 {
   string uuid = helloReq.uuid;
-  if (devices.empty() || devices.count(helloReq.uuid) == 0)
+  if (devices.empty() || devices.count(uuid) == 0)
   {
     // New device:
     unsigned long lastSeq = helloReq.header.seq;
     Time lastSeen = helloReq.header.stamp;
-    string uuid = helloReq.uuid;
     string name = helloReq.name;
     DeviceType type = (DeviceType)helloReq.type;
     unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     Device device(type, name, uuid, lastSeq, lastSeen, heartbeat);
-    devices.emplace(helloReq.uuid, device);
+    devices.emplace(uuid, device);
     for (unsigned int i = 0; i < helloReq.features.capacity(); i++)
     {
       Feature feature(
           (FeatureType)helloReq.features[i].type, helloReq.features[i].name,
           helloReq.features[i].description, helloReq.features[i].uuid);
-      devices.at(helloReq.uuid).addFeature(feature);
+      devices.at(uuid).addFeature(feature);
     }
     helloResp.status = (unsigned short)DeviceStatusResponse::OK;
     helloResp.heartbeat = heartbeat;
     changed();
   }
-  else if (devices.count(helloReq.uuid) == 1)
+  else if (devices.count(uuid) == 1)
   {
     unsigned long lastSeq = helloReq.header.seq;
     Time lastSeen = helloReq.header.stamp;
     string name = helloReq.name;
     DeviceType type = (DeviceType)helloReq.type;
     unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-    devices.at(helloReq.uuid).Update(type, name, lastSeq, lastSeen, heartbeat);
+    devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat);
     // TODO: Updating feature-list
     helloResp.status = (unsigned short)DeviceStatusResponse::OK;
     helloResp.heartbeat = heartbeat;
