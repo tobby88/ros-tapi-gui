@@ -27,7 +27,7 @@ private:
 public:
   Api(NodeHandle* nh);
   ~Api();
-  bool checkPending();
+  bool CheckPending();
   void DebugOutput();
   void Run();
 };
