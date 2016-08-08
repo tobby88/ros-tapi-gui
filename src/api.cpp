@@ -87,10 +87,7 @@ void Api::changed()
 #endif
 }
 
-bool Api::checkPending()
-{
-  return pendingChanges;
-}
+bool Api::checkPending() { return pendingChanges; }
 
 void Api::DebugOutput()
 {
