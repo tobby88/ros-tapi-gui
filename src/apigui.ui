@@ -14,7 +14,7 @@
    <string>ApiGui</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="TestLabel">
     <property name="geometry">
      <rect>
       <x>160</x>

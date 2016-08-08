@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "api.hpp"
+#include <QTimer>
 
 namespace Ui
 {
@@ -20,6 +21,11 @@ public:
 private:
   Ui::ApiGui* ui;
   Api* api;
+  unsigned long int temp;
+  QTimer *timer;
+
+private slots:
+  void checkApiForUpdate();
 };
 
 #endif // APIGUI_HPP
