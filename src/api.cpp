@@ -90,8 +90,8 @@ bool Api::CheckPending() { return pendingChanges; }
 
 void Api::DebugOutput()
 {
-  for (map<string, Device>::iterator it = devices.begin();
-       it != devices.end(); it++)
+  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
+       it++)
   {
     ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
     ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, "
@@ -113,9 +113,6 @@ void Api::DebugOutput()
   }
 }
 
-map<string, Device> Api::GetDevices()
-{
-  return devices;
-}
+map<string, Device> Api::GetDevices() { return devices; }
 
 void Api::Run() { spinner->start(); }
