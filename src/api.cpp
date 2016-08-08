@@ -17,7 +17,7 @@ Api::Api(NodeHandle* nh)
   helloServ = nh->advertiseService("TobbyAPI/HelloServ", &Api::hello, this);
   configPub = nh->advertise<tobby::Config>("TobbyAPI/Config", 1000);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
-  changes = false;
+  pendingChanges = false;
 }
 
 Api::~Api()
@@ -51,7 +51,7 @@ bool Api::hello(tobby::Hello::Request& helloReq,
     }
     helloResp.status = (unsigned short)DeviceStatusResponse::OK;
     helloResp.heartbeat = heartbeat;
-    changes = true;
+    changed();
   }
   else if (devices.count(helloReq.uuid) == 1)
   {
@@ -64,7 +64,7 @@ bool Api::hello(tobby::Hello::Request& helloReq,
     // TODO: Updating feature-list
     helloResp.status = (unsigned short)DeviceStatusResponse::OK;
     helloResp.heartbeat = heartbeat;
-    changes = true;
+    changed();
   }
   else
   {
@@ -75,39 +75,45 @@ bool Api::hello(tobby::Hello::Request& helloReq,
     helloResp.heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     return false;
   }
+
+  return true;
+}
+
+void Api::changed()
+{
+  pendingChanges = true;
 #ifdef DEBUG
   DebugOutput();
 #endif
-  return true;
+}
+
+bool Api::checkPending()
+{
+  return pendingChanges;
 }
 
 void Api::DebugOutput()
 {
-  if (changes)
+  for (unordered_map<string, Device>::iterator it = devices.begin();
+       it != devices.end(); it++)
   {
-    for (unordered_map<string, Device>::iterator it = devices.begin();
-         it != devices.end(); it++)
+    ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
+    ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, "
+             "Last Seen: %f, Heartbeat-Interval: %lu",
+             (unsigned short)it->second.getType(), it->second.getName().c_str(),
+             it->second.getUUID().c_str(), it->second.getLastSeq(),
+             it->second.getLastSeen().toSec(), it->second.getHeartbeat());
+    unordered_map<string, Feature> features = it->second.getFeatureMap();
+    for (unordered_map<string, Feature>::iterator it2 = features.begin();
+         it2 != features.end(); it2++)
     {
-      ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
-      ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: "
-               "%lu, Last Seen: %f, Heartbeat-Interval: %lu",
-               (unsigned short)it->second.getType(),
-               it->second.getName().c_str(), it->second.getUUID().c_str(),
-               it->second.getLastSeq(), it->second.getLastSeen().toSec(),
-               it->second.getHeartbeat());
-      unordered_map<string, Feature> features = it->second.getFeatureMap();
-      for (unordered_map<string, Feature>::iterator it2 = features.begin();
-           it2 != features.end(); it2++)
-      {
-        ROS_INFO("Debug: Device-Feature: Map-ID: %s, ID: %s, Feature-Type: %u, "
-                 "Feature-Name: %s, Feature-Description: %s",
-                 it2->first.c_str(), it2->second.getUUID().c_str(),
-                 (unsigned short)it2->second.getType(),
-                 it2->second.getName().c_str(),
-                 it2->second.getDescription().c_str());
-      }
+      ROS_INFO("Debug: Device-Feature: Map-ID: %s, ID: %s, Feature-Type: %u, "
+               "Feature-Name: %s, Feature-Description: %s",
+               it2->first.c_str(), it2->second.getUUID().c_str(),
+               (unsigned short)it2->second.getType(),
+               it2->second.getName().c_str(),
+               it2->second.getDescription().c_str());
     }
-    changes = false;
   }
 }
 

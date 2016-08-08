@@ -20,12 +20,14 @@ private:
   Publisher configPub;
   bool hello(tobby::Hello::Request& helloReq,
              tobby::Hello::Response& helloResp);
-  bool changes;
+  bool pendingChanges;
   AsyncSpinner* spinner;
+  void changed();
 
 public:
   Api(NodeHandle* nh);
   ~Api();
+  bool checkPending();
   void DebugOutput();
   void Run();
 };
