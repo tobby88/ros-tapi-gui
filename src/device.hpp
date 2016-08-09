@@ -4,8 +4,8 @@
 #include "enums.hpp"
 #include "feature.hpp"
 #include "ros/ros.h"
-#include <string>
 #include <map>
+#include <string>
 
 using namespace ros;
 using namespace std;

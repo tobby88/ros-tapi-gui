@@ -1,8 +1,8 @@
 #ifndef APIGUI_HPP
 #define APIGUI_HPP
 
-#include <QMainWindow>
 #include "api.hpp"
+#include <QMainWindow>
 #include <QTimer>
 
 namespace Ui
@@ -22,7 +22,7 @@ private:
   Ui::ApiGui* ui;
   Api* api;
   unsigned long int temp;
-  QTimer *timer;
+  QTimer* timer;
 
 private slots:
   void checkApiForUpdate();
