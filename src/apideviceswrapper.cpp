@@ -1,23 +1,22 @@
 #include "apideviceswrapper.hpp"
-#include <QFont>
 #include <QBrush>
+#include <QFont>
 
-ApiDevicesWrapper::ApiDevicesWrapper(QObject* parent)
+ApiDevicesWrapper::ApiDevicesWrapper(QObject* parent, Api* api)
     : QAbstractTableModel(parent)
 {
+  this->api = api;
 }
 
 ApiDevicesWrapper::~ApiDevicesWrapper() {}
 
-int ApiDevicesWrapper::rowCount(const QModelIndex& /*parent*/) const
+int ApiDevicesWrapper::rowCount(const QModelIndex&) const
 {
-  return 2;
-}
-
-int ApiDevicesWrapper::columnCount(const QModelIndex& /*parent*/) const
-{
+  //return api->GetDevices().size();
   return 3;
 }
+
+int ApiDevicesWrapper::columnCount(const QModelIndex&) const { return 3; }
 
 QVariant ApiDevicesWrapper::data(const QModelIndex& index, int role) const
 {
@@ -32,7 +31,8 @@ QVariant ApiDevicesWrapper::data(const QModelIndex& index, int role) const
     if (row == 1 && col == 1)
       return QString("right-->");
 
-    return QString("Row%1, Column%2").arg(row + 1).arg(col + 1);
+    //return QString("Row%1, Column%2").arg(row + 1).arg(col + 1);
+    return QString::number(api->GetDevices().size());
     break;
   case Qt::FontRole:
     if (row == 0 && col == 0) // change font only for cell(0,0)
