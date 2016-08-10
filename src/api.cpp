@@ -90,9 +90,9 @@ void Api::changed()
 
 bool Api::CheckPending() { return pendingChanges; }
 
-bool Api::compareDeviceNames(const Device& first, const Device& second)
+bool Api::compareDeviceNames(const Device* first, const Device* second)
 {
-  return first.getName() < second.getName();
+  return first->getName() < second->getName();
 }
 
 void Api::DebugOutput()
@@ -122,25 +122,25 @@ void Api::DebugOutput()
 
 map<string, Device> Api::GetDevices() { return devices; }
 
-vector<Device> Api::GetReceiversSorted()
+vector<Device*> Api::GetReceiversSorted()
 {
-  vector<Device> receivers;
+  vector<Device*> receivers;
   for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
        it++)
     if (it->second.getType() == DeviceType::OutputDevice)
-      receivers.push_back(it->second);
+      receivers.push_back(&it->second);
   if (receivers.size() > 1)
     sort(receivers.begin(), receivers.end(), compareDeviceNames);
   return receivers;
 }
 
-vector<Device> Api::GetSendersSorted()
+vector<Device*> Api::GetSendersSorted()
 {
-  vector<Device> senders;
+  vector<Device*> senders;
   for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
        it++)
     if (it->second.getType() == DeviceType::InputDevice)
-      senders.push_back(it->second);
+      senders.push_back(&it->second);
   if (senders.size() > 1)
     sort(senders.begin(), senders.end(), compareDeviceNames);
   return senders;
