@@ -33,7 +33,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
 
   // print heading
   painter.setFont(QFont("Arial", 11));
-  painter.drawText(QRect(QPoint(0, 0), QPoint(line_width, header_end)),
+  painter.drawText(QRect(QPoint(line_start, 0), QPoint(line_end, header_end)),
                    Qt::AlignCenter, "Joystick2");
 
   // Draw Features
