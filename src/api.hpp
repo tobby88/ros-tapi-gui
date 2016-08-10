@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include "tobby/Hello.h"
 #include <map>
+#include <vector>
 
 using namespace ros;
 using namespace std;
@@ -23,6 +24,7 @@ private:
   bool pendingChanges;
   AsyncSpinner* spinner;
   void changed();
+  static bool compareDeviceNames(const Device& first, const Device& second);
 
 public:
   Api(NodeHandle* nh);
@@ -30,6 +32,8 @@ public:
   bool CheckPending();
   void DebugOutput();
   map<string, Device> GetDevices();
+  vector<Device> GetReceiversSorted();
+  vector<Device> GetSendersSorted();
   void Run();
 };
 

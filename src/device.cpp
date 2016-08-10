@@ -25,7 +25,13 @@ void Device::addFeature(Feature feature)
 DeviceType Device::getType() { return type; }
 map<string, Feature> Device::getFeatureMap() { return features; }
 
-string Device::getName() { return name; }
+string Device::getName() const
+{
+  if (name.empty())
+    return uuid;
+  else
+    return name;
+}
 
 string Device::getUUID() { return uuid; }
 

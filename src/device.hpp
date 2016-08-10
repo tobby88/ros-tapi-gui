@@ -29,7 +29,7 @@ public:
   void addFeature(Feature feature);
   map<string, Feature> getFeatureMap();
   DeviceType getType();
-  string getName();
+  string getName() const;
   string getUUID();
   unsigned long getLastSeq();
   Time getLastSeen();
