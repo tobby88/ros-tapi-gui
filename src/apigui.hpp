@@ -4,6 +4,7 @@
 #include "api.hpp"
 #include <QMainWindow>
 #include <QTimer>
+#include <QVBoxLayout>
 
 namespace Ui
 {
@@ -23,6 +24,11 @@ private:
   Api* api;
   unsigned long int temp;
   QTimer* timer;
+  void addDevice();
+  unsigned int temp2;
+  QVBoxLayout* layoutSender;
+  QVBoxLayout* layoutReceiver;
+  QVBoxLayout* layoutConnections;
 
 private slots:
   void checkApiForUpdate();

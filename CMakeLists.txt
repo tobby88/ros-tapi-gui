@@ -151,6 +151,7 @@ add_executable(tobby
   src/device.cpp
   src/enums.hpp
   src/feature.cpp
+  src/guidevice.cpp
   src/main.cpp
   srv/Hello.srv
 )
