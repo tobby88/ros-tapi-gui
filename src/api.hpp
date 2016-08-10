@@ -35,6 +35,7 @@ public:
   vector<Device> GetReceiversSorted();
   vector<Device> GetSendersSorted();
   void Run();
+  void Done();
 };
 
 #endif // API_H

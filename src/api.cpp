@@ -27,6 +27,8 @@ Api::~Api()
   ROS_INFO("Hello-Service has been stopped.");
 }
 
+void Api::Done() { pendingChanges = false; }
+
 bool Api::hello(tobby::Hello::Request& helloReq,
                 tobby::Hello::Response& helloResp)
 {
