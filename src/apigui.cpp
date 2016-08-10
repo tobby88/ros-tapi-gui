@@ -7,8 +7,6 @@ ApiGui::ApiGui(Api* api, QWidget* parent)
 {
   this->api = api;
   ui->setupUi(this);
-  temp = 0;
-  ui->TestLabel->setText(QString::number(temp));
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
   timer->start(100);
@@ -41,7 +39,5 @@ void ApiGui::addDevice()
 
 void ApiGui::checkApiForUpdate()
 {
-  temp++;
-  ui->TestLabel->setText(QString::number(temp));
   addDevice();
 }

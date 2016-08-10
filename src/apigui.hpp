@@ -22,7 +22,6 @@ public:
 private:
   Ui::ApiGui* ui;
   Api* api;
-  unsigned long int temp;
   QTimer* timer;
   void addDevice();
   unsigned int temp2;
