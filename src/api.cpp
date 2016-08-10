@@ -127,7 +127,7 @@ vector<Device*> Api::GetDevicesSorted()
   vector<Device*> devicesList;
   for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
        it++)
-      devicesList.push_back(&it->second);
+    devicesList.push_back(&it->second);
   if (devicesList.size() > 1)
     sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
   return devicesList;

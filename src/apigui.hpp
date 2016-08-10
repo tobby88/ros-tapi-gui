@@ -2,12 +2,12 @@
 #define APIGUI_HPP
 
 #include "api.hpp"
+#include "device.hpp"
+#include "guidevice.hpp"
 #include <QMainWindow>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <vector>
-#include "device.hpp"
-#include "guidevice.hpp"
 
 namespace Ui
 {
