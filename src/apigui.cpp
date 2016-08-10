@@ -43,9 +43,8 @@ void ApiGui::checkApiForUpdate()
   if (api->CheckPending())
   {
     temp2 = 0;
-    vector<Device*> senders = api->GetSendersSorted();
-    for (vector<Device*>::iterator it = senders.begin(); it != senders.end();
-         it++)
+    vector<Device*> devices = api->GetDevicesSorted();
+    for (vector<Device*>::iterator it = devices.begin(); it != devices.end(); it++)
     {
       addDevice(*it);
       temp2++;

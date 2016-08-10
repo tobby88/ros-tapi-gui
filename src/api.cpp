@@ -122,28 +122,15 @@ void Api::DebugOutput()
 
 map<string, Device> Api::GetDevices() { return devices; }
 
-vector<Device*> Api::GetReceiversSorted()
+vector<Device*> Api::GetDevicesSorted()
 {
-  vector<Device*> receivers;
+  vector<Device*> devicesList;
   for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
        it++)
-    if (it->second.getType() == DeviceType::OutputDevice)
-      receivers.push_back(&it->second);
-  if (receivers.size() > 1)
-    sort(receivers.begin(), receivers.end(), compareDeviceNames);
-  return receivers;
-}
-
-vector<Device*> Api::GetSendersSorted()
-{
-  vector<Device*> senders;
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
-       it++)
-    if (it->second.getType() == DeviceType::InputDevice)
-      senders.push_back(&it->second);
-  if (senders.size() > 1)
-    sort(senders.begin(), senders.end(), compareDeviceNames);
-  return senders;
+      devicesList.push_back(&it->second);
+  if (devicesList.size() > 1)
+    sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
+  return devicesList;
 }
 
 void Api::Run() { spinner->start(); }

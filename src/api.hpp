@@ -32,8 +32,7 @@ public:
   bool CheckPending();
   void DebugOutput();
   map<string, Device> GetDevices();
-  vector<Device*> GetReceiversSorted();
-  vector<Device*> GetSendersSorted();
+  vector<Device*> GetDevicesSorted();
   void Run();
   void Done();
 };
