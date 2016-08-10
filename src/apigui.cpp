@@ -31,10 +31,19 @@ ApiGui::~ApiGui()
 void ApiGui::addDevice(Device* device)
 {
   GuiDevice* guidevice = new GuiDevice(this, device);
-  guidevice->is_input_device = false;
-  layoutSender->addWidget(guidevice);
+  if(device->getType()==DeviceType::InputDevice)
+  {
+    guidevice->is_input_device = true;
+    layoutSender->addWidget(guidevice);
+    senderGuiDevices.push_back(guidevice);
+  }
+  else
+  {
+    guidevice->is_input_device = false;
+    layoutReceiver->addWidget(guidevice);
+    receiverGuiDevices.push_back(guidevice);
+  }
   guidevice->show(); // dont forget to show it ;)
-  guidevices.push_back(guidevice);
 }
 
 void ApiGui::checkApiForUpdate()
@@ -42,6 +51,20 @@ void ApiGui::checkApiForUpdate()
 
   if (api->CheckPending())
   {
+    for (vector<GuiDevice*>::iterator it = senderGuiDevices.begin(); it != senderGuiDevices.end(); it++)
+    {
+      (*it)->hide();
+      layoutSender->removeWidget(*it);
+      delete *it;
+    }
+    senderGuiDevices.clear();
+    for (vector<GuiDevice*>::iterator it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); it++)
+    {
+      (*it)->hide();
+      layoutReceiver->removeWidget(*it);
+      delete *it;
+    }
+    receiverGuiDevices.clear();
     temp2 = 0;
     vector<Device*> devices = api->GetDevicesSorted();
     for (vector<Device*>::iterator it = devices.begin(); it != devices.end(); it++)

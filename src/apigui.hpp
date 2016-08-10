@@ -31,7 +31,8 @@ private:
   QVBoxLayout* layoutSender;
   QVBoxLayout* layoutReceiver;
   QVBoxLayout* layoutConnections;
-  vector<GuiDevice*> guidevices;
+  vector<GuiDevice*> receiverGuiDevices;
+  vector<GuiDevice*> senderGuiDevices;
 
 private slots:
   void checkApiForUpdate();
