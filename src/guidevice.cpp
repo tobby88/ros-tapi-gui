@@ -54,7 +54,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + 6),
                       QSize(connectbox_size, connectbox_size));
 
-    if (!is_input_device)
+    if (is_input_device)
     {
       connect_box.moveLeft(line_end);
     }
