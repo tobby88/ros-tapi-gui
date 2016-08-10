@@ -11,9 +11,6 @@ class GuiDevice : public QWidget
   Q_OBJECT
 public:
   explicit GuiDevice(QWidget* parent, Device* device);
-
-  bool is_input_device;
-
   void paintEvent(QPaintEvent*);
 
 private:

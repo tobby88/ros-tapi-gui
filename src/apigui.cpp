@@ -33,13 +33,11 @@ void ApiGui::addDevice(Device* device)
   GuiDevice* guidevice = new GuiDevice(this, device);
   if(device->getType()==DeviceType::InputDevice)
   {
-    guidevice->is_input_device = true;
     layoutSender->addWidget(guidevice);
     senderGuiDevices.push_back(guidevice);
   }
   else
   {
-    guidevice->is_input_device = false;
     layoutReceiver->addWidget(guidevice);
     receiverGuiDevices.push_back(guidevice);
   }

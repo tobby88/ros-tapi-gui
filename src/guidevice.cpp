@@ -5,8 +5,6 @@
 GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
 {
   this->device = device;
-  is_input_device = false;
-
   connectbox_size = 10;
   header_end = 30;
   footer_height = 10;
@@ -54,7 +52,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + 6),
                       QSize(connectbox_size, connectbox_size));
 
-    if (is_input_device)
+    if (device->getType() == DeviceType::InputDevice)
     {
       connect_box.moveLeft(line_end);
     }
