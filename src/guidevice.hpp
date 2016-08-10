@@ -1,8 +1,8 @@
 #ifndef GUIDEVICE_H
 #define GUIDEVICE_H
 
-#include <QWidget>
 #include "device.hpp"
+#include <QWidget>
 
 class GuiDevice : public QWidget
 {
