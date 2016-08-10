@@ -5,6 +5,9 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <vector>
+#include "device.hpp"
+#include "guidevice.hpp"
 
 namespace Ui
 {
@@ -23,11 +26,12 @@ private:
   Ui::ApiGui* ui;
   Api* api;
   QTimer* timer;
-  void addDevice();
+  void addDevice(Device* device);
   unsigned int temp2;
   QVBoxLayout* layoutSender;
   QVBoxLayout* layoutReceiver;
   QVBoxLayout* layoutConnections;
+  vector<GuiDevice*> guidevices;
 
 private slots:
   void checkApiForUpdate();

@@ -1,8 +1,10 @@
 #include "guidevice.hpp"
 #include <QPainter>
+#include <QString>
 
-GuiDevice::GuiDevice(QWidget* parent) : QWidget(parent)
+GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
 {
+  this->device = device;
   is_input_device = false;
 
   connectbox_size = 10;
@@ -10,7 +12,8 @@ GuiDevice::GuiDevice(QWidget* parent) : QWidget(parent)
   footer_height = 10;
   line_height = 20;
   line_start = connectbox_size;
-  items = 10;
+  // TODO: this should later be updated during painting
+  items = device->getFeatureMap().size();
 
   // min height
   this->setMinimumHeight(header_end + line_height * items + footer_height);
@@ -34,7 +37,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
   // print heading
   painter.setFont(QFont("Arial", 11));
   painter.drawText(QRect(QPoint(line_start, 0), QPoint(line_end, header_end)),
-                   Qt::AlignCenter, "Joystick2");
+                   Qt::AlignCenter, QString::fromStdString(device->getName()));
 
   // Draw Features
   for (int i = 0; i < items; i++)

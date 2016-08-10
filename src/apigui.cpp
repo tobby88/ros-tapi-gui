@@ -1,5 +1,4 @@
 #include "apigui.hpp"
-#include "guidevice.hpp"
 #include "ui_apigui.h"
 
 ApiGui::ApiGui(Api* api, QWidget* parent)
@@ -7,10 +6,10 @@ ApiGui::ApiGui(Api* api, QWidget* parent)
 {
   this->api = api;
   ui->setupUi(this);
+  temp2 = 0;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
   timer->start(100);
-  temp2 = 0;
   // Add vertical layouts to the scroll Areas
   layoutConnections = new QVBoxLayout;
   layoutReceiver = new QVBoxLayout;
@@ -29,15 +28,29 @@ ApiGui::~ApiGui()
   delete ui;
 }
 
-void ApiGui::addDevice()
+void ApiGui::addDevice(Device* device)
 {
-  GuiDevice* guidevice = new GuiDevice(this);
+  GuiDevice* guidevice = new GuiDevice(this, device);
   guidevice->is_input_device = false;
   layoutSender->addWidget(guidevice);
   guidevice->show(); // dont forget to show it ;)
+  guidevices.push_back(guidevice);
 }
 
 void ApiGui::checkApiForUpdate()
 {
-  addDevice();
+
+  if (api->CheckPending())
+  {
+    temp2 = 0;
+    vector<Device*> senders = api->GetSendersSorted();
+    for (vector<Device*>::iterator it = senders.begin(); it != senders.end();
+         it++)
+    {
+      addDevice(*it);
+      temp2++;
+    }
+    ui->TestLabel->setText(QString::number(temp2));
+    api->Done();
+  }
 }

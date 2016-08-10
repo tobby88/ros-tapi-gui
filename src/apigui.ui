@@ -31,7 +31,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>300</width>
+         <width>310</width>
          <height>608</height>
         </rect>
        </property>
@@ -48,7 +48,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>299</width>
+         <width>309</width>
          <height>608</height>
         </rect>
        </property>
@@ -58,7 +58,7 @@
     <item>
      <widget class="QLabel" name="TestLabel">
       <property name="text">
-       <string>TextLabel</string>
+       <string>false</string>
       </property>
      </widget>
     </item>
@@ -78,7 +78,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>300</width>
+         <width>310</width>
          <height>608</height>
         </rect>
        </property>
