@@ -2,7 +2,9 @@
 #define GUIDEVICE_H
 
 #include "device.hpp"
+#include "feature.hpp"
 #include <QWidget>
+#include <vector>
 
 class GuiDevice : public QWidget
 {
@@ -16,6 +18,7 @@ public:
 
 private:
   Device* device;
+  vector<Feature*> features;
   int connectbox_size;
   int header_end;
   int footer_height;

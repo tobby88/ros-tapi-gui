@@ -12,8 +12,8 @@ GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
   footer_height = 10;
   line_height = 20;
   line_start = connectbox_size;
-  // TODO: this should later be updated during painting
-  items = device->getFeatureMap().size();
+  features = device->GetSortedFeatures();
+  items = features.size();
 
   // min height
   this->setMinimumHeight(header_end + line_height * items + footer_height);
@@ -40,7 +40,9 @@ void GuiDevice::paintEvent(QPaintEvent*)
                    Qt::AlignCenter, QString::fromStdString(device->getName()));
 
   // Draw Features
-  for (int i = 0; i < items; i++)
+  int i = 0;
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
+       it++)
   {
     int line_y = header_end + i * line_height;
 
@@ -61,7 +63,8 @@ void GuiDevice::paintEvent(QPaintEvent*)
     painter.setFont(QFont("Arial", 10));
     painter.drawText(QRect(QPoint(line_start, line_y),
                            QPoint(line_end, line_y + line_height)),
-                     Qt::AlignCenter, "Feature" + QString::number(i));
+                     Qt::AlignCenter, QString::fromStdString((*it)->getName()));
+    i++;
   }
 
   // footer line
