@@ -22,8 +22,25 @@ void Device::addFeature(Feature feature)
     features.emplace(feature.getUUID(), feature);
 }
 
+bool Device::compareFeatureNames(const Feature* first, const Feature* second)
+{
+  return first->getName() < second->getName();
+}
+
 DeviceType Device::getType() { return type; }
+
 map<string, Feature> Device::getFeatureMap() { return features; }
+
+vector<Feature*> Device::GetSortedFeatures()
+{
+  vector<Feature*> featureList;
+  for (map<string, Feature>::iterator it = features.begin();
+       it != features.end(); it++)
+    featureList.push_back(&it->second);
+  if (featureList.size() > 1)
+    sort(featureList.begin(), featureList.end(), compareFeatureNames);
+  return featureList;
+}
 
 string Device::getName() const
 {

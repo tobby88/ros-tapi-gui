@@ -10,7 +10,13 @@ Feature::Feature(FeatureType type, string name, string description, string uuid)
 
 Feature::~Feature() {}
 
-string Feature::getName() { return name; }
+string Feature::getName() const
+{
+  if (name.empty())
+    return uuid;
+  else
+    return name;
+}
 
 string Feature::getDescription() { return description; }
 

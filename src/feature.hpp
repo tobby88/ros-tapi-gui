@@ -21,7 +21,7 @@ public:
   Feature(FeatureType type, string name, string description, string uuid);
   ~Feature();
 
-  string getName();
+  string getName() const;
   string getDescription();
   string getUUID();
   FeatureType getType();

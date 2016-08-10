@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include <map>
 #include <string>
+#include <vector>
 
 using namespace ros;
 using namespace std;
@@ -27,7 +28,9 @@ public:
          Time lastSeen, unsigned long heartbeat);
   ~Device();
   void addFeature(Feature feature);
+  static bool compareFeatureNames(const Feature* first, const Feature* second);
   map<string, Feature> getFeatureMap();
+  vector<Feature*> GetSortedFeatures();
   DeviceType getType();
   string getName() const;
   string getUUID();
