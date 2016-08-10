@@ -11,7 +11,7 @@ ApiGui::ApiGui(Api* api, QWidget* parent)
   ui->TestLabel->setText(QString::number(temp));
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
-  timer->start(2000);
+  timer->start(100);
   temp2 = 0;
   // Add vertical layouts to the scroll Areas
   layoutConnections = new QVBoxLayout;
