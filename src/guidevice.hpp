@@ -10,7 +10,7 @@ class GuiDevice : public QWidget
 {
   Q_OBJECT
 public:
-  explicit GuiDevice(QWidget* parent, Device* device);
+  GuiDevice(QWidget* parent, Device* device);
   void paintEvent(QPaintEvent*);
 
 private:
