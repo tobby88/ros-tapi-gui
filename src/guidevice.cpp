@@ -49,7 +49,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     painter.drawLine(QPoint(line_start, line_y), QPoint(line_end, line_y));
 
     // draw connect box
-    QRect connect_box(QPoint(0, line_y + line_height/2 - connectbox_size/2),
+    QRect connect_box(QPoint(0, line_y + line_height / 2 - connectbox_size / 2),
                       QSize(connectbox_size, connectbox_size));
 
     if (device->getType() == DeviceType::SenderDevice)
@@ -73,19 +73,18 @@ void GuiDevice::paintEvent(QPaintEvent*)
 QPoint GuiDevice::featureBoxPosition(Feature* feature)
 {
   int x, y, i;
-  y=0;
+  y = 0;
   if (device->getType() == DeviceType::ReceiverDevice)
-    x=0;
+    x = 0;
   else
-    x=this->width()-1;
-  i=0;
+    x = this->width() - 1;
+  i = 0;
   for (vector<Feature*>::iterator it = features.begin(); it != features.end();
        it++)
   {
     if (*it == feature)
-      y=header_end + i * line_height + line_height/2;
+      y = header_end + i * line_height + line_height / 2;
     i++;
-
   }
-  return QPoint(x,y);
+  return QPoint(x, y);
 }
