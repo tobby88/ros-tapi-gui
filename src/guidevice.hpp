@@ -3,20 +3,25 @@
 
 #include "device.hpp"
 #include "feature.hpp"
+#include <QMouseEvent>
 #include <QWidget>
 #include <vector>
 
 class GuiDevice : public QWidget
 {
   Q_OBJECT
+
+signals:
+  void featureClicked(GuiDevice* guidevice, Feature* feature);
+
 public:
   GuiDevice(QWidget* parent, Device* device);
   QPoint featureBoxPosition(Feature* feature);
 
-
   vector<Feature*> features; // TODO: private
 protected:
   void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
+  void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 
 private:
   Device* device;

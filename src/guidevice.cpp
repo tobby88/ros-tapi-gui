@@ -88,3 +88,20 @@ QPoint GuiDevice::featureBoxPosition(Feature* feature)
   }
   return QPoint(x, y);
 }
+
+void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
+{
+  int i = 0, y;
+  QPoint p = event->pos();
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
+       it++)
+  {
+    y = header_end + i * line_height;
+
+    if (p.y() >= y && p.y() < y + line_height)
+    {
+      emit featureClicked(this, *it);
+    }
+    i++;
+  }
+}
