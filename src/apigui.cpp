@@ -11,10 +11,8 @@ ApiGui::ApiGui(Api* api, QWidget* parent)
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
   timer->start(100);
   // Add vertical layouts to the scroll Areas
-  layoutConnections = new QVBoxLayout;
   layoutReceiver = new QVBoxLayout;
   layoutSender = new QVBoxLayout;
-  ui->scrollAreaWidgetContentsConnections->setLayout(layoutConnections);
   ui->scrollAreaWidgetContentsReceiver->setLayout(layoutReceiver);
   ui->scrollAreaWidgetContentsSender->setLayout(layoutSender);
 }
@@ -24,7 +22,6 @@ ApiGui::~ApiGui()
   delete timer;
   delete layoutReceiver;
   delete layoutSender;
-  delete layoutConnections;
   delete ui;
 }
 

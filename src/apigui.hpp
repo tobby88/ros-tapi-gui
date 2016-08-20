@@ -30,7 +30,6 @@ private:
   unsigned int temp2;
   QVBoxLayout* layoutSender;
   QVBoxLayout* layoutReceiver;
-  QVBoxLayout* layoutConnections;
   vector<GuiDevice*> receiverGuiDevices;
   vector<GuiDevice*> senderGuiDevices;
 
