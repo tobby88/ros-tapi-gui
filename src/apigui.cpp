@@ -24,7 +24,7 @@ ApiGui::~ApiGui()
 void ApiGui::addDevice(Device* device)
 {
   GuiDevice* guidevice = new GuiDevice(this, device);
-  if (device->getType() == DeviceType::InputDevice)
+  if (device->getType() == DeviceType::SenderDevice)
   {
     layoutSender->addWidget(guidevice);
     senderGuiDevices.push_back(guidevice);

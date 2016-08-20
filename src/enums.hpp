@@ -3,9 +3,8 @@
 
 enum class DeviceType
 {
-  InputDevice,
-  OutputDevice,
-  Hook
+  SenderDevice,
+  ReceiverDevice,
 };
 enum class DeviceStatusResponse
 {
