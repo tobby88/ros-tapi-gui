@@ -22,6 +22,9 @@ public:
   ApiGui(Api* api, QWidget* parent = 0);
   ~ApiGui();
 
+protected:
+  void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
+
 private:
   Ui::ApiGui* ui;
   Api* api;

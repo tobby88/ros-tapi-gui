@@ -13,12 +13,13 @@ public:
   GuiDevice(QWidget* parent, Device* device);
   QPoint featureBoxPosition(Feature* feature);
 
+
+  vector<Feature*> features; // TODO: private
 protected:
   void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
 
 private:
   Device* device;
-  vector<Feature*> features;
   int connectbox_size;
   int header_end;
   int footer_height;

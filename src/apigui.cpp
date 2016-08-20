@@ -1,5 +1,6 @@
 #include "apigui.hpp"
 #include "ui_apigui.h"
+#include <QPainter>
 
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
@@ -68,4 +69,26 @@ void ApiGui::checkApiForUpdate()
     ui->TestLabel->setText(QString::number(temp2));
     api->Done();
   }
+}
+
+void ApiGui::paintEvent(QPaintEvent*)
+{
+  QPainter painter(this);
+  painter.setPen(Qt::black);
+
+  if (senderGuiDevices.size() == 0)
+    return;
+
+  if (receiverGuiDevices.size() == 0)
+    return;
+
+  GuiDevice *s = (*senderGuiDevices.begin());
+  GuiDevice *r = (*receiverGuiDevices.begin());
+
+  Feature *fs = (*s->features.begin());
+  Feature *fr = (*r->features.begin());
+
+  QPoint begin = s->mapTo(this, s->featureBoxPosition(fs));
+  QPoint end = r->mapTo(this, r->featureBoxPosition(fr));
+  painter.drawLine(begin, end);
 }
