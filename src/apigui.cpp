@@ -1,8 +1,7 @@
 #include "apigui.hpp"
 #include "ui_apigui.h"
 
-ApiGui::ApiGui(Api* api, QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::ApiGui)
+ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
   this->api = api;
   ui->setupUi(this);

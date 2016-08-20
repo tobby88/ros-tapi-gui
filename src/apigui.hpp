@@ -4,9 +4,9 @@
 #include "api.hpp"
 #include "device.hpp"
 #include "guidevice.hpp"
-#include <QMainWindow>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QWidget>
 #include <vector>
 
 namespace Ui
@@ -14,7 +14,7 @@ namespace Ui
 class ApiGui;
 }
 
-class ApiGui : public QMainWindow
+class ApiGui : public QWidget
 {
   Q_OBJECT
 

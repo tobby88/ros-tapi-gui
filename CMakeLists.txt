@@ -153,6 +153,8 @@ add_executable(tobby
   src/feature.cpp
   src/guidevice.cpp
   src/main.cpp
+  src/maingui.cpp
+  src/maingui.ui
   srv/Hello.srv
 )
 
