@@ -49,7 +49,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     painter.drawLine(QPoint(line_start, line_y), QPoint(line_end, line_y));
 
     // draw connect box
-    QRect connect_box(QPoint(0, line_y + 6),
+    QRect connect_box(QPoint(0, line_y + line_height/2 - connectbox_size/2),
                       QSize(connectbox_size, connectbox_size));
 
     if (device->getType() == DeviceType::InputDevice)
