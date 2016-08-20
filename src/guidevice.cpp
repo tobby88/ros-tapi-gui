@@ -69,3 +69,23 @@ void GuiDevice::paintEvent(QPaintEvent*)
   painter.drawLine(QPoint(line_start, footer_start),
                    QPoint(line_end, footer_start));
 }
+
+QPoint GuiDevice::featureBoxPosition(Feature* feature)
+{
+  int x, y, i;
+  y=0;
+  if (device->getType() == DeviceType::OutputDevice)
+    x=0;
+  else
+    x=this->width()-1;
+  i=0;
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
+       it++)
+  {
+    if (*it == feature)
+      y=header_end + i * line_height + line_height/2;
+    i++;
+
+  }
+  return QPoint(x,y);
+}

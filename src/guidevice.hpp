@@ -11,6 +11,7 @@ class GuiDevice : public QWidget
   Q_OBJECT
 public:
   GuiDevice(QWidget* parent, Device* device);
+  QPoint featureBoxPosition(Feature* feature);
 
 protected:
   void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
