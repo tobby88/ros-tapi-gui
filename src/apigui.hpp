@@ -19,7 +19,7 @@ class ApiGui : public QMainWindow
   Q_OBJECT
 
 public:
-  explicit ApiGui(Api* api, QWidget* parent = 0);
+  ApiGui(Api* api, QWidget* parent = 0);
   ~ApiGui();
 
 private:
