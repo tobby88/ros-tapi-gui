@@ -4,6 +4,7 @@
 #include "api.hpp"
 #include "device.hpp"
 #include "guidevice.hpp"
+#include <QPoint>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -35,9 +36,13 @@ private:
   QVBoxLayout* layoutReceiver;
   vector<GuiDevice*> receiverGuiDevices;
   vector<GuiDevice*> senderGuiDevices;
+  Feature* selectedFeature;
+  GuiDevice* selectedGuiDevice;
+  QPoint mousePosition;
 
 private slots:
   void checkApiForUpdate();
+  void featureClicked(GuiDevice* guidevice, Feature* feature);
 };
 
 #endif // APIGUI_HPP

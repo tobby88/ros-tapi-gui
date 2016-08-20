@@ -1,5 +1,6 @@
 #include "apigui.hpp"
 #include "ui_apigui.h"
+#include <QCursor>
 #include <QPainter>
 
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
@@ -9,10 +10,13 @@ ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
   temp2 = 0;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
-  timer->start(100);
+  timer->start(15);
   // Add vertical layouts to the scroll Areas
   layoutReceiver = ui->verticalLayoutReceiver;
   layoutSender = ui->verticalLayoutSender;
+
+  selectedFeature = 0;
+  selectedGuiDevice = 0;
 }
 
 ApiGui::~ApiGui()
@@ -35,10 +39,18 @@ void ApiGui::addDevice(Device* device)
     receiverGuiDevices.push_back(guidevice);
   }
   guidevice->show(); // dont forget to show it ;)
+  connect(guidevice, SIGNAL(featureClicked(GuiDevice*, Feature*)), this,
+          SLOT(featureClicked(GuiDevice*, Feature*)));
 }
 
 void ApiGui::checkApiForUpdate()
 {
+  QPoint newMousePosition = QCursor::pos();
+  if (newMousePosition != mousePosition)
+  {
+    mousePosition = newMousePosition;
+    update();
+  }
 
   if (api->CheckPending())
   {
@@ -76,19 +88,23 @@ void ApiGui::paintEvent(QPaintEvent*)
   QPainter painter(this);
   painter.setPen(Qt::black);
 
-  if (senderGuiDevices.size() == 0)
+  if (!selectedFeature)
     return;
 
-  if (receiverGuiDevices.size() == 0)
-    return;
+  GuiDevice* s = selectedGuiDevice;
+  QPoint end = mapFromGlobal(mousePosition);
 
-  GuiDevice *s = (*senderGuiDevices.begin());
-  GuiDevice *r = (*receiverGuiDevices.begin());
-
-  Feature *fs = (*s->features.begin());
-  Feature *fr = (*r->features.begin());
+  Feature* fs = selectedFeature;
 
   QPoint begin = s->mapTo(this, s->featureBoxPosition(fs));
-  QPoint end = r->mapTo(this, r->featureBoxPosition(fr));
   painter.drawLine(begin, end);
+}
+
+void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
+{
+  QString qs = QString::fromStdString(feature->getName());
+  ui->TestLabel->setText(qs);
+
+  selectedFeature = feature;
+  selectedGuiDevice = guidevice;
 }
