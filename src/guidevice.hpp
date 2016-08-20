@@ -11,7 +11,9 @@ class GuiDevice : public QWidget
   Q_OBJECT
 public:
   GuiDevice(QWidget* parent, Device* device);
-  void paintEvent(QPaintEvent*);
+
+protected:
+  void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
 
 private:
   Device* device;
