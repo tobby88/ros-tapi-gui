@@ -105,6 +105,68 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   QString qs = QString::fromStdString(feature->getName());
   ui->TestLabel->setText(qs);
 
-  selectedFeature = feature;
-  selectedGuiDevice = guidevice;
+  if (false /* TODO: replace with check whether feature is already assigned */)
+  {
+    if (guidevice->device->getType() == DeviceType::ReceiverDevice)
+    {
+      // one receiver can only have one sender
+
+      // TODO: remove old assignmed!?
+      return; // stub: ignore click!
+    }
+    else
+    {
+      // it's okay. sender can have muliple receivers.
+    }
+  }
+
+  if (!selectedFeature)
+  {
+    // select feature
+    selectedFeature = feature;
+    selectedGuiDevice = guidevice;
+  }
+  else if (guidevice->device->getType() == selectedGuiDevice->device->getType())
+  {
+    // select feature (drop old selection)
+    selectedFeature = feature;
+    selectedGuiDevice = guidevice;
+  }
+  else
+  {
+    // can we assign them?
+    // TODO: maybe this should be checked in the api
+    if (feature->getType() != selectedFeature->getType())
+    {
+      // TODO: message box
+
+      // ignore the wrong click
+      return;
+    }
+
+    // TODO: assign it in the api (export to own method)
+    // sort clicks by sender and receiver
+    Feature *sender, receiver;
+    Device *senderDevice, receiverDevice;
+    if (selectedGuiDevice->device->getType() == DeviceType::ReceiverDevice)
+    {
+      sender = feature;
+      receiver = selectedFeature;
+      senderDevice = guidevice;
+      receiverDevice = senderGuiDevices;
+    }
+    else
+    {
+      receiver = feature;
+      sender = selectedFeature;
+      receiverDevice = guidevice;
+      senderDevice = senderGuiDevices;
+    }
+    // Assignment* a = new Assignment(receiverDevice->getUUID(),
+    // senderDevice->getUUID(), receiver->getUUID(), sender->getUUID()); //
+    // TODO: sorting of the arguments is crap
+    // api->
+    selectedFeature = 0;
+    selectedGuiDevice = 0;
+  }
 }

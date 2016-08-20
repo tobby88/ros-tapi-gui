@@ -19,12 +19,12 @@ public:
   QPoint featureBoxPosition(Feature* feature);
 
   vector<Feature*> features; // TODO: private
+  Device* device;            // TODO: getDevice() & private
 protected:
   void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
   void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 
 private:
-  Device* device;
   int connectbox_size;
   int header_end;
   int footer_height;
