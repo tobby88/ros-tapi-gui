@@ -14,33 +14,37 @@ using namespace std;
 
 class Api
 {
-private:
-  NodeHandle* nh;
-  map<string, Device> devices;
-  map<string, Assignment> connections;
-  ServiceServer helloServ;
-  Publisher configPub;
-  bool hello(tobby::Hello::Request& helloReq,
-             tobby::Hello::Response& helloResp);
-  bool pendingChanges;
-  AsyncSpinner* spinner;
-  void changed();
-  static bool compareDeviceNames(const Device* first, const Device* second);
-  Device* getDeviceByFeatureUUID(string uuid);
-  void sendAllConnections();
-
 public:
+  // Public member functions
   Api(NodeHandle* nh);
   ~Api();
   bool CheckPending();
+  bool ConnectFeatures(string feature1UUID, string feature2UUID,
+                       double coefficient);
   void DebugOutput();
+  bool DeleteConnection(string receiverFeatureUUID);
+  void Done();
+  vector<Assignment*> GetConnections();
   vector<Device*> GetDevicesSorted();
   void Run();
-  void Done();
-  bool ConnectFeatures(string feature1uuid, string feature2uuid,
-                       double coefficient);
-  vector<Assignment*> GetConnections();
-  bool DeleteConnection(string receiverFeatureUUID);
+
+private:
+  // Private member variables
+  Publisher configPub;
+  map<string, Assignment> connections;
+  map<string, Device> devices;
+  ServiceServer helloServ;
+  NodeHandle* nh;
+  bool pendingChanges;
+  AsyncSpinner* spinner;
+
+  // Private member functions
+  void changed();
+  static bool compareDeviceNames(const Device* first, const Device* second);
+  Device* getDeviceByFeatureUUID(string uuid);
+  bool hello(tobby::Hello::Request& helloReq,
+             tobby::Hello::Response& helloResp);
+  void sendAllConnections();
 };
 
 #endif // API_H

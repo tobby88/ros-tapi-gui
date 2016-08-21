@@ -10,6 +10,8 @@
 using namespace ros;
 using namespace std;
 
+// Public member functions
+
 Api::Api(NodeHandle* nh)
 {
   this->nh = nh;
@@ -29,125 +31,7 @@ Api::~Api()
   ROS_INFO("Hello-Service has been stopped.");
 }
 
-void Api::Done() { pendingChanges = false; }
-
-bool Api::hello(tobby::Hello::Request& helloReq,
-                tobby::Hello::Response& helloResp)
-{
-  string uuid = helloReq.UUID;
-  if (devices.empty() || devices.count(uuid) == 0)
-  {
-    // New device:
-    unsigned long lastSeq = helloReq.Header.seq;
-    Time lastSeen = helloReq.Header.stamp;
-    string name = helloReq.Name;
-    DeviceType type = (DeviceType)helloReq.DeviceType;
-    unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-    Device device(type, name, uuid, lastSeq, lastSeen, heartbeat);
-    devices.emplace(uuid, device);
-    for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
-    {
-      Feature feature((FeatureType)helloReq.Features[i].FeatureType,
-                      helloReq.Features[i].Name,
-                      helloReq.Features[i].Description,
-                      helloReq.Features[i].UUID);
-      devices.at(uuid).addFeature(feature);
-    }
-    helloResp.Status = (unsigned short)DeviceStatusResponse::OK;
-    helloResp.Heartbeat = heartbeat;
-    changed();
-  }
-  else if (devices.count(uuid) == 1)
-  {
-    unsigned long lastSeq = helloReq.Header.seq;
-    Time lastSeen = helloReq.Header.stamp;
-    string name = helloReq.Name;
-    DeviceType type = (DeviceType)helloReq.DeviceType;
-    unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-    devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat);
-    // TODO: Updating feature-list
-    helloResp.Status = (unsigned short)DeviceStatusResponse::OK;
-    helloResp.Heartbeat = heartbeat;
-    changed();
-  }
-  else
-  {
-    ROS_ERROR("Hello message couldn't be decoded, looks like there is "
-              "something wrong with the devices database. Please try to "
-              "restart the Hello-Service.");
-    helloResp.Status = (unsigned short)DeviceStatusResponse::Error;
-    helloResp.Heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-    return false;
-  }
-
-  return true;
-}
-
-void Api::changed()
-{
-  pendingChanges = true;
-  sendAllConnections();
-#ifdef DEBUG
-  DebugOutput();
-#endif
-}
-
 bool Api::CheckPending() { return pendingChanges; }
-
-bool Api::compareDeviceNames(const Device* first, const Device* second)
-{
-  return first->getName() < second->getName();
-}
-
-void Api::DebugOutput()
-{
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
-       it++)
-  {
-    ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
-    ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, "
-             "Last Seen: %f, Heartbeat-Interval: %lu",
-             (unsigned short)it->second.getType(), it->second.getName().c_str(),
-             it->second.getUUID().c_str(), it->second.getLastSeq(),
-             it->second.getLastSeen().toSec(), it->second.getHeartbeat());
-    map<string, Feature> features = it->second.getFeatureMap();
-    for (map<string, Feature>::iterator it2 = features.begin();
-         it2 != features.end(); it2++)
-    {
-      ROS_INFO("Debug: Device-Feature: Map-ID: %s, ID: %s, Feature-Type: %u, "
-               "Feature-Name: %s, Feature-Description: %s",
-               it2->first.c_str(), it2->second.getUUID().c_str(),
-               (unsigned short)it2->second.getType(),
-               it2->second.getName().c_str(),
-               it2->second.getDescription().c_str());
-    }
-  }
-  // TODO: Print connections
-}
-
-vector<Device*> Api::GetDevicesSorted()
-{
-  vector<Device*> devicesList;
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
-       it++)
-    devicesList.push_back(&it->second);
-  if (devicesList.size() > 1)
-    sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
-  return devicesList;
-}
-
-void Api::Run() { spinner->start(); }
-
-Device* Api::getDeviceByFeatureUUID(string uuid)
-{
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
-       it++)
-  {
-    if (it->second.getFeatureMap().count(uuid) > 0)
-      return &(it->second);
-  }
-  return 0;
-}
 
 bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
                           double coefficient)
@@ -201,28 +85,30 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
   return false;
 }
 
-void Api::sendAllConnections()
+void Api::DebugOutput()
 {
-  for (map<string, Assignment>::iterator it = connections.begin();
-       it != connections.end(); it++)
+  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
+       it++)
   {
-    tobby::Config msg;
-    msg.SenderUUID = it->second.getSenderUUID();
-    msg.SenderFeatureUUID = it->second.getSenderFeatureUUID();
-    msg.ReceiverUUID = it->second.getReceiverUUID();
-    msg.ReceiverFeatureUUID = it->second.getReceiverFeatureUUID();
-    msg.Coefficient = it->second.getCoefficient();
-    configPub.publish(msg);
+    ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
+    ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, "
+             "Last Seen: %f, Heartbeat-Interval: %lu",
+             (unsigned short)it->second.getType(), it->second.getName().c_str(),
+             it->second.getUUID().c_str(), it->second.getLastSeq(),
+             it->second.getLastSeen().toSec(), it->second.getHeartbeat());
+    map<string, Feature> features = it->second.getFeatureMap();
+    for (map<string, Feature>::iterator it2 = features.begin();
+         it2 != features.end(); it2++)
+    {
+      ROS_INFO("Debug: Device-Feature: Map-ID: %s, ID: %s, Feature-Type: %u, "
+               "Feature-Name: %s, Feature-Description: %s",
+               it2->first.c_str(), it2->second.getUUID().c_str(),
+               (unsigned short)it2->second.getType(),
+               it2->second.getName().c_str(),
+               it2->second.getDescription().c_str());
+    }
   }
-}
-
-vector<Assignment*> Api::GetConnections()
-{
-  vector<Assignment*> connectionList;
-  for (map<string, Assignment>::iterator it = connections.begin();
-       it != connections.end(); it++)
-    connectionList.push_back(&it->second);
-  return connectionList;
+  // TODO: Print connections
 }
 
 bool Api::DeleteConnection(string receiverFeatureUUID)
@@ -249,5 +135,123 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
     msg.Coefficient = 0;
     configPub.publish(msg);
     connections.erase(receiverFeatureUUID);
+  }
+}
+
+void Api::Done() { pendingChanges = false; }
+
+vector<Assignment*> Api::GetConnections()
+{
+  vector<Assignment*> connectionList;
+  for (map<string, Assignment>::iterator it = connections.begin();
+       it != connections.end(); it++)
+    connectionList.push_back(&it->second);
+  return connectionList;
+}
+
+vector<Device*> Api::GetDevicesSorted()
+{
+  vector<Device*> devicesList;
+  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
+       it++)
+    devicesList.push_back(&it->second);
+  if (devicesList.size() > 1)
+    sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
+  return devicesList;
+}
+
+void Api::Run() { spinner->start(); }
+
+// Private memeber functions
+
+void Api::changed()
+{
+  pendingChanges = true;
+  sendAllConnections();
+#ifdef DEBUG
+  DebugOutput();
+#endif
+}
+
+bool Api::compareDeviceNames(const Device* first, const Device* second)
+{
+  return first->getName() < second->getName();
+}
+
+Device* Api::getDeviceByFeatureUUID(string uuid)
+{
+  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
+       it++)
+  {
+    if (it->second.getFeatureMap().count(uuid) > 0)
+      return &(it->second);
+  }
+  return 0;
+}
+
+bool Api::hello(tobby::Hello::Request& helloReq,
+                tobby::Hello::Response& helloResp)
+{
+  string uuid = helloReq.UUID;
+  if (devices.empty() || devices.count(uuid) == 0)
+  {
+    // New device:
+    unsigned long lastSeq = helloReq.Header.seq;
+    Time lastSeen = helloReq.Header.stamp;
+    string name = helloReq.Name;
+    DeviceType type = (DeviceType)helloReq.DeviceType;
+    unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
+    Device device(type, name, uuid, lastSeq, lastSeen, heartbeat);
+    devices.emplace(uuid, device);
+    for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
+    {
+      Feature feature((FeatureType)helloReq.Features[i].FeatureType,
+                      helloReq.Features[i].Name,
+                      helloReq.Features[i].Description,
+                      helloReq.Features[i].UUID);
+      devices.at(uuid).addFeature(feature);
+    }
+    helloResp.Status = (unsigned short)DeviceStatusResponse::OK;
+    helloResp.Heartbeat = heartbeat;
+    changed();
+  }
+  else if (devices.count(uuid) == 1)
+  {
+    unsigned long lastSeq = helloReq.Header.seq;
+    Time lastSeen = helloReq.Header.stamp;
+    string name = helloReq.Name;
+    DeviceType type = (DeviceType)helloReq.DeviceType;
+    unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
+    devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat);
+    // TODO: Updating feature-list
+    helloResp.Status = (unsigned short)DeviceStatusResponse::OK;
+    helloResp.Heartbeat = heartbeat;
+    changed();
+  }
+  else
+  {
+    ROS_ERROR("Hello message couldn't be decoded, looks like there is "
+              "something wrong with the devices database. Please try to "
+              "restart the Hello-Service.");
+    helloResp.Status = (unsigned short)DeviceStatusResponse::Error;
+    helloResp.Heartbeat = STANDARD_HEARTBEAT_INTERVAL;
+    return false;
+  }
+
+  return true;
+}
+
+void Api::sendAllConnections()
+{
+  for (map<string, Assignment>::iterator it = connections.begin();
+       it != connections.end(); it++)
+  {
+    tobby::Config msg;
+    msg.SenderUUID = it->second.getSenderUUID();
+    msg.SenderFeatureUUID = it->second.getSenderFeatureUUID();
+    msg.ReceiverUUID = it->second.getReceiverUUID();
+    msg.ReceiverFeatureUUID = it->second.getReceiverFeatureUUID();
+    msg.Coefficient = it->second.getCoefficient();
+    configPub.publish(msg);
   }
 }
