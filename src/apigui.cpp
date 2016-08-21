@@ -2,6 +2,7 @@
 #include "assignment.hpp"
 #include "ui_apigui.h"
 #include <QCursor>
+#include <QMessageBox>
 #include <QPainter>
 
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
@@ -170,13 +171,37 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   if (guidevice->device->getType() == DeviceType::ReceiverDevice &&
       feature->getConnectionCount() > 0)
   {
-    // one receiver can only have one sender
-    // TODO: remove old assignment!?
-    return; // stub: ignore click!
-  }
-  else
-  {
-    // it's okay. sender can have muliple receivers.
+    QMessageBox msgBox;
+    if (selectedFeature)
+    {
+      string msg = "Replace connection of \"" + feature->getName() + "\"?";
+      msgBox.setWindowTitle("Feature already connected");
+      msgBox.setText(QString::fromStdString(msg));
+    }
+    else
+    {
+      string msg = "Delete connection of \"" + feature->getName() + "\"?";
+      msgBox.setWindowTitle("Delete connection?");
+      msgBox.setText(QString::fromStdString(msg));
+    }
+    msgBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+    msgBox.setDefaultButton(QMessageBox::No);
+    msgBox.setIcon(QMessageBox::Question);
+    timer->stop();
+    int ret = msgBox.exec();
+    timer->start(timerInterval);
+    switch (ret)
+    {
+    case QMessageBox::No:
+      return;
+    case QMessageBox::Yes:
+      // TODO: Delete connection
+      break;
+    default:
+      break;
+    }
+    if (!selectedFeature)
+      return;
   }
 
   if (!selectedFeature)
