@@ -185,15 +185,17 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
   else
   {
     // Connect devices/features
+    // TODO: changable coefficient
+    int coefficient = 1;
     tobby::Config msg;
     msg.publisherFeatureUUID = senderFeatureUUID;
     msg.publisherUUID = senderUUID;
     msg.receiverFeatureUUID = receiverFeatureUUID;
     msg.receiverUUID = receiverUUID;
+    msg.coefficient = coefficient;
     configPub.publish(msg);
-    // TODO: coefficient?
     Assignment connection(receiverUUID, senderUUID, senderFeatureUUID,
-                          receiverFeatureUUID, 1);
+                          receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
     return true;
   }
