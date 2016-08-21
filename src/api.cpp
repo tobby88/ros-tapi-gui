@@ -122,8 +122,6 @@ void Api::DebugOutput()
   // TODO: Print connections
 }
 
-map<string, Device> Api::GetDevices() { return devices; }
-
 vector<Device*> Api::GetDevicesSorted()
 {
   vector<Device*> devicesList;

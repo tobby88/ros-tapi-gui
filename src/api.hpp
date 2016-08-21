@@ -34,7 +34,6 @@ public:
   ~Api();
   bool CheckPending();
   void DebugOutput();
-  map<string, Device> GetDevices();
   vector<Device*> GetDevicesSorted();
   void Run();
   void Done();
