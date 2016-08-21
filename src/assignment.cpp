@@ -1,5 +1,7 @@
 #include "assignment.hpp"
 
+using namespace std;
+
 Assignment::Assignment(string senderUUID, string senderFeatureUUID,
                        string receiverUUID, string receiverFeatureUUID,
                        double coefficient)
