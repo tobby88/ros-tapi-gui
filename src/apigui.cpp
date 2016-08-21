@@ -2,8 +2,10 @@
 #include "assignment.hpp"
 #include "ui_apigui.h"
 #include <QCursor>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QPainter>
+#include <limits>
 
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
@@ -232,9 +234,24 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  // Everything ok -> try to connect them
-  api->ConnectFeatures(selectedFeature->getUUID(), feature->getUUID());
-  selectedFeature = 0;
-  selectedGuiDevice = 0;
-  update();
+  // Everything ok -> try to connect them (and ask for coefficient if appliable)
+  double coefficient = 1.0;
+  bool ok = true;
+  if (feature->getType() == FeatureType::Axis)
+  {
+    timer->stop();
+    QString input =
+        QInputDialog::getText(this, "Coefficient?", "Multiply all values with:",
+                              QLineEdit::Normal, "1.0", &ok);
+    coefficient = input.toDouble(&ok);
+    timer->start(timerInterval);
+  }
+  if (ok)
+  {
+    api->ConnectFeatures(selectedFeature->getUUID(), feature->getUUID(),
+                         coefficient);
+    selectedFeature = 0;
+    selectedGuiDevice = 0;
+    update();
+  }
 }

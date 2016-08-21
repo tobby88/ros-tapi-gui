@@ -37,7 +37,8 @@ public:
   vector<Device*> GetDevicesSorted();
   void Run();
   void Done();
-  bool ConnectFeatures(string feature1uuid, string feature2uuid);
+  bool ConnectFeatures(string feature1uuid, string feature2uuid,
+                       double coefficient);
   vector<Assignment*> GetConnections();
   bool DeleteConnection(string receiverFeatureUUID);
 };

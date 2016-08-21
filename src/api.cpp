@@ -146,7 +146,8 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
   return 0;
 }
 
-bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
+bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
+                          double coefficient)
 {
   Device *device1, *device2;
   device1 = getDeviceByFeatureUUID(feature1uuid);
@@ -185,8 +186,6 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
   else
   {
     // Connect devices/features
-    // TODO: changable coefficient
-    int coefficient = 1;
     Assignment connection(senderUUID, senderFeatureUUID, receiverUUID,
                           receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
