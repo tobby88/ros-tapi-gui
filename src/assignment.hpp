@@ -18,6 +18,10 @@ public:
   Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID,
              string receiverFeatureUUID, double coefficient);
   ~Assignment();
+  string getSenderUUID();
+  string getSenderFeatureUUID();
+  string getReceiverUUID();
+  string getReceiverFeatureUUID();
 };
 
 #endif // ASSIGNMENT_H
