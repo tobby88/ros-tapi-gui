@@ -211,3 +211,11 @@ void Api::sendAllConnections()
     configPub.publish(msg);
   }
 }
+
+vector<Assignment*> Api::GetConnections()
+{
+  vector<Assignment*> connectionList;
+  for (map<string, Assignment>::iterator it = connections.begin(); it != connections.end(); it++)
+    connectionList.push_back(&it->second);
+  return connectionList;
+}

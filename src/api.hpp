@@ -38,6 +38,7 @@ public:
   void Run();
   void Done();
   bool ConnectFeatures(string feature1uuid, string feature2uuid);
+  vector<Assignment*> GetConnections();
 };
 
 #endif // API_H
