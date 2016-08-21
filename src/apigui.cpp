@@ -2,6 +2,7 @@
 #include "ui_apigui.h"
 #include <QCursor>
 #include <QPainter>
+#include "assignment.hpp"
 
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
@@ -90,6 +91,50 @@ void ApiGui::paintEvent(QPaintEvent*)
 {
   QPainter painter(this);
   painter.setPen(Qt::black);
+
+  // Draw all connections
+  vector<Assignment*> connections;
+  connections = api->GetConnections();
+  for (vector<Assignment*>::iterator it = connections.begin(); it != connections.end(); it++)
+  {
+    string senderUUID = (*it)->getSenderUUID();
+    string senderFeatureUUID = (*it)->getSenderFeatureUUID();
+    string receiverUUID = (*it)->getReceiverUUID();
+    string receiverFeatureUUID = (*it)->getReceiverFeatureUUID();
+    GuiDevice *sender, *receiver;
+    sender = 0;
+    receiver = 0;
+    for (vector<GuiDevice*>::iterator it2 = senderGuiDevices.begin(); it2 != senderGuiDevices.end(); it2++)
+    {
+      if((*it2)->device->getUUID() == senderUUID)
+      {
+        sender = *it2;
+        break;
+      }
+    }
+    if(!sender)
+      continue;
+    for (vector<GuiDevice*>::iterator it2 = receiverGuiDevices.begin(); it2 != receiverGuiDevices.end(); it2++)
+    {
+      if((*it2)->device->getUUID() == receiverUUID)
+      {
+        receiver = *it2;
+        break;
+      }
+    }
+    if(!receiver)
+      continue;
+    QPoint begin, end;
+    Feature* feature = sender->device->getFeatureByUUID(senderFeatureUUID);
+    if (!feature)
+      continue;
+    begin = sender->mapTo(this, sender->featureBoxPosition(feature));
+    feature = receiver->device->getFeatureByUUID(receiverFeatureUUID);
+    if (!feature)
+      continue;
+    end = receiver->mapTo(this, receiver->featureBoxPosition(feature));
+    painter.drawLine(begin, end);
+  }
 
   // Draw line for current (pending) connection
   if (!selectedFeature)
