@@ -195,7 +195,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
     msg.receiverUUID = receiverUUID;
     msg.coefficient = coefficient;
     configPub.publish(msg);
-    Assignment connection(receiverUUID, senderUUID, senderFeatureUUID,
+    Assignment connection(senderUUID, senderFeatureUUID, receiverUUID,
                           receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
     changed();

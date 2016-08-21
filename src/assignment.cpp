@@ -1,12 +1,12 @@
 #include "assignment.hpp"
 
-Assignment::Assignment(string receiverUUID, string publisherUUID,
-                       string publisherFeatureUUID, string receiverFeatureUUID,
+Assignment::Assignment(string senderUUID, string senderFeatureUUID,
+                       string receiverUUID, string receiverFeatureUUID,
                        double coefficient)
 {
+  this->senderUUID = senderUUID;
+  this->senderFeatureUUID = senderFeatureUUID;
   this->receiverUUID = receiverUUID;
-  this->publisherUUID = publisherUUID;
-  this->publisherFeatureUUID = publisherFeatureUUID;
   this->receiverFeatureUUID = receiverFeatureUUID;
   this->coefficient = coefficient;
 }

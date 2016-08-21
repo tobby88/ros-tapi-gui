@@ -8,16 +8,15 @@ using namespace std;
 class Assignment
 {
 private:
+  string senderUUID;
+  string senderFeatureUUID;
   string receiverUUID;
-  string publisherUUID;
-  string publisherFeatureUUID;
   string receiverFeatureUUID;
   double coefficient;
 
 public:
-  Assignment(string receiverUUID, string publisherUUID,
-             string publisherFeatureUUID, string receiverFeatureUUID,
-             double coefficient);
+  Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID,
+             string receiverFeatureUUID, double coefficient);
   ~Assignment();
 };
 
