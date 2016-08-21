@@ -22,6 +22,8 @@ Api::Api(NodeHandle* nh)
 
 Api::~Api()
 {
+  helloServ.shutdown();
+  configPub.shutdown();
   spinner->stop();
   delete spinner;
   ROS_INFO("Hello-Service has been stopped.");
