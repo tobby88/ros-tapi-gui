@@ -145,3 +145,58 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
   }
   return 0;
 }
+
+bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
+{
+  Device *device1, *device2;
+  device1 = getDeviceByFeatureUUID(feature1uuid);
+  device2 = getDeviceByFeatureUUID(feature2uuid);
+  if (device1 == 0 || device2 == 0)
+    // At least one Device not found
+    return false;
+  if (device1->getType() == device2->getType())
+    // Cannont connect devices of same type (sender-sender or receiver-receiver)
+    return false;
+  if (device1->getFeatureMap().at(feature1uuid).getType() !=
+      device2->getFeatureMap().at(feature2uuid).getType())
+    // Cannot connect features of different types
+    return false;
+
+  // Who is sender, who receiver?
+  string senderUUID, receiverUUID, senderFeatureUUID, receiverFeatureUUID;
+  if (device1->getType() == DeviceType::ReceiverDevice)
+  {
+    receiverUUID = device1->getUUID();
+    receiverFeatureUUID = feature1uuid;
+    senderUUID = device2->getUUID();
+    senderFeatureUUID = feature2uuid;
+  }
+  else
+  {
+    receiverUUID = device2->getUUID();
+    receiverFeatureUUID = feature2uuid;
+    senderUUID = device1->getUUID();
+    senderFeatureUUID = feature1uuid;
+  }
+
+  if (connections.count(receiverFeatureUUID) > 0)
+    // TODO: Remove old connection before reassigning
+    return false;
+  else
+  {
+    // Connect devices/features
+    tobby::Config msg;
+    msg.publisherFeatureUUID = senderFeatureUUID;
+    msg.publisherUUID = senderUUID;
+    msg.receiverFeatureUUID = receiverFeatureUUID;
+    msg.receiverUUID = receiverUUID;
+    configPub.publish(msg);
+    // TODO: coefficient?
+    Assignment connection(receiverUUID, senderUUID, senderFeatureUUID,
+                          receiverFeatureUUID, 1);
+    connections.emplace(receiverFeatureUUID, connection);
+    return true;
+  }
+  // "Error" handler - should never be reached:
+  return false;
+}
