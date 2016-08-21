@@ -180,7 +180,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
   }
 
   if (connections.count(receiverFeatureUUID) > 0)
-    // TODO: Remove old connection before reassigning
+    // Old connection was not removed before reassigning!
     return false;
   else
   {
@@ -221,4 +221,25 @@ vector<Assignment*> Api::GetConnections()
        it != connections.end(); it++)
     connectionList.push_back(&it->second);
   return connectionList;
+}
+
+bool Api::DeleteConnection(string receiverFeatureUUID)
+{
+  if (connections.count(receiverFeatureUUID) > 0)
+  {
+    Assignment* connection = &connections.at(receiverFeatureUUID);
+    string senderUUID = connection->getSenderUUID();
+    string senderFeatureUUID = connection->getSenderFeatureUUID();
+    string receiverUUID = connection->getReceiverUUID();
+    if (devices.count(senderUUID) > 0)
+      devices.at(senderUUID)
+          .getFeatureByUUID(senderFeatureUUID)
+          ->decrementConnections();
+    if (devices.count(receiverUUID) > 0)
+      devices.at(receiverUUID)
+          .getFeatureByUUID(receiverFeatureUUID)
+          ->decrementConnections();
+    // TODO: Send message to receiver that it should stop subscribing
+    connections.erase(receiverFeatureUUID);
+  }
 }

@@ -39,6 +39,7 @@ public:
   void Done();
   bool ConnectFeatures(string feature1uuid, string feature2uuid);
   vector<Assignment*> GetConnections();
+  bool DeleteConnection(string receiverFeatureUUID);
 };
 
 #endif // API_H
