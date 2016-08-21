@@ -239,7 +239,13 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
       devices.at(receiverUUID)
           .getFeatureByUUID(receiverFeatureUUID)
           ->decrementConnections();
-    // TODO: Send message to receiver that it should stop subscribing
+    tobby::Config msg;
+    msg.publisherUUID = "0";
+    msg.publisherFeatureUUID = "0";
+    msg.receiverUUID = receiverUUID;
+    msg.receiverFeatureUUID = receiverFeatureUUID;
+    msg.coefficient = 0;
+    configPub.publish(msg);
     connections.erase(receiverFeatureUUID);
   }
 }
