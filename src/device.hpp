@@ -39,6 +39,7 @@ public:
   unsigned long getHeartbeat();
   void Update(DeviceType type, string name, unsigned long lastSeq,
               Time lastSeen, unsigned long heartbeat);
+  Feature* getFeatureByUUID(string uuid);
 };
 
 #endif // DEVICE_H

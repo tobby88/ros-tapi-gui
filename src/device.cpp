@@ -67,3 +67,11 @@ void Device::Update(DeviceType type, string name, unsigned long lastSeq,
   this->lastSeen = lastSeen;
   this->heartbeat = heartbeat;
 }
+
+Feature* Device::getFeatureByUUID(string uuid)
+{
+  if (features.count(uuid) > 0)
+    return &features.at(uuid);
+  else
+    return 0;
+}
