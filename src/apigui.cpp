@@ -195,7 +195,8 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     case QMessageBox::No:
       return;
     case QMessageBox::Yes:
-      // TODO: Delete connection
+      api->DeleteConnection(feature->getUUID());
+      update();
       break;
     default:
       break;
