@@ -118,7 +118,7 @@ void Api::DebugOutput()
                it2->second.getDescription().c_str());
     }
   }
-  //TODO: Print connections
+  // TODO: Print connections
 }
 
 map<string, Device> Api::GetDevices() { return devices; }
