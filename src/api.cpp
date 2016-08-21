@@ -140,7 +140,7 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
   for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
        it++)
   {
-    if (it->second.getUUID() == uuid)
+    if (it->second.getFeatureMap().count(uuid) > 0)
       return &(it->second);
   }
   return 0;
