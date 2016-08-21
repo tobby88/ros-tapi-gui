@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QPainter>
 
+using namespace std;
+
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
   this->api = api;

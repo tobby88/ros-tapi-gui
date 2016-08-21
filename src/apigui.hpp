@@ -9,6 +9,8 @@
 #include <QVBoxLayout>
 #include <vector>
 
+using namespace std;
+
 namespace Ui
 {
 class ApiGui;
