@@ -14,8 +14,7 @@ private:
   string description;
   string
       uuid; // Not necessary as this is saved in the hash-table (unordered_map)?
-  // string msg_type; // TODO: Right choice to save message type? How to
-  // subscribe later on?
+  int connections;
 
 public:
   Feature(FeatureType type, string name, string description, string uuid);
@@ -25,6 +24,9 @@ public:
   string getDescription();
   string getUUID();
   FeatureType getType();
+  void incrementConnections();
+  void decrementConnections();
+  int getConnectionCount();
 };
 
 #endif // FEATURE_H

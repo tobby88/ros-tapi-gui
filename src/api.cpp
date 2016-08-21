@@ -190,6 +190,8 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
     Assignment connection(senderUUID, senderFeatureUUID, receiverUUID,
                           receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
+    device1->getFeatureByUUID(feature1uuid)->incrementConnections();
+    device2->getFeatureByUUID(feature2uuid)->incrementConnections();
     changed();
     return true;
   }
