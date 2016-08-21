@@ -45,9 +45,10 @@ bool Api::hello(tobby::Hello::Request& helloReq,
     devices.emplace(uuid, device);
     for (unsigned int i = 0; i < helloReq.features.capacity(); i++)
     {
-      Feature feature(
-          (FeatureType)helloReq.features[i].type, helloReq.features[i].name,
-          helloReq.features[i].description, helloReq.features[i].uuid);
+      Feature feature((FeatureType)helloReq.features[i].FeatureType,
+                      helloReq.features[i].Name,
+                      helloReq.features[i].Description,
+                      helloReq.features[i].UUID);
       devices.at(uuid).addFeature(feature);
     }
     helloResp.status = (unsigned short)DeviceStatusResponse::OK;
