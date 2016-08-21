@@ -105,6 +105,14 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   QString qs = QString::fromStdString(feature->getName());
   ui->TestLabel->setText(qs);
 
+  if (selectedFeature && selectedFeature == feature)
+  // Clicked twice on the same feature -> demarcate selection
+  {
+    selectedFeature = 0;
+    selectedGuiDevice = 0;
+    return;
+  }
+
   if (false /* TODO: replace with check whether feature is already assigned */)
   {
     if (guidevice->device->getType() == DeviceType::ReceiverDevice)
@@ -121,52 +129,34 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   }
 
   if (!selectedFeature)
+  // Nothing selected before, select first feature of (possible coming)
+  // connection
   {
-    // select feature
     selectedFeature = feature;
     selectedGuiDevice = guidevice;
+    return;
   }
-  else if (guidevice->device->getType() == selectedGuiDevice->device->getType())
+
+  if (guidevice->device->getType() == selectedGuiDevice->device->getType())
+  // Selected the same device type, so no connection is possible. Drop old
+  // selection and select the new one
   {
-    // select feature (drop old selection)
     selectedFeature = feature;
     selectedGuiDevice = guidevice;
+    return;
   }
-  else
+
+  if (selectedFeature->getType() != feature->getType())
+  // Selected different feature types, so no connection is possible. Drop old
+  // selection and select the new one
   {
-    // can we assign them?
-    // TODO: maybe this should be checked in the api
-    if (feature->getType() != selectedFeature->getType())
-    {
-      // TODO: message box
-
-      // ignore the wrong click
-      return;
-    }
-
-    // TODO: assign it in the api (export to own method)
-    // sort clicks by sender and receiver
-    Feature *sender, *receiver;
-    Device *senderDevice, *receiverDevice;
-    if (selectedGuiDevice->device->getType() == DeviceType::ReceiverDevice)
-    {
-      /*sender = feature;
-      receiver = selectedFeature;
-      senderDevice = guidevice->device;
-      receiverDevice = senderGuiDevices;*/
-    }
-    else
-    {
-      /*receiver = feature;
-      sender = selectedFeature;
-      receiverDevice = guidevice->device;
-      senderDevice = senderGuiDevices;*/
-    }
-    // Assignment* a = new Assignment(receiverDevice->getUUID(),
-    // senderDevice->getUUID(), receiver->getUUID(), sender->getUUID()); //
-    // TODO: sorting of the arguments is crap
-    // api->
-    selectedFeature = 0;
-    selectedGuiDevice = 0;
+    selectedFeature = feature;
+    selectedGuiDevice = guidevice;
+    return;
   }
+
+  // Everything ok -> try to connect them
+  api->ConnectFeatures(selectedFeature->getUUID(), feature->getUUID());
+  selectedFeature = 0;
+  selectedGuiDevice = 0;
 }
