@@ -118,6 +118,7 @@ void Api::DebugOutput()
                it2->second.getDescription().c_str());
     }
   }
+  //TODO: Print connections
 }
 
 map<string, Device> Api::GetDevices() { return devices; }
@@ -197,6 +198,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
     Assignment connection(receiverUUID, senderUUID, senderFeatureUUID,
                           receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
+    changed();
     return true;
   }
   // "Error" handler - should never be reached:
