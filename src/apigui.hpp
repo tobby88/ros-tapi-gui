@@ -39,6 +39,7 @@ private:
   Feature* selectedFeature;
   GuiDevice* selectedGuiDevice;
   QPoint mousePosition;
+  int timerInterval;
 
 private slots:
   void checkApiForUpdate();

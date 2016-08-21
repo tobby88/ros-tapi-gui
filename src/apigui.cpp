@@ -11,7 +11,8 @@ ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
   temp2 = 0;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
-  timer->start(15);
+  timerInterval = 15;
+  timer->start(timerInterval);
   // Add vertical layouts to the scroll Areas
   layoutReceiver = ui->verticalLayoutReceiver;
   layoutSender = ui->verticalLayoutSender;
