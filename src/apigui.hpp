@@ -21,28 +21,34 @@ class ApiGui : public QWidget
   Q_OBJECT
 
 public:
+  // Public member functions
   ApiGui(Api* api, QWidget* parent = 0);
   ~ApiGui();
 
 protected:
+  // Protected member functions
   void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
 
 private:
-  Ui::ApiGui* ui;
+  // Private member variables
   Api* api;
-  QTimer* timer;
-  void addDevice(Device* device);
-  unsigned int temp2;
-  QVBoxLayout* layoutSender;
   QVBoxLayout* layoutReceiver;
+  QVBoxLayout* layoutSender;
+  QPoint mousePosition;
   vector<GuiDevice*> receiverGuiDevices;
-  vector<GuiDevice*> senderGuiDevices;
   Feature* selectedFeature;
   GuiDevice* selectedGuiDevice;
-  QPoint mousePosition;
+  vector<GuiDevice*> senderGuiDevices;
+  unsigned int temp2;
+  QTimer* timer;
   int timerInterval;
+  Ui::ApiGui* ui;
+
+  // Private member functions
+  void addDevice(Device* device);
 
 private slots:
+  // Slot functions
   void checkApiForUpdate();
   void featureClicked(GuiDevice* guidevice, Feature* feature);
 };

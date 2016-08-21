@@ -8,6 +8,8 @@
 
 using namespace std;
 
+// Public member functions
+
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
   this->api = api;
@@ -31,66 +33,7 @@ ApiGui::~ApiGui()
   delete ui;
 }
 
-void ApiGui::addDevice(Device* device)
-{
-  GuiDevice* guidevice = new GuiDevice(this, device);
-  if (device->getType() == DeviceType::SenderDevice)
-  {
-    layoutSender->addWidget(guidevice);
-    senderGuiDevices.push_back(guidevice);
-  }
-  else
-  {
-    layoutReceiver->addWidget(guidevice);
-    receiverGuiDevices.push_back(guidevice);
-  }
-  guidevice->show(); // dont forget to show it ;)
-  connect(guidevice, SIGNAL(featureClicked(GuiDevice*, Feature*)), this,
-          SLOT(featureClicked(GuiDevice*, Feature*)));
-}
-
-void ApiGui::checkApiForUpdate()
-{
-  if (selectedFeature)
-  {
-    QPoint newMousePosition = QCursor::pos();
-    if (newMousePosition != mousePosition)
-    {
-      mousePosition = newMousePosition;
-      update();
-    }
-  }
-
-  if (api->CheckPending())
-  {
-    for (vector<GuiDevice*>::iterator it = senderGuiDevices.begin();
-         it != senderGuiDevices.end(); it++)
-    {
-      (*it)->hide();
-      layoutSender->removeWidget(*it);
-      delete *it;
-    }
-    senderGuiDevices.clear();
-    for (vector<GuiDevice*>::iterator it = receiverGuiDevices.begin();
-         it != receiverGuiDevices.end(); it++)
-    {
-      (*it)->hide();
-      layoutReceiver->removeWidget(*it);
-      delete *it;
-    }
-    receiverGuiDevices.clear();
-    temp2 = 0;
-    vector<Device*> devices = api->GetDevicesSorted();
-    for (vector<Device*>::iterator it = devices.begin(); it != devices.end();
-         it++)
-    {
-      addDevice(*it);
-      temp2++;
-    }
-    ui->TestLabel->setText(QString::number(temp2));
-    api->Done();
-  }
-}
+// Protected member functions
 
 void ApiGui::paintEvent(QPaintEvent*)
 {
@@ -155,6 +98,71 @@ void ApiGui::paintEvent(QPaintEvent*)
 
   QPoint begin = s->mapTo(this, s->featureBoxPosition(fs));
   painter.drawLine(begin, end);
+}
+
+// Private member functions
+
+void ApiGui::addDevice(Device* device)
+{
+  GuiDevice* guidevice = new GuiDevice(this, device);
+  if (device->getType() == DeviceType::SenderDevice)
+  {
+    layoutSender->addWidget(guidevice);
+    senderGuiDevices.push_back(guidevice);
+  }
+  else
+  {
+    layoutReceiver->addWidget(guidevice);
+    receiverGuiDevices.push_back(guidevice);
+  }
+  guidevice->show(); // dont forget to show it ;)
+  connect(guidevice, SIGNAL(featureClicked(GuiDevice*, Feature*)), this,
+          SLOT(featureClicked(GuiDevice*, Feature*)));
+}
+
+// Slot functions
+
+void ApiGui::checkApiForUpdate()
+{
+  if (selectedFeature)
+  {
+    QPoint newMousePosition = QCursor::pos();
+    if (newMousePosition != mousePosition)
+    {
+      mousePosition = newMousePosition;
+      update();
+    }
+  }
+
+  if (api->CheckPending())
+  {
+    for (vector<GuiDevice*>::iterator it = senderGuiDevices.begin();
+         it != senderGuiDevices.end(); it++)
+    {
+      (*it)->hide();
+      layoutSender->removeWidget(*it);
+      delete *it;
+    }
+    senderGuiDevices.clear();
+    for (vector<GuiDevice*>::iterator it = receiverGuiDevices.begin();
+         it != receiverGuiDevices.end(); it++)
+    {
+      (*it)->hide();
+      layoutReceiver->removeWidget(*it);
+      delete *it;
+    }
+    receiverGuiDevices.clear();
+    temp2 = 0;
+    vector<Device*> devices = api->GetDevicesSorted();
+    for (vector<Device*>::iterator it = devices.begin(); it != devices.end();
+         it++)
+    {
+      addDevice(*it);
+      temp2++;
+    }
+    ui->TestLabel->setText(QString::number(temp2));
+    api->Done();
+  }
 }
 
 void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
