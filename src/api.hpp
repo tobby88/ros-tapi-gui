@@ -27,6 +27,7 @@ private:
   void changed();
   static bool compareDeviceNames(const Device* first, const Device* second);
   Device* getDeviceByFeatureUUID(string uuid);
+  void sendAllConnections();
 
 public:
   Api(NodeHandle* nh);

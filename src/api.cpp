@@ -83,6 +83,7 @@ bool Api::hello(tobby::Hello::Request& helloReq,
 void Api::changed()
 {
   pendingChanges = true;
+  sendAllConnections();
 #ifdef DEBUG
   DebugOutput();
 #endif
@@ -188,13 +189,6 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
     // Connect devices/features
     // TODO: changable coefficient
     int coefficient = 1;
-    tobby::Config msg;
-    msg.publisherFeatureUUID = senderFeatureUUID;
-    msg.publisherUUID = senderUUID;
-    msg.receiverFeatureUUID = receiverFeatureUUID;
-    msg.receiverUUID = receiverUUID;
-    msg.coefficient = coefficient;
-    configPub.publish(msg);
     Assignment connection(senderUUID, senderFeatureUUID, receiverUUID,
                           receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
@@ -203,4 +197,19 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid)
   }
   // "Error" handler - should never be reached:
   return false;
+}
+
+void Api::sendAllConnections()
+{
+  for (map<string, Assignment>::iterator it = connections.begin();
+       it != connections.end(); it++)
+  {
+    tobby::Config msg;
+    msg.publisherUUID = it->second.getSenderUUID();
+    msg.publisherFeatureUUID = it->second.getSenderFeatureUUID();
+    msg.receiverUUID = it->second.getReceiverUUID();
+    msg.receiverFeatureUUID = it->second.getReceiverFeatureUUID();
+    msg.coefficient = it->second.getCoefficient();
+    configPub.publish(msg);
+  }
 }
