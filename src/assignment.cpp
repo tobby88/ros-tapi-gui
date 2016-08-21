@@ -17,12 +17,12 @@ Assignment::Assignment(string senderUUID, string senderFeatureUUID,
 
 Assignment::~Assignment() {}
 
-double Assignment::getCoefficient() { return coefficient; }
+double Assignment::GetCoefficient() { return coefficient; }
 
-string Assignment::getReceiverFeatureUUID() { return receiverFeatureUUID; }
+string Assignment::GetReceiverFeatureUUID() { return receiverFeatureUUID; }
 
-string Assignment::getReceiverUUID() { return receiverUUID; }
+string Assignment::GetReceiverUUID() { return receiverUUID; }
 
-string Assignment::getSenderFeatureUUID() { return senderFeatureUUID; }
+string Assignment::GetSenderFeatureUUID() { return senderFeatureUUID; }
 
-string Assignment::getSenderUUID() { return senderUUID; }
+string Assignment::GetSenderUUID() { return senderUUID; }

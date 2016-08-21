@@ -12,11 +12,11 @@ public:
   Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID,
              string receiverFeatureUUID, double coefficient);
   ~Assignment();
-  double getCoefficient();
-  string getReceiverFeatureUUID();
-  string getReceiverUUID();
-  string getSenderFeatureUUID();
-  string getSenderUUID();
+  double GetCoefficient();
+  string GetReceiverFeatureUUID();
+  string GetReceiverUUID();
+  string GetSenderFeatureUUID();
+  string GetSenderUUID();
 
 private:
   // Private member variables

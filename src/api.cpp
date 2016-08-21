@@ -116,9 +116,9 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
   if (connections.count(receiverFeatureUUID) > 0)
   {
     Assignment* connection = &connections.at(receiverFeatureUUID);
-    string senderUUID = connection->getSenderUUID();
-    string senderFeatureUUID = connection->getSenderFeatureUUID();
-    string receiverUUID = connection->getReceiverUUID();
+    string senderUUID = connection->GetSenderUUID();
+    string senderFeatureUUID = connection->GetSenderFeatureUUID();
+    string receiverUUID = connection->GetReceiverUUID();
     if (devices.count(senderUUID) > 0)
       devices.at(senderUUID)
           .getFeatureByUUID(senderFeatureUUID)
@@ -247,11 +247,11 @@ void Api::sendAllConnections()
        it != connections.end(); it++)
   {
     tobby::Config msg;
-    msg.SenderUUID = it->second.getSenderUUID();
-    msg.SenderFeatureUUID = it->second.getSenderFeatureUUID();
-    msg.ReceiverUUID = it->second.getReceiverUUID();
-    msg.ReceiverFeatureUUID = it->second.getReceiverFeatureUUID();
-    msg.Coefficient = it->second.getCoefficient();
+    msg.SenderUUID = it->second.GetSenderUUID();
+    msg.SenderFeatureUUID = it->second.GetSenderFeatureUUID();
+    msg.ReceiverUUID = it->second.GetReceiverUUID();
+    msg.ReceiverFeatureUUID = it->second.GetReceiverFeatureUUID();
+    msg.Coefficient = it->second.GetCoefficient();
     configPub.publish(msg);
   }
 }

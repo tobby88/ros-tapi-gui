@@ -47,10 +47,10 @@ void ApiGui::paintEvent(QPaintEvent*)
   for (vector<Assignment*>::iterator it = connections.begin();
        it != connections.end(); it++)
   {
-    string senderUUID = (*it)->getSenderUUID();
-    string senderFeatureUUID = (*it)->getSenderFeatureUUID();
-    string receiverUUID = (*it)->getReceiverUUID();
-    string receiverFeatureUUID = (*it)->getReceiverFeatureUUID();
+    string senderUUID = (*it)->GetSenderUUID();
+    string senderFeatureUUID = (*it)->GetSenderFeatureUUID();
+    string receiverUUID = (*it)->GetReceiverUUID();
+    string receiverFeatureUUID = (*it)->GetReceiverFeatureUUID();
     GuiDevice *sender, *receiver;
     sender = 0;
     receiver = 0;
