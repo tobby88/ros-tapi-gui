@@ -5,7 +5,6 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QPainter>
-#include <limits>
 
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
