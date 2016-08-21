@@ -2,6 +2,8 @@
 
 using namespace std;
 
+// Public member functions
+
 Assignment::Assignment(string senderUUID, string senderFeatureUUID,
                        string receiverUUID, string receiverFeatureUUID,
                        double coefficient)
@@ -15,12 +17,12 @@ Assignment::Assignment(string senderUUID, string senderFeatureUUID,
 
 Assignment::~Assignment() {}
 
-string Assignment::getSenderUUID() { return senderUUID; }
-
-string Assignment::getSenderFeatureUUID() { return senderFeatureUUID; }
-
-string Assignment::getReceiverUUID() { return receiverUUID; }
+double Assignment::getCoefficient() { return coefficient; }
 
 string Assignment::getReceiverFeatureUUID() { return receiverFeatureUUID; }
 
-double Assignment::getCoefficient() { return coefficient; }
+string Assignment::getReceiverUUID() { return receiverUUID; }
+
+string Assignment::getSenderFeatureUUID() { return senderFeatureUUID; }
+
+string Assignment::getSenderUUID() { return senderUUID; }

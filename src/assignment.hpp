@@ -7,22 +7,24 @@ using namespace std;
 
 class Assignment
 {
-private:
-  string senderUUID;
-  string senderFeatureUUID;
-  string receiverUUID;
-  string receiverFeatureUUID;
-  double coefficient;
-
 public:
+  // Public member functions
   Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID,
              string receiverFeatureUUID, double coefficient);
   ~Assignment();
-  string getSenderUUID();
-  string getSenderFeatureUUID();
-  string getReceiverUUID();
-  string getReceiverFeatureUUID();
   double getCoefficient();
+  string getReceiverFeatureUUID();
+  string getReceiverUUID();
+  string getSenderFeatureUUID();
+  string getSenderUUID();
+
+private:
+  // Private member variables
+  double coefficient;
+  string receiverFeatureUUID;
+  string receiverUUID;
+  string senderFeatureUUID;
+  string senderUUID;
 };
 
 #endif // ASSIGNMENT_H
