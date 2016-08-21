@@ -204,11 +204,11 @@ void Api::sendAllConnections()
        it != connections.end(); it++)
   {
     tobby::Config msg;
-    msg.publisherUUID = it->second.getSenderUUID();
-    msg.publisherFeatureUUID = it->second.getSenderFeatureUUID();
-    msg.receiverUUID = it->second.getReceiverUUID();
-    msg.receiverFeatureUUID = it->second.getReceiverFeatureUUID();
-    msg.coefficient = it->second.getCoefficient();
+    msg.SenderUUID = it->second.getSenderUUID();
+    msg.SenderFeatureUUID = it->second.getSenderFeatureUUID();
+    msg.ReceiverUUID = it->second.getReceiverUUID();
+    msg.ReceiverFeatureUUID = it->second.getReceiverFeatureUUID();
+    msg.Coefficient = it->second.getCoefficient();
     configPub.publish(msg);
   }
 }
@@ -239,11 +239,11 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
           .getFeatureByUUID(receiverFeatureUUID)
           ->decrementConnections();
     tobby::Config msg;
-    msg.publisherUUID = "0";
-    msg.publisherFeatureUUID = "0";
-    msg.receiverUUID = receiverUUID;
-    msg.receiverFeatureUUID = receiverFeatureUUID;
-    msg.coefficient = 0;
+    msg.SenderUUID = "0";
+    msg.SenderFeatureUUID = "0";
+    msg.ReceiverUUID = receiverUUID;
+    msg.ReceiverFeatureUUID = receiverFeatureUUID;
+    msg.Coefficient = 0;
     configPub.publish(msg);
     connections.erase(receiverFeatureUUID);
   }

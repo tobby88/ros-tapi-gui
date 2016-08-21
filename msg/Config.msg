@@ -1,5 +1,5 @@
-string receiverUUID
-string publisherUUID
-string publisherFeatureUUID
-string receiverFeatureUUID
-float64 coefficient
+string SenderUUID
+string SenderFeatureUUID
+string ReceiverUUID
+string ReceiverFeatureUUID
+float64 Coefficient
