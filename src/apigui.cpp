@@ -111,7 +111,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     {
       // one receiver can only have one sender
 
-      // TODO: remove old assignmed!?
+      // TODO: remove old assignment!?
       return; // stub: ignore click!
     }
     else
