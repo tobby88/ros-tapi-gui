@@ -6,6 +6,7 @@ MainGui::MainGui(Api* api, QWidget* parent)
 {
   this->api = api;
   ui->setupUi(this);
+  QWidget::showMaximized();
   apiui = new ApiGui(api, this);
   ui->scrollAreaWidgetContents->layout()->addWidget(apiui);
   apiui->show();
