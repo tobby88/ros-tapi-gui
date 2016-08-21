@@ -22,6 +22,7 @@ public:
   string getSenderFeatureUUID();
   string getReceiverUUID();
   string getReceiverFeatureUUID();
+  double getCoefficient;
 };
 
 #endif // ASSIGNMENT_H

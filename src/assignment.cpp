@@ -20,3 +20,5 @@ string Assignment::getSenderFeatureUUID() { return senderFeatureUUID; }
 string Assignment::getReceiverUUID() { return receiverUUID; }
 
 string Assignment::getReceiverFeatureUUID() { return receiverFeatureUUID; }
+
+double Assignment::getCoefficient() { return coefficient; }
