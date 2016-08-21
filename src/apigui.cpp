@@ -45,11 +45,14 @@ void ApiGui::addDevice(Device* device)
 
 void ApiGui::checkApiForUpdate()
 {
-  QPoint newMousePosition = QCursor::pos();
-  if (newMousePosition != mousePosition)
+  if (selectedFeature)
   {
-    mousePosition = newMousePosition;
-    update();
+    QPoint newMousePosition = QCursor::pos();
+    if (newMousePosition != mousePosition)
+    {
+      mousePosition = newMousePosition;
+      update();
+    }
   }
 
   if (api->CheckPending())
@@ -88,6 +91,7 @@ void ApiGui::paintEvent(QPaintEvent*)
   QPainter painter(this);
   painter.setPen(Qt::black);
 
+  // Draw line for current (pending) connection
   if (!selectedFeature)
     return;
 
@@ -110,6 +114,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   {
     selectedFeature = 0;
     selectedGuiDevice = 0;
+    update();
     return;
   }
 
@@ -159,4 +164,5 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   api->ConnectFeatures(selectedFeature->getUUID(), feature->getUUID());
   selectedFeature = 0;
   selectedGuiDevice = 0;
+  update();
 }
