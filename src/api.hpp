@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include "tobby/Hello.h"
 #include <map>
+#include <string>
 #include <vector>
 
 using namespace ros;
@@ -25,6 +26,7 @@ private:
   AsyncSpinner* spinner;
   void changed();
   static bool compareDeviceNames(const Device* first, const Device* second);
+  Device* getDeviceByFeatureUUID(string uuid);
 
 public:
   Api(NodeHandle* nh);

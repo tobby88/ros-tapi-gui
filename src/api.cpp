@@ -134,3 +134,14 @@ vector<Device*> Api::GetDevicesSorted()
 }
 
 void Api::Run() { spinner->start(); }
+
+Device* Api::getDeviceByFeatureUUID(string uuid)
+{
+  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
+       it++)
+  {
+    if (it->second.getUUID() == uuid)
+      return &(it->second);
+  }
+  return 0;
+}
