@@ -174,7 +174,9 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
       feature->getConnectionCount() > 0)
   {
     QMessageBox msgBox;
-    if (selectedFeature)
+    if (selectedFeature &&
+        guidevice->device->getType() != selectedGuiDevice->device->getType() &&
+        selectedFeature->getType() == feature->getType())
     {
       string msg = "Replace connection of \"" + feature->getName() + "\"?";
       msgBox.setWindowTitle("Feature already connected");
