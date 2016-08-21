@@ -146,21 +146,21 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
 
     // TODO: assign it in the api (export to own method)
     // sort clicks by sender and receiver
-    Feature *sender, receiver;
-    Device *senderDevice, receiverDevice;
+    Feature *sender, *receiver;
+    Device *senderDevice, *receiverDevice;
     if (selectedGuiDevice->device->getType() == DeviceType::ReceiverDevice)
     {
-      sender = feature;
+      /*sender = feature;
       receiver = selectedFeature;
-      senderDevice = guidevice;
-      receiverDevice = senderGuiDevices;
+      senderDevice = guidevice->device;
+      receiverDevice = senderGuiDevices;*/
     }
     else
     {
-      receiver = feature;
+      /*receiver = feature;
       sender = selectedFeature;
-      receiverDevice = guidevice;
-      senderDevice = senderGuiDevices;
+      receiverDevice = guidevice->device;
+      senderDevice = senderGuiDevices;*/
     }
     // Assignment* a = new Assignment(receiverDevice->getUUID(),
     // senderDevice->getUUID(), receiver->getUUID(), sender->getUUID()); //
