@@ -166,19 +166,16 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (false /* TODO: replace with check whether feature is already assigned */)
+  if (guidevice->device->getType() == DeviceType::ReceiverDevice &&
+      feature->getConnectionCount() > 0)
   {
-    if (guidevice->device->getType() == DeviceType::ReceiverDevice)
-    {
-      // one receiver can only have one sender
-
-      // TODO: remove old assignment!?
-      return; // stub: ignore click!
-    }
-    else
-    {
-      // it's okay. sender can have muliple receivers.
-    }
+    // one receiver can only have one sender
+    // TODO: remove old assignment!?
+    return; // stub: ignore click!
+  }
+  else
+  {
+    // it's okay. sender can have muliple receivers.
   }
 
   if (!selectedFeature)
