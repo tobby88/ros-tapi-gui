@@ -13,29 +13,37 @@ class GuiDevice : public QWidget
 {
   Q_OBJECT
 
-signals:
-  void featureClicked(GuiDevice* guidevice, Feature* feature);
-
 public:
+  // Constructor/Destructor
   GuiDevice(QWidget* parent, Device* device);
+
+  // Public member variables
+  Device* device;            // TODO: getDevice() & private
+  vector<Feature*> features; // TODO: private
+
+  // Public member functions
   QPoint featureBoxPosition(Feature* feature);
 
-  vector<Feature*> features; // TODO: private
-  Device* device;            // TODO: getDevice() & private
 protected:
-  void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
+  // Protected member functions
   void mouseReleaseEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+  void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
 
 private:
+  // Private member variables
   int connectbox_size;
-  int header_end;
   int footer_height;
   int footer_start;
-  int line_height;
-  int line_width;
-  int line_start;
-  int line_end;
+  int header_end;
   int items;
+  int line_end;
+  int line_height;
+  int line_start;
+  int line_width;
+
+signals:
+  // Signals without implementation
+  void featureClicked(GuiDevice* guidevice, Feature* feature);
 };
 
 #endif // GuiDevice_H

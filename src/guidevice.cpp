@@ -4,6 +4,8 @@
 
 using namespace std;
 
+// Constructor/Destructor
+
 GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
 {
   this->device = device;
@@ -18,6 +20,46 @@ GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
   // min height
   this->setMinimumHeight(header_end + line_height * items + footer_height);
   this->setMaximumHeight(header_end + line_height * items + footer_height);
+}
+
+// Public member functions
+
+QPoint GuiDevice::featureBoxPosition(Feature* feature)
+{
+  int x, y, i;
+  y = 0;
+  if (device->getType() == DeviceType::ReceiverDevice)
+    x = 0;
+  else
+    x = this->width() - 1;
+  i = 0;
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
+       it++)
+  {
+    if (*it == feature)
+      y = header_end + i * line_height + line_height / 2;
+    i++;
+  }
+  return QPoint(x, y);
+}
+
+// Protected member functions
+
+void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
+{
+  int i = 0, y;
+  QPoint p = event->pos();
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
+       it++)
+  {
+    y = header_end + i * line_height;
+
+    if (p.y() >= y && p.y() < y + line_height)
+    {
+      emit featureClicked(this, *it);
+    }
+    i++;
+  }
 }
 
 void GuiDevice::paintEvent(QPaintEvent*)
@@ -70,40 +112,4 @@ void GuiDevice::paintEvent(QPaintEvent*)
   // footer line
   painter.drawLine(QPoint(line_start, footer_start),
                    QPoint(line_end, footer_start));
-}
-
-QPoint GuiDevice::featureBoxPosition(Feature* feature)
-{
-  int x, y, i;
-  y = 0;
-  if (device->getType() == DeviceType::ReceiverDevice)
-    x = 0;
-  else
-    x = this->width() - 1;
-  i = 0;
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
-       it++)
-  {
-    if (*it == feature)
-      y = header_end + i * line_height + line_height / 2;
-    i++;
-  }
-  return QPoint(x, y);
-}
-
-void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
-{
-  int i = 0, y;
-  QPoint p = event->pos();
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
-       it++)
-  {
-    y = header_end + i * line_height;
-
-    if (p.y() >= y && p.y() < y + line_height)
-    {
-      emit featureClicked(this, *it);
-    }
-    i++;
-  }
 }
