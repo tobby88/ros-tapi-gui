@@ -1,35 +1,23 @@
 #include "apigui.hpp"
 #include "ui_apigui.h"
-#include <QModelIndex>
-#include <QAbstractTableModel>
 
-ApiGui::ApiGui(Api* api, QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::ApiGui)
+ApiGui::ApiGui(Api *api, QWidget* parent) : QMainWindow(parent), ui(new Ui::ApiGui)
 {
   this->api = api;
   ui->setupUi(this);
-  temp = 0;
+  temp=0;
   ui->TestLabel->setText(QString::number(temp));
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
   timer->start(100);
-  myModel = new ApiDevicesWrapper(0, api);
-  ui->tableViewReceiver->setModel(myModel);
 }
 
-ApiGui::~ApiGui()
-{
+ApiGui::~ApiGui() {
   delete timer;
-  delete myModel;
-  delete ui;
-}
+  delete ui; }
 
 void ApiGui::checkApiForUpdate()
 {
   temp++;
-  //ui->TestLabel->setText(QString::number(temp));
-  ui->TestLabel->setText(QString::number(api->GetDevices().size()));
-  //ui->tableViewReceiver->setModel(myModel);
-  ui->tableViewReceiver->hide();
-  ui->tableViewReceiver->show();
+  ui->TestLabel->setText(QString::number(temp));
 }
