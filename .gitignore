@@ -1,7 +1,3 @@
-# Qt cache
-CMakeLists.txt.user
-CMakeLists.txt.user.*
-
 # Build dir
 build
 
@@ -38,6 +34,7 @@ msg/_*.py
 
 # qcreator stuff
 CMakeLists.txt.user
+CMakeLists.txt.user.*
 
 srv/_*.py
 *.pcd
