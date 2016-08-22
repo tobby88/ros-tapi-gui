@@ -22,6 +22,8 @@ GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
   this->setMaximumHeight(header_end + line_height * items + footer_height);
 }
 
+GuiDevice::~GuiDevice() {}
+
 // Public member functions
 
 QPoint GuiDevice::FeatureBoxPosition(Feature* feature)

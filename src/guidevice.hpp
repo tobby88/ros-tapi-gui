@@ -16,6 +16,7 @@ class GuiDevice : public QWidget
 public:
   // Constructor/Destructor
   GuiDevice(QWidget* parent, Device* device);
+  ~GuiDevice();
 
   // Public member variables
   Device* DevicePointer;            // TODO: getDevice() & private
