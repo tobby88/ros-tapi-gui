@@ -2,6 +2,8 @@
 
 using namespace std;
 
+// Constructor/Destructor
+
 Feature::Feature(FeatureType type, string name, string description, string uuid)
 {
   this->type = type;
@@ -13,6 +15,14 @@ Feature::Feature(FeatureType type, string name, string description, string uuid)
 
 Feature::~Feature() {}
 
+// Public member functions
+
+void Feature::decrementConnections() { connections--; }
+
+int Feature::getConnectionCount() { return connections; }
+
+string Feature::getDescription() { return description; }
+
 string Feature::getName() const
 {
   if (name.empty())
@@ -21,14 +31,8 @@ string Feature::getName() const
     return name;
 }
 
-string Feature::getDescription() { return description; }
+FeatureType Feature::getType() { return type; }
 
 string Feature::getUUID() { return uuid; }
 
-FeatureType Feature::getType() { return type; }
-
 void Feature::incrementConnections() { connections++; }
-
-void Feature::decrementConnections() { connections--; }
-
-int Feature::getConnectionCount() { return connections; }

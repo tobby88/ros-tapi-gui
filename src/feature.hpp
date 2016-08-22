@@ -8,25 +8,27 @@ using namespace std;
 
 class Feature
 {
-private:
-  FeatureType type;
-  string name;
-  string description;
-  string
-      uuid; // Not necessary as this is saved in the hash-table (unordered_map)?
-  int connections;
-
 public:
+  // Constructor/Destructor
   Feature(FeatureType type, string name, string description, string uuid);
   ~Feature();
 
-  string getName() const;
-  string getDescription();
-  string getUUID();
-  FeatureType getType();
-  void incrementConnections();
+  // Public member functions
   void decrementConnections();
   int getConnectionCount();
+  string getDescription();
+  string getName() const;
+  FeatureType getType();
+  string getUUID();
+  void incrementConnections();
+
+private:
+  // Private member variables
+  FeatureType type;
+  string name;
+  string description;
+  string uuid;
+  int connections;
 };
 
 #endif // FEATURE_H
