@@ -1,5 +1,7 @@
 #include "feature.hpp"
 
+using namespace std;
+
 Feature::Feature(FeatureType type, string name, string description, string uuid)
 {
   this->type = type;
