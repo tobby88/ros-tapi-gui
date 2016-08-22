@@ -20,18 +20,18 @@ Device::~Device() {}
 
 // Public member functions
 
-void Device::addFeature(Feature feature)
+void Device::AddFeature(Feature feature)
 {
   if (features.count(feature.getUUID()) == 0)
     features.emplace(feature.getUUID(), feature);
 }
 
-bool Device::compareFeatureNames(const Feature* first, const Feature* second)
+bool Device::CompareFeatureNames(const Feature* first, const Feature* second)
 {
   return first->getName() < second->getName();
 }
 
-Feature* Device::getFeatureByUUID(string uuid)
+Feature* Device::GetFeatureByUUID(string uuid)
 {
   if (features.count(uuid) > 0)
     return &features.at(uuid);
@@ -39,15 +39,15 @@ Feature* Device::getFeatureByUUID(string uuid)
     return 0;
 }
 
-map<string, Feature> Device::getFeatureMap() { return features; }
+map<string, Feature> Device::GetFeatureMap() { return features; }
 
-unsigned long Device::getHeartbeat() { return heartbeat; }
+unsigned long Device::GetHeartbeat() { return heartbeat; }
 
-Time Device::getLastSeen() { return lastSeen; }
+Time Device::GetLastSeen() { return lastSeen; }
 
-unsigned long Device::getLastSeq() { return lastSeq; }
+unsigned long Device::GetLastSeq() { return lastSeq; }
 
-string Device::getName() const
+string Device::GetName() const
 {
   if (name.empty())
     return uuid;
@@ -62,13 +62,13 @@ vector<Feature*> Device::GetSortedFeatures()
        it != features.end(); it++)
     featureList.push_back(&it->second);
   if (featureList.size() > 1)
-    sort(featureList.begin(), featureList.end(), compareFeatureNames);
+    sort(featureList.begin(), featureList.end(), CompareFeatureNames);
   return featureList;
 }
 
-DeviceType Device::getType() { return type; }
+DeviceType Device::GetType() { return type; }
 
-string Device::getUUID() { return uuid; }
+string Device::GetUUID() { return uuid; }
 
 void Device::Update(DeviceType type, string name, unsigned long lastSeq,
                     Time lastSeen, unsigned long heartbeat)

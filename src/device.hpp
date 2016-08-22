@@ -20,17 +20,17 @@ public:
   ~Device();
 
   // Public member functions
-  void addFeature(Feature feature);
-  static bool compareFeatureNames(const Feature* first, const Feature* second);
-  Feature* getFeatureByUUID(string uuid);
-  map<string, Feature> getFeatureMap();
-  unsigned long getHeartbeat();
-  Time getLastSeen();
-  unsigned long getLastSeq();
-  string getName() const;
+  void AddFeature(Feature feature);
+  static bool CompareFeatureNames(const Feature* first, const Feature* second);
+  Feature* GetFeatureByUUID(string uuid);
+  map<string, Feature> GetFeatureMap();
+  unsigned long GetHeartbeat();
+  Time GetLastSeen();
+  unsigned long GetLastSeq();
+  string GetName() const;
   vector<Feature*> GetSortedFeatures();
-  DeviceType getType();
-  string getUUID();
+  DeviceType GetType();
+  string GetUUID();
   void Update(DeviceType type, string name, unsigned long lastSeq,
               Time lastSeen, unsigned long heartbeat);
 

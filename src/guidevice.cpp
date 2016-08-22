@@ -28,7 +28,7 @@ QPoint GuiDevice::featureBoxPosition(Feature* feature)
 {
   int x, y, i;
   y = 0;
-  if (device->getType() == DeviceType::ReceiverDevice)
+  if (device->GetType() == DeviceType::ReceiverDevice)
     x = 0;
   else
     x = this->width() - 1;
@@ -79,7 +79,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
   // print heading
   painter.setFont(QFont("Arial", 11));
   painter.drawText(QRect(QPoint(line_start, 0), QPoint(line_end, header_end)),
-                   Qt::AlignCenter, QString::fromStdString(device->getName()));
+                   Qt::AlignCenter, QString::fromStdString(device->GetName()));
 
   // Draw Features
   int i = 0;
@@ -96,7 +96,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + line_height / 2 - connectbox_size / 2),
                       QSize(connectbox_size, connectbox_size));
 
-    if (device->getType() == DeviceType::SenderDevice)
+    if (device->GetType() == DeviceType::SenderDevice)
     {
       connect_box.moveLeft(line_end);
     }

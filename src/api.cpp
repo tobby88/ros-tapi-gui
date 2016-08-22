@@ -44,28 +44,28 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
   if (device1 == 0 || device2 == 0)
     // At least one Device not found
     return false;
-  if (device1->getType() == device2->getType())
+  if (device1->GetType() == device2->GetType())
     // Cannont connect devices of same type (sender-sender or receiver-receiver)
     return false;
-  if (device1->getFeatureMap().at(feature1uuid).getType() !=
-      device2->getFeatureMap().at(feature2uuid).getType())
+  if (device1->GetFeatureMap().at(feature1uuid).getType() !=
+      device2->GetFeatureMap().at(feature2uuid).getType())
     // Cannot connect features of different types
     return false;
 
   // Who is sender, who receiver?
   string senderUUID, receiverUUID, senderFeatureUUID, receiverFeatureUUID;
-  if (device1->getType() == DeviceType::ReceiverDevice)
+  if (device1->GetType() == DeviceType::ReceiverDevice)
   {
-    receiverUUID = device1->getUUID();
+    receiverUUID = device1->GetUUID();
     receiverFeatureUUID = feature1uuid;
-    senderUUID = device2->getUUID();
+    senderUUID = device2->GetUUID();
     senderFeatureUUID = feature2uuid;
   }
   else
   {
-    receiverUUID = device2->getUUID();
+    receiverUUID = device2->GetUUID();
     receiverFeatureUUID = feature2uuid;
-    senderUUID = device1->getUUID();
+    senderUUID = device1->GetUUID();
     senderFeatureUUID = feature1uuid;
   }
 
@@ -78,8 +78,8 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
     Assignment connection(senderUUID, senderFeatureUUID, receiverUUID,
                           receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
-    device1->getFeatureByUUID(feature1uuid)->incrementConnections();
-    device2->getFeatureByUUID(feature2uuid)->incrementConnections();
+    device1->GetFeatureByUUID(feature1uuid)->incrementConnections();
+    device2->GetFeatureByUUID(feature2uuid)->incrementConnections();
     changed();
     return true;
   }
@@ -95,10 +95,10 @@ void Api::DebugOutput()
     ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
     ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, "
              "Last Seen: %f, Heartbeat-Interval: %lu",
-             (unsigned short)it->second.getType(), it->second.getName().c_str(),
-             it->second.getUUID().c_str(), it->second.getLastSeq(),
-             it->second.getLastSeen().toSec(), it->second.getHeartbeat());
-    map<string, Feature> features = it->second.getFeatureMap();
+             (unsigned short)it->second.GetType(), it->second.GetName().c_str(),
+             it->second.GetUUID().c_str(), it->second.GetLastSeq(),
+             it->second.GetLastSeen().toSec(), it->second.GetHeartbeat());
+    map<string, Feature> features = it->second.GetFeatureMap();
     for (map<string, Feature>::iterator it2 = features.begin();
          it2 != features.end(); it2++)
     {
@@ -123,11 +123,11 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
     string receiverUUID = connection->GetReceiverUUID();
     if (devices.count(senderUUID) > 0)
       devices.at(senderUUID)
-          .getFeatureByUUID(senderFeatureUUID)
+          .GetFeatureByUUID(senderFeatureUUID)
           ->decrementConnections();
     if (devices.count(receiverUUID) > 0)
       devices.at(receiverUUID)
-          .getFeatureByUUID(receiverFeatureUUID)
+          .GetFeatureByUUID(receiverFeatureUUID)
           ->decrementConnections();
     tobby::Config msg;
     msg.SenderUUID = "0";
@@ -177,7 +177,7 @@ void Api::changed()
 
 bool Api::compareDeviceNames(const Device* first, const Device* second)
 {
-  return first->getName() < second->getName();
+  return first->GetName() < second->GetName();
 }
 
 Device* Api::getDeviceByFeatureUUID(string uuid)
@@ -185,7 +185,7 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
   for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
        it++)
   {
-    if (it->second.getFeatureMap().count(uuid) > 0)
+    if (it->second.GetFeatureMap().count(uuid) > 0)
       return &(it->second);
   }
   return 0;
@@ -211,7 +211,7 @@ bool Api::hello(tobby::Hello::Request& helloReq,
                       helloReq.Features[i].Name,
                       helloReq.Features[i].Description,
                       helloReq.Features[i].UUID);
-      devices.at(uuid).addFeature(feature);
+      devices.at(uuid).AddFeature(feature);
     }
     helloResp.Status = (unsigned short)DeviceStatusResponse::OK;
     helloResp.Heartbeat = heartbeat;
