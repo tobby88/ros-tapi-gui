@@ -25,7 +25,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 # Find the QtWidgets library
 find_package(Qt5Widgets)
-# Include the binary-dir just for QtCreator so it will find the files from the uic
+# Include the binary-dir just for QtCreator so it will find automatically generated files (uic, ros,...)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ## Uncomment this if the package has a setup.py. This macro ensures
