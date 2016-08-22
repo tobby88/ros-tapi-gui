@@ -1,8 +1,8 @@
 #include "api.hpp"
 #include "enums.hpp"
 #include "feature.hpp"
-#include "tobby/Config.h"
-#include "tobby/Feature.h"
+#include "tobbyapi_msgs/Config.h"
+#include "tobbyapi_msgs/Feature.h"
 
 #define STANDARD_HEARTBEAT_INTERVAL 10000L
 #define DEBUG
@@ -17,7 +17,7 @@ Api::Api(NodeHandle* nh)
   this->nh = nh;
   spinner = new AsyncSpinner(1);
   helloServ = nh->advertiseService("TobbyAPI/HelloServ", &Api::hello, this);
-  configPub = nh->advertise<tobby::Config>("TobbyAPI/Config", 1000);
+  configPub = nh->advertise<tobbyapi_msgs::Config>("TobbyAPI/Config", 1000);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
   pendingChanges = false;
 }
@@ -127,7 +127,7 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
       devices.at(receiverUUID)
           .GetFeatureByUUID(receiverFeatureUUID)
           ->DecrementConnections();
-    tobby::Config msg;
+    tobbyapi_msgs::Config msg;
     msg.SenderUUID = "0";
     msg.SenderFeatureUUID = "0";
     msg.ReceiverUUID = receiverUUID;
@@ -189,8 +189,8 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
   return 0;
 }
 
-bool Api::hello(tobby::Hello::Request& helloReq,
-                tobby::Hello::Response& helloResp)
+bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq,
+                tobbyapi_msgs::Hello::Response& helloResp)
 {
   string uuid = helloReq.UUID;
   if (devices.empty() || devices.count(uuid) == 0)
@@ -246,7 +246,7 @@ void Api::sendAllConnections()
   for (map<string, Assignment>::iterator it = connections.begin();
        it != connections.end(); it++)
   {
-    tobby::Config msg;
+    tobbyapi_msgs::Config msg;
     msg.SenderUUID = it->second.GetSenderUUID();
     msg.SenderFeatureUUID = it->second.GetSenderFeatureUUID();
     msg.ReceiverUUID = it->second.GetReceiverUUID();

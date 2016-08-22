@@ -4,7 +4,7 @@
 #include "assignment.hpp"
 #include "device.hpp"
 #include "ros/ros.h"
-#include "tobby/Hello.h"
+#include "tobbyapi_msgs/Hello.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -44,8 +44,8 @@ private:
   void changed();
   static bool compareDeviceNames(const Device* first, const Device* second);
   Device* getDeviceByFeatureUUID(string uuid);
-  bool hello(tobby::Hello::Request& helloReq,
-             tobby::Hello::Response& helloResp);
+  bool hello(tobbyapi_msgs::Hello::Request& helloReq,
+             tobbyapi_msgs::Hello::Response& helloResp);
   void sendAllConnections();
 };
 
