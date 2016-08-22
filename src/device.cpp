@@ -26,11 +26,6 @@ void Device::AddFeature(Feature feature)
     features.emplace(feature.GetUUID(), feature);
 }
 
-bool Device::CompareFeatureNames(const Feature* first, const Feature* second)
-{
-  return first->GetName() < second->GetName();
-}
-
 Feature* Device::GetFeatureByUUID(string uuid)
 {
   if (features.count(uuid) > 0)
@@ -60,7 +55,7 @@ vector<Feature*> Device::GetSortedFeatures()
        it != features.end(); it++)
     featureList.push_back(&it->second);
   if (featureList.size() > 1)
-    sort(featureList.begin(), featureList.end(), CompareFeatureNames);
+    sort(featureList.begin(), featureList.end(), compareFeatureNames);
   return featureList;
 }
 
@@ -76,4 +71,11 @@ void Device::Update(DeviceType type, string name, unsigned long lastSeq,
   this->lastSeq = lastSeq;
   this->lastSeen = lastSeen;
   this->heartbeat = heartbeat;
+}
+
+// Private member functions
+
+bool Device::compareFeatureNames(const Feature* first, const Feature* second)
+{
+  return first->GetName() < second->GetName();
 }

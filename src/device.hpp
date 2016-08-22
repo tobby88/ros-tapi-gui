@@ -21,7 +21,6 @@ public:
 
   // Public member functions
   void AddFeature(Feature feature);
-  static bool CompareFeatureNames(const Feature* first, const Feature* second);
   Feature* GetFeatureByUUID(string uuid);
   unsigned long GetHeartbeat();
   Time GetLastSeen();
@@ -42,6 +41,9 @@ private:
   string name;
   DeviceType type;
   string uuid;
+
+  // Private member functions
+  static bool compareFeatureNames(const Feature* first, const Feature* second);
 };
 
 #endif // DEVICE_H
