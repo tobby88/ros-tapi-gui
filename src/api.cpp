@@ -10,7 +10,7 @@
 using namespace ros;
 using namespace std;
 
-// Public member functions
+// Constructor/Destructor
 
 Api::Api(NodeHandle* nh)
 {
@@ -30,6 +30,8 @@ Api::~Api()
   delete spinner;
   ROS_INFO("Hello-Service has been stopped.");
 }
+
+// Public member functions
 
 bool Api::CheckPending() { return pendingChanges; }
 

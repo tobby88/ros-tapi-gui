@@ -8,10 +8,12 @@ using namespace std;
 class Assignment
 {
 public:
-  // Public member functions
+  // Constructor/Destructor
   Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID,
              string receiverFeatureUUID, double coefficient);
   ~Assignment();
+
+  // Public member functions
   double GetCoefficient();
   string GetReceiverFeatureUUID();
   string GetReceiverUUID();

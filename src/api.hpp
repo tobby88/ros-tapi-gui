@@ -15,9 +15,11 @@ using namespace std;
 class Api
 {
 public:
-  // Public member functions
+  // Constructor/Destructor
   Api(NodeHandle* nh);
   ~Api();
+
+  // Public member functions
   bool CheckPending();
   bool ConnectFeatures(string feature1UUID, string feature2UUID,
                        double coefficient);

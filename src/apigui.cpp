@@ -9,7 +9,7 @@
 
 using namespace std;
 
-// Public member functions
+// Constructor/Destructor
 
 ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {

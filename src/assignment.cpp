@@ -2,7 +2,7 @@
 
 using namespace std;
 
-// Public member functions
+// Constructor/Destructor
 
 Assignment::Assignment(string senderUUID, string senderFeatureUUID,
                        string receiverUUID, string receiverFeatureUUID,
@@ -16,6 +16,8 @@ Assignment::Assignment(string senderUUID, string senderFeatureUUID,
 }
 
 Assignment::~Assignment() {}
+
+// Public member functions
 
 double Assignment::GetCoefficient() { return coefficient; }
 

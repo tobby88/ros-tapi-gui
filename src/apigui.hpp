@@ -21,7 +21,7 @@ class ApiGui : public QWidget
   Q_OBJECT
 
 public:
-  // Public member functions
+  // Constructor/Destructor
   ApiGui(Api* api, QWidget* parent = 0);
   ~ApiGui();
 
