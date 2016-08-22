@@ -5,7 +5,7 @@
 #include "device.hpp"
 #include "ros/ros.h"
 #include "tobby/Hello.h"
-#include <map>
+#include <unordered_map>
 
 using namespace ros;
 using namespace std;
@@ -14,8 +14,8 @@ class Api
 {
 private:
   NodeHandle* nh;
-  map<string, Device> devices;
-  map<string, Assignment> connections;
+  unordered_map<string, Device> devices;
+  unordered_map<string, Assignment> connections;
   ServiceServer helloServ;
   Publisher configPub;
   bool hello(tobby::Hello::Request& helloReq,
@@ -27,9 +27,8 @@ private:
 public:
   Api(NodeHandle* nh);
   ~Api();
-  bool CheckPending();
+  bool checkPending();
   void DebugOutput();
-  map<string, Device> GetDevices();
   void Run();
 };
 

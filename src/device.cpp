@@ -23,7 +23,7 @@ void Device::addFeature(Feature feature)
 }
 
 DeviceType Device::getType() { return type; }
-map<string, Feature> Device::getFeatureMap() { return features; }
+unordered_map<string, Feature> Device::getFeatureMap() { return features; }
 
 string Device::getName() { return name; }
 
