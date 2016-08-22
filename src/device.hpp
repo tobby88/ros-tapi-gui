@@ -23,7 +23,6 @@ public:
   void AddFeature(Feature feature);
   static bool CompareFeatureNames(const Feature* first, const Feature* second);
   Feature* GetFeatureByUUID(string uuid);
-  map<string, Feature> GetFeatureMap();
   unsigned long GetHeartbeat();
   Time GetLastSeen();
   unsigned long GetLastSeq();

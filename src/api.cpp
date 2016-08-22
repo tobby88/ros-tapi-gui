@@ -47,8 +47,8 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
   if (device1->GetType() == device2->GetType())
     // Cannont connect devices of same type (sender-sender or receiver-receiver)
     return false;
-  if (device1->GetFeatureMap().at(feature1uuid).GetType() !=
-      device2->GetFeatureMap().at(feature2uuid).GetType())
+  if (device1->GetFeatureByUUID(feature1uuid)->GetType() !=
+      device2->GetFeatureByUUID(feature2uuid)->GetType())
     // Cannot connect features of different types
     return false;
 
@@ -98,16 +98,14 @@ void Api::DebugOutput()
              (unsigned short)it->second.GetType(), it->second.GetName().c_str(),
              it->second.GetUUID().c_str(), it->second.GetLastSeq(),
              it->second.GetLastSeen().toSec(), it->second.GetHeartbeat());
-    map<string, Feature> features = it->second.GetFeatureMap();
-    for (map<string, Feature>::iterator it2 = features.begin();
+    vector<Feature*> features = it->second.GetSortedFeatures();
+    for (vector<Feature*>::iterator it2 = features.begin();
          it2 != features.end(); it2++)
     {
-      ROS_INFO("Debug: Device-Feature: Map-ID: %s, ID: %s, Feature-Type: %u, "
-               "Feature-Name: %s, Feature-Description: %s",
-               it2->first.c_str(), it2->second.GetUUID().c_str(),
-               (unsigned short)it2->second.GetType(),
-               it2->second.GetName().c_str(),
-               it2->second.GetDescription().c_str());
+      ROS_INFO("Debug: Device-Feature: ID: %s, Feature-Type: %u, Feature-Name: "
+               "%s, Feature-Description: %s",
+               (*it2)->GetUUID().c_str(), (unsigned short)(*it2)->GetType(),
+               (*it2)->GetName().c_str(), (*it2)->GetDescription().c_str());
     }
   }
   // TODO: Print connections
@@ -185,7 +183,7 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
   for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
        it++)
   {
-    if (it->second.GetFeatureMap().count(uuid) > 0)
+    if (it->second.GetFeatureByUUID(uuid))
       return &(it->second);
   }
   return 0;
