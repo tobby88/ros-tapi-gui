@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QPainter>
+#include <QString>
 #include <string>
 
 using namespace std;
