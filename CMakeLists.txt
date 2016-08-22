@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(tobby)
+project(tobbyapi)
 
 # Use specified C++ standard
 set(CMAKE_CXX_STANDARD 11)
@@ -139,7 +139,7 @@ include_directories(
 # add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(tobby
+add_executable(tobbyapi
   src/api.cpp
   src/apigui.cpp
   src/apigui.ui
@@ -155,10 +155,10 @@ add_executable(tobby
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(tobbyapi ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(tobby
+target_link_libraries(tobbyapi
   Qt5::Widgets
   ${catkin_LIBRARIES}
 )
