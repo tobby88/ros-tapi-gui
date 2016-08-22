@@ -16,7 +16,6 @@ ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 {
   this->api = api;
   ui->setupUi(this);
-  temp2 = 0;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
   timerInterval = 15;
@@ -155,15 +154,10 @@ void ApiGui::checkApiForUpdate()
       delete *it;
     }
     receiverGuiDevices.clear();
-    temp2 = 0;
     vector<Device*> devices = api->GetDevicesSorted();
     for (vector<Device*>::iterator it = devices.begin(); it != devices.end();
          it++)
-    {
       addDevice(*it);
-      temp2++;
-    }
-    ui->TestLabel->setText(QString::number(temp2));
     api->Done();
   }
 }

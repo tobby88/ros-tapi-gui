@@ -40,7 +40,6 @@ private:
   Feature* selectedFeature;
   GuiDevice* selectedGuiDevice;
   vector<GuiDevice*> senderGuiDevices;
-  unsigned int temp2;
   QTimer* timer;
   int timerInterval;
   Ui::ApiGui* ui;
