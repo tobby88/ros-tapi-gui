@@ -8,7 +8,7 @@ using namespace std;
 
 GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
 {
-  device = device;
+  this->device = device;
   connectbox_size = 10;
   header_end = 30;
   footer_height = 10;
