@@ -7,6 +7,8 @@
 #include <QWidget>
 #include <vector>
 
+using namespace std;
+
 class GuiDevice : public QWidget
 {
   Q_OBJECT

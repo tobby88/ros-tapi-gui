@@ -2,6 +2,8 @@
 #include <QPainter>
 #include <QString>
 
+using namespace std;
+
 GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
 {
   this->device = device;
