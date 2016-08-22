@@ -22,13 +22,13 @@ Device::~Device() {}
 
 void Device::AddFeature(Feature feature)
 {
-  if (features.count(feature.getUUID()) == 0)
-    features.emplace(feature.getUUID(), feature);
+  if (features.count(feature.GetUUID()) == 0)
+    features.emplace(feature.GetUUID(), feature);
 }
 
 bool Device::CompareFeatureNames(const Feature* first, const Feature* second)
 {
-  return first->getName() < second->getName();
+  return first->GetName() < second->GetName();
 }
 
 Feature* Device::GetFeatureByUUID(string uuid)

@@ -169,7 +169,7 @@ void ApiGui::checkApiForUpdate()
 
 void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
 {
-  QString qs = QString::fromStdString(feature->getName());
+  QString qs = QString::fromStdString(feature->GetName());
   ui->TestLabel->setText(qs);
 
   if (selectedFeature && selectedFeature == feature)
@@ -182,20 +182,20 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   }
 
   if (guidevice->device->GetType() == DeviceType::ReceiverDevice &&
-      feature->getConnectionCount() > 0)
+      feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
     if (selectedFeature &&
         guidevice->device->GetType() != selectedGuiDevice->device->GetType() &&
-        selectedFeature->getType() == feature->getType())
+        selectedFeature->GetType() == feature->GetType())
     {
-      string msg = "Replace connection of \"" + feature->getName() + "\"?";
+      string msg = "Replace connection of \"" + feature->GetName() + "\"?";
       msgBox.setWindowTitle("Feature already connected");
       msgBox.setText(QString::fromStdString(msg));
     }
     else
     {
-      string msg = "Delete connection of \"" + feature->getName() + "\"?";
+      string msg = "Delete connection of \"" + feature->GetName() + "\"?";
       msgBox.setWindowTitle("Delete connection?");
       msgBox.setText(QString::fromStdString(msg));
     }
@@ -210,7 +210,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     case QMessageBox::No:
       return;
     case QMessageBox::Yes:
-      api->DeleteConnection(feature->getUUID());
+      api->DeleteConnection(feature->GetUUID());
       update();
       break;
     default:
@@ -238,7 +238,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (selectedFeature->getType() != feature->getType())
+  if (selectedFeature->GetType() != feature->GetType())
   // Selected different feature types, so no connection is possible. Drop old
   // selection and select the new one
   {
@@ -250,7 +250,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   // Everything ok -> try to connect them (and ask for coefficient if appliable)
   double coefficient = 1.0;
   bool ok = true;
-  if (feature->getType() == FeatureType::Axis)
+  if (feature->GetType() == FeatureType::Axis)
   {
     timer->stop();
     QString input =
@@ -261,7 +261,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   }
   if (ok)
   {
-    api->ConnectFeatures(selectedFeature->getUUID(), feature->getUUID(),
+    api->ConnectFeatures(selectedFeature->GetUUID(), feature->GetUUID(),
                          coefficient);
     selectedFeature = 0;
     selectedGuiDevice = 0;

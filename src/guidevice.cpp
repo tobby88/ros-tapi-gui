@@ -105,7 +105,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     painter.setFont(QFont("Arial", 10));
     painter.drawText(QRect(QPoint(line_start, line_y),
                            QPoint(line_end, line_y + line_height)),
-                     Qt::AlignCenter, QString::fromStdString((*it)->getName()));
+                     Qt::AlignCenter, QString::fromStdString((*it)->GetName()));
     i++;
   }
 

@@ -14,13 +14,13 @@ public:
   ~Feature();
 
   // Public member functions
-  void decrementConnections();
-  int getConnectionCount();
-  string getDescription();
-  string getName() const;
-  FeatureType getType();
-  string getUUID();
-  void incrementConnections();
+  void DecrementConnections();
+  int GetConnectionCount();
+  string GetDescription();
+  string GetName() const;
+  FeatureType GetType();
+  string GetUUID();
+  void IncrementConnections();
 
 private:
   // Private member variables

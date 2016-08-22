@@ -17,13 +17,13 @@ Feature::~Feature() {}
 
 // Public member functions
 
-void Feature::decrementConnections() { connections--; }
+void Feature::DecrementConnections() { connections--; }
 
-int Feature::getConnectionCount() { return connections; }
+int Feature::GetConnectionCount() { return connections; }
 
-string Feature::getDescription() { return description; }
+string Feature::GetDescription() { return description; }
 
-string Feature::getName() const
+string Feature::GetName() const
 {
   if (name.empty())
     return uuid;
@@ -31,8 +31,8 @@ string Feature::getName() const
     return name;
 }
 
-FeatureType Feature::getType() { return type; }
+FeatureType Feature::GetType() { return type; }
 
-string Feature::getUUID() { return uuid; }
+string Feature::GetUUID() { return uuid; }
 
-void Feature::incrementConnections() { connections++; }
+void Feature::IncrementConnections() { connections++; }

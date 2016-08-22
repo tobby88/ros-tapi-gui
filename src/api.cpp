@@ -47,8 +47,8 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
   if (device1->GetType() == device2->GetType())
     // Cannont connect devices of same type (sender-sender or receiver-receiver)
     return false;
-  if (device1->GetFeatureMap().at(feature1uuid).getType() !=
-      device2->GetFeatureMap().at(feature2uuid).getType())
+  if (device1->GetFeatureMap().at(feature1uuid).GetType() !=
+      device2->GetFeatureMap().at(feature2uuid).GetType())
     // Cannot connect features of different types
     return false;
 
@@ -78,8 +78,8 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
     Assignment connection(senderUUID, senderFeatureUUID, receiverUUID,
                           receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
-    device1->GetFeatureByUUID(feature1uuid)->incrementConnections();
-    device2->GetFeatureByUUID(feature2uuid)->incrementConnections();
+    device1->GetFeatureByUUID(feature1uuid)->IncrementConnections();
+    device2->GetFeatureByUUID(feature2uuid)->IncrementConnections();
     changed();
     return true;
   }
@@ -104,10 +104,10 @@ void Api::DebugOutput()
     {
       ROS_INFO("Debug: Device-Feature: Map-ID: %s, ID: %s, Feature-Type: %u, "
                "Feature-Name: %s, Feature-Description: %s",
-               it2->first.c_str(), it2->second.getUUID().c_str(),
-               (unsigned short)it2->second.getType(),
-               it2->second.getName().c_str(),
-               it2->second.getDescription().c_str());
+               it2->first.c_str(), it2->second.GetUUID().c_str(),
+               (unsigned short)it2->second.GetType(),
+               it2->second.GetName().c_str(),
+               it2->second.GetDescription().c_str());
     }
   }
   // TODO: Print connections
@@ -124,11 +124,11 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
     if (devices.count(senderUUID) > 0)
       devices.at(senderUUID)
           .GetFeatureByUUID(senderFeatureUUID)
-          ->decrementConnections();
+          ->DecrementConnections();
     if (devices.count(receiverUUID) > 0)
       devices.at(receiverUUID)
           .GetFeatureByUUID(receiverFeatureUUID)
-          ->decrementConnections();
+          ->DecrementConnections();
     tobby::Config msg;
     msg.SenderUUID = "0";
     msg.SenderFeatureUUID = "0";
