@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QWidget>
 #include <vector>
 
 using namespace std;
