@@ -1,6 +1,8 @@
 #include "maingui.hpp"
 #include "ui_maingui.h"
 
+// Constructor/Destructor
+
 MainGui::MainGui(Api* api, QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainGui)
 {

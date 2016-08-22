@@ -15,13 +15,15 @@ class MainGui : public QMainWindow
   Q_OBJECT
 
 public:
+  // Constructor/Destructor
   MainGui(Api* api, QWidget* parent = 0);
   ~MainGui();
 
 private:
-  Ui::MainGui* ui;
+  // Private member variables
   Api* api;
   ApiGui* apiui;
+  Ui::MainGui* ui;
 };
 
 #endif // MAINGUI_HPP
