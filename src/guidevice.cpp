@@ -8,14 +8,14 @@ using namespace std;
 
 GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
 {
-  DevicePointer = device;
+  device = device;
   connectbox_size = 10;
   header_end = 30;
   footer_height = 10;
   line_height = 20;
   line_start = connectbox_size;
-  Features = device->GetSortedFeatures();
-  items = Features.size();
+  features = device->GetSortedFeatures();
+  items = features.size();
 
   // min height
   this->setMinimumHeight(header_end + line_height * items + footer_height);
@@ -30,12 +30,12 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
 {
   int x, y, i;
   y = 0;
-  if (DevicePointer->GetType() == DeviceType::ReceiverDevice)
+  if (device->GetType() == DeviceType::ReceiverDevice)
     x = 0;
   else
     x = this->width() - 1;
   i = 0;
-  for (vector<Feature*>::iterator it = Features.begin(); it != Features.end();
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
        it++)
   {
     if (*it == feature)
@@ -45,13 +45,17 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
   return QPoint(x, y);
 }
 
+Device* GuiDevice::GetDevice() { return device; }
+
+vector<Feature*> GuiDevice::GetFeatures() { return features; }
+
 // Protected member functions
 
 void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
 {
   int i = 0, y;
   QPoint p = event->pos();
-  for (vector<Feature*>::iterator it = Features.begin(); it != Features.end();
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
        it++)
   {
     y = header_end + i * line_height;
@@ -81,12 +85,11 @@ void GuiDevice::paintEvent(QPaintEvent*)
   // print heading
   painter.setFont(QFont("Arial", 11));
   painter.drawText(QRect(QPoint(line_start, 0), QPoint(line_end, header_end)),
-                   Qt::AlignCenter,
-                   QString::fromStdString(DevicePointer->GetName()));
+                   Qt::AlignCenter, QString::fromStdString(device->GetName()));
 
   // Draw Features
   int i = 0;
-  for (vector<Feature*>::iterator it = Features.begin(); it != Features.end();
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
        it++)
   {
     int line_y = header_end + i * line_height;
@@ -99,7 +102,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + line_height / 2 - connectbox_size / 2),
                       QSize(connectbox_size, connectbox_size));
 
-    if (DevicePointer->GetType() == DeviceType::SenderDevice)
+    if (device->GetType() == DeviceType::SenderDevice)
     {
       connect_box.moveLeft(line_end);
     }
