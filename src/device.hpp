@@ -13,33 +13,36 @@ using namespace std;
 
 class Device
 {
-private:
-  DeviceType type;
-  string name;
-  string
-      uuid; // Not necessary as this is saved in the hash-table (unordered_map)
-  unsigned long lastSeq;
-  Time lastSeen;
-  unsigned long heartbeat;
-  map<string, Feature> features;
-
 public:
+  // Constructor/Destructor
   Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
          Time lastSeen, unsigned long heartbeat);
   ~Device();
+
+  // Public member functions
   void addFeature(Feature feature);
   static bool compareFeatureNames(const Feature* first, const Feature* second);
+  Feature* getFeatureByUUID(string uuid);
   map<string, Feature> getFeatureMap();
+  unsigned long getHeartbeat();
+  Time getLastSeen();
+  unsigned long getLastSeq();
+  string getName() const;
   vector<Feature*> GetSortedFeatures();
   DeviceType getType();
-  string getName() const;
   string getUUID();
-  unsigned long getLastSeq();
-  Time getLastSeen();
-  unsigned long getHeartbeat();
   void Update(DeviceType type, string name, unsigned long lastSeq,
               Time lastSeen, unsigned long heartbeat);
-  Feature* getFeatureByUUID(string uuid);
+
+private:
+  // Private member variables
+  map<string, Feature> features;
+  unsigned long heartbeat;
+  Time lastSeen;
+  unsigned long lastSeq;
+  string name;
+  DeviceType type;
+  string uuid;
 };
 
 #endif // DEVICE_H

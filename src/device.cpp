@@ -3,6 +3,8 @@
 using namespace ros;
 using namespace std;
 
+// Constructor/Destructor
+
 Device::Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
                Time lastSeen, unsigned long heartbeat)
 {
@@ -16,6 +18,8 @@ Device::Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
 
 Device::~Device() {}
 
+// Public member functions
+
 void Device::addFeature(Feature feature)
 {
   if (features.count(feature.getUUID()) == 0)
@@ -27,9 +31,29 @@ bool Device::compareFeatureNames(const Feature* first, const Feature* second)
   return first->getName() < second->getName();
 }
 
-DeviceType Device::getType() { return type; }
+Feature* Device::getFeatureByUUID(string uuid)
+{
+  if (features.count(uuid) > 0)
+    return &features.at(uuid);
+  else
+    return 0;
+}
 
 map<string, Feature> Device::getFeatureMap() { return features; }
+
+unsigned long Device::getHeartbeat() { return heartbeat; }
+
+Time Device::getLastSeen() { return lastSeen; }
+
+unsigned long Device::getLastSeq() { return lastSeq; }
+
+string Device::getName() const
+{
+  if (name.empty())
+    return uuid;
+  else
+    return name;
+}
 
 vector<Feature*> Device::GetSortedFeatures()
 {
@@ -42,21 +66,9 @@ vector<Feature*> Device::GetSortedFeatures()
   return featureList;
 }
 
-string Device::getName() const
-{
-  if (name.empty())
-    return uuid;
-  else
-    return name;
-}
+DeviceType Device::getType() { return type; }
 
 string Device::getUUID() { return uuid; }
-
-unsigned long Device::getLastSeq() { return lastSeq; }
-
-Time Device::getLastSeen() { return lastSeen; }
-
-unsigned long Device::getHeartbeat() { return heartbeat; }
 
 void Device::Update(DeviceType type, string name, unsigned long lastSeq,
                     Time lastSeen, unsigned long heartbeat)
@@ -66,12 +78,4 @@ void Device::Update(DeviceType type, string name, unsigned long lastSeq,
   this->lastSeq = lastSeq;
   this->lastSeen = lastSeen;
   this->heartbeat = heartbeat;
-}
-
-Feature* Device::getFeatureByUUID(string uuid)
-{
-  if (features.count(uuid) > 0)
-    return &features.at(uuid);
-  else
-    return 0;
 }
