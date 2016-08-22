@@ -58,7 +58,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     for (vector<GuiDevice*>::iterator it2 = senderGuiDevices.begin();
          it2 != senderGuiDevices.end(); it2++)
     {
-      if ((*it2)->device->GetUUID() == senderUUID)
+      if ((*it2)->DevicePointer->GetUUID() == senderUUID)
       {
         sender = *it2;
         break;
@@ -69,7 +69,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     for (vector<GuiDevice*>::iterator it2 = receiverGuiDevices.begin();
          it2 != receiverGuiDevices.end(); it2++)
     {
-      if ((*it2)->device->GetUUID() == receiverUUID)
+      if ((*it2)->DevicePointer->GetUUID() == receiverUUID)
       {
         receiver = *it2;
         break;
@@ -78,14 +78,15 @@ void ApiGui::paintEvent(QPaintEvent*)
     if (!receiver)
       continue;
     QPoint begin, end;
-    Feature* feature = sender->device->GetFeatureByUUID(senderFeatureUUID);
+    Feature* feature =
+        sender->DevicePointer->GetFeatureByUUID(senderFeatureUUID);
     if (!feature)
       continue;
-    begin = sender->mapTo(this, sender->featureBoxPosition(feature));
-    feature = receiver->device->GetFeatureByUUID(receiverFeatureUUID);
+    begin = sender->mapTo(this, sender->FeatureBoxPosition(feature));
+    feature = receiver->DevicePointer->GetFeatureByUUID(receiverFeatureUUID);
     if (!feature)
       continue;
-    end = receiver->mapTo(this, receiver->featureBoxPosition(feature));
+    end = receiver->mapTo(this, receiver->FeatureBoxPosition(feature));
     painter.drawLine(begin, end);
   }
 
@@ -98,7 +99,7 @@ void ApiGui::paintEvent(QPaintEvent*)
 
   Feature* fs = selectedFeature;
 
-  QPoint begin = s->mapTo(this, s->featureBoxPosition(fs));
+  QPoint begin = s->mapTo(this, s->FeatureBoxPosition(fs));
   painter.drawLine(begin, end);
 }
 
@@ -181,12 +182,13 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (guidevice->device->GetType() == DeviceType::ReceiverDevice &&
+  if (guidevice->DevicePointer->GetType() == DeviceType::ReceiverDevice &&
       feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
     if (selectedFeature &&
-        guidevice->device->GetType() != selectedGuiDevice->device->GetType() &&
+        guidevice->DevicePointer->GetType() !=
+            selectedGuiDevice->DevicePointer->GetType() &&
         selectedFeature->GetType() == feature->GetType())
     {
       string msg = "Replace connection of \"" + feature->GetName() + "\"?";
@@ -229,7 +231,8 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (guidevice->device->GetType() == selectedGuiDevice->device->GetType())
+  if (guidevice->DevicePointer->GetType() ==
+      selectedGuiDevice->DevicePointer->GetType())
   // Selected the same device type, so no connection is possible. Drop old
   // selection and select the new one
   {

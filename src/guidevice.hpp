@@ -18,11 +18,11 @@ public:
   GuiDevice(QWidget* parent, Device* device);
 
   // Public member variables
-  Device* device;            // TODO: getDevice() & private
-  vector<Feature*> features; // TODO: private
+  Device* DevicePointer;            // TODO: getDevice() & private
+  vector<Feature*> Features; // TODO: private
 
   // Public member functions
-  QPoint featureBoxPosition(Feature* feature);
+  QPoint FeatureBoxPosition(Feature* feature);
 
 protected:
   // Protected member functions
