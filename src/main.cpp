@@ -12,7 +12,5 @@ int main(int argc, char** argv)
   MainGui w(&api);
   w.show();
   api.Run();
-  a.exec();
-
-  return 0;
+  return a.exec();
 }
