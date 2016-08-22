@@ -1,8 +1,8 @@
-Header header
-string name
-string uuid
-uint8 type
-Feature[] features
+Header Header
+string Name
+string UUID
+uint8 DeviceType
+Feature[] Features
 ---
-uint8 status
-uint32 heartbeat
+uint8 Status
+uint32 Heartbeat

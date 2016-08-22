@@ -1,4 +1,4 @@
-uint8 type
-string uuid
-string name
-string description
+uint8 FeatureType
+string UUID
+string Name
+string Description

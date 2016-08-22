@@ -3,6 +3,8 @@
 using namespace ros;
 using namespace std;
 
+// Constructor/Destructor
+
 Device::Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
                Time lastSeen, unsigned long heartbeat)
 {
@@ -16,24 +18,57 @@ Device::Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
 
 Device::~Device() {}
 
-void Device::addFeature(Feature feature)
+// Public member functions
+
+void Device::AddFeature(Feature feature)
 {
-  if (features.count(feature.getUUID()) == 0)
-    features.emplace(feature.getUUID(), feature);
+  if (features.count(feature.GetUUID()) == 0)
+    features.emplace(feature.GetUUID(), feature);
 }
 
-DeviceType Device::getType() { return type; }
-unordered_map<string, Feature> Device::getFeatureMap() { return features; }
+bool Device::CompareFeatureNames(const Feature* first, const Feature* second)
+{
+  return first->GetName() < second->GetName();
+}
 
-string Device::getName() { return name; }
+Feature* Device::GetFeatureByUUID(string uuid)
+{
+  if (features.count(uuid) > 0)
+    return &features.at(uuid);
+  else
+    return 0;
+}
 
-string Device::getUUID() { return uuid; }
+map<string, Feature> Device::GetFeatureMap() { return features; }
 
-unsigned long Device::getLastSeq() { return lastSeq; }
+unsigned long Device::GetHeartbeat() { return heartbeat; }
 
-Time Device::getLastSeen() { return lastSeen; }
+Time Device::GetLastSeen() { return lastSeen; }
 
-unsigned long Device::getHeartbeat() { return heartbeat; }
+unsigned long Device::GetLastSeq() { return lastSeq; }
+
+string Device::GetName() const
+{
+  if (name.empty())
+    return uuid;
+  else
+    return name;
+}
+
+vector<Feature*> Device::GetSortedFeatures()
+{
+  vector<Feature*> featureList;
+  for (map<string, Feature>::iterator it = features.begin();
+       it != features.end(); it++)
+    featureList.push_back(&it->second);
+  if (featureList.size() > 1)
+    sort(featureList.begin(), featureList.end(), CompareFeatureNames);
+  return featureList;
+}
+
+DeviceType Device::GetType() { return type; }
+
+string Device::GetUUID() { return uuid; }
 
 void Device::Update(DeviceType type, string name, unsigned long lastSeq,
                     Time lastSeen, unsigned long heartbeat)

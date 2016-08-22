@@ -5,31 +5,48 @@
 #include "device.hpp"
 #include "ros/ros.h"
 #include "tobby/Hello.h"
-#include <unordered_map>
+#include <map>
+#include <string>
+#include <vector>
 
 using namespace ros;
 using namespace std;
 
 class Api
 {
-private:
-  NodeHandle* nh;
-  unordered_map<string, Device> devices;
-  unordered_map<string, Assignment> connections;
-  ServiceServer helloServ;
-  Publisher configPub;
-  bool hello(tobby::Hello::Request& helloReq,
-             tobby::Hello::Response& helloResp);
-  bool pendingChanges;
-  AsyncSpinner* spinner;
-  void changed();
-
 public:
+  // Constructor/Destructor
   Api(NodeHandle* nh);
   ~Api();
-  bool checkPending();
+
+  // Public member functions
+  bool CheckPending();
+  bool ConnectFeatures(string feature1UUID, string feature2UUID,
+                       double coefficient);
   void DebugOutput();
+  bool DeleteConnection(string receiverFeatureUUID);
+  void Done();
+  vector<Assignment*> GetConnections();
+  vector<Device*> GetDevicesSorted();
   void Run();
+
+private:
+  // Private member variables
+  Publisher configPub;
+  map<string, Assignment> connections;
+  map<string, Device> devices;
+  ServiceServer helloServ;
+  NodeHandle* nh;
+  bool pendingChanges;
+  AsyncSpinner* spinner;
+
+  // Private member functions
+  void changed();
+  static bool compareDeviceNames(const Device* first, const Device* second);
+  Device* getDeviceByFeatureUUID(string uuid);
+  bool hello(tobby::Hello::Request& helloReq,
+             tobby::Hello::Response& helloResp);
+  void sendAllConnections();
 };
 
 #endif // API_H

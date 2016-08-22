@@ -1,19 +1,38 @@
 #include "feature.hpp"
 
+using namespace std;
+
+// Constructor/Destructor
+
 Feature::Feature(FeatureType type, string name, string description, string uuid)
 {
   this->type = type;
   this->name = name;
   this->description = description;
   this->uuid = uuid;
+  connections = 0;
 }
 
 Feature::~Feature() {}
 
-string Feature::getName() { return name; }
+// Public member functions
 
-string Feature::getDescription() { return description; }
+void Feature::DecrementConnections() { connections--; }
 
-string Feature::getUUID() { return uuid; }
+int Feature::GetConnectionCount() { return connections; }
 
-FeatureType Feature::getType() { return type; }
+string Feature::GetDescription() { return description; }
+
+string Feature::GetName() const
+{
+  if (name.empty())
+    return uuid;
+  else
+    return name;
+}
+
+FeatureType Feature::GetType() { return type; }
+
+string Feature::GetUUID() { return uuid; }
+
+void Feature::IncrementConnections() { connections++; }
