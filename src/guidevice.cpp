@@ -1,4 +1,5 @@
 #include "guidevice.hpp"
+#include "tobbyapi_msgs/HelloRequest.h"
 #include <QPainter>
 #include <QString>
 
@@ -30,7 +31,7 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
 {
   int x, y, i;
   y = 0;
-  if (device->GetType() == DeviceType::ReceiverDevice)
+  if (device->GetType() == tobbyapi_msgs::HelloRequest::Type_ReceiverDevice)
     x = 0;
   else
     x = this->width() - 1;
@@ -102,7 +103,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + line_height / 2 - connectbox_size / 2),
                       QSize(connectbox_size, connectbox_size));
 
-    if (device->GetType() == DeviceType::SenderDevice)
+    if (device->GetType() == tobbyapi_msgs::HelloRequest::Type_SenderDevice)
     {
       connect_box.moveLeft(line_end);
     }

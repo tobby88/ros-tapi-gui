@@ -5,7 +5,7 @@ using namespace std;
 
 // Constructor/Destructor
 
-Device::Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
+Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq,
                Time lastSeen, unsigned long heartbeat)
 {
   this->type = type;
@@ -59,11 +59,11 @@ vector<Feature*> Device::GetSortedFeatures()
   return featureList;
 }
 
-DeviceType Device::GetType() { return type; }
+uint8_t Device::GetType() { return type; }
 
 string Device::GetUUID() { return uuid; }
 
-void Device::Update(DeviceType type, string name, unsigned long lastSeq,
+void Device::Update(uint8_t type, string name, unsigned long lastSeq,
                     Time lastSeen, unsigned long heartbeat)
 {
   this->type = type;

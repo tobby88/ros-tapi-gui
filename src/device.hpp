@@ -1,7 +1,6 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include "enums.hpp"
 #include "feature.hpp"
 #include "ros/ros.h"
 #include <map>
@@ -15,7 +14,7 @@ class Device
 {
 public:
   // Constructor/Destructor
-  Device(DeviceType type, string name, string uuid, unsigned long lastSeq,
+  Device(uint8_t type, string name, string uuid, unsigned long lastSeq,
          Time lastSeen, unsigned long heartbeat);
   ~Device();
 
@@ -27,10 +26,10 @@ public:
   unsigned long GetLastSeq();
   string GetName() const;
   vector<Feature*> GetSortedFeatures();
-  DeviceType GetType();
+  uint8_t GetType();
   string GetUUID();
-  void Update(DeviceType type, string name, unsigned long lastSeq,
-              Time lastSeen, unsigned long heartbeat);
+  void Update(uint8_t type, string name, unsigned long lastSeq, Time lastSeen,
+              unsigned long heartbeat);
 
 private:
   // Private member variables
@@ -39,7 +38,7 @@ private:
   Time lastSeen;
   unsigned long lastSeq;
   string name;
-  DeviceType type;
+  uint8_t type;
   string uuid;
 
   // Private member functions

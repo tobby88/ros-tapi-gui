@@ -1,5 +1,7 @@
 #include "apigui.hpp"
 #include "assignment.hpp"
+#include "tobbyapi_msgs/Feature.h"
+#include "tobbyapi_msgs/HelloRequest.h"
 #include "ui_apigui.h"
 #include <QCursor>
 #include <QInputDialog>
@@ -77,8 +79,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     if (!receiver)
       continue;
     QPoint begin, end;
-    Feature* feature =
-        sender->GetDevice()->GetFeatureByUUID(senderFeatureUUID);
+    Feature* feature = sender->GetDevice()->GetFeatureByUUID(senderFeatureUUID);
     if (!feature)
       continue;
     begin = sender->mapTo(this, sender->FeatureBoxPosition(feature));
@@ -107,7 +108,7 @@ void ApiGui::paintEvent(QPaintEvent*)
 void ApiGui::addDevice(Device* device)
 {
   GuiDevice* guidevice = new GuiDevice(this, device);
-  if (device->GetType() == DeviceType::SenderDevice)
+  if (device->GetType() == tobbyapi_msgs::HelloRequest::Type_SenderDevice)
   {
     layoutSender->addWidget(guidevice);
     senderGuiDevices.push_back(guidevice);
@@ -176,7 +177,8 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() == DeviceType::ReceiverDevice &&
+  if (guidevice->GetDevice()->GetType() ==
+          tobbyapi_msgs::HelloRequest::Type_ReceiverDevice &&
       feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
@@ -247,7 +249,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   // Everything ok -> try to connect them (and ask for coefficient if appliable)
   double coefficient = 1.0;
   bool ok = true;
-  if (feature->GetType() == FeatureType::Axis)
+  if (feature->GetType() == tobbyapi_msgs::Feature::Type_AnalogValue)
   {
     timer->stop();
     QString input =

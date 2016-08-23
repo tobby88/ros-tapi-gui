@@ -145,7 +145,6 @@ add_executable(tobbyapi
   src/apigui.ui
   src/assignment.cpp
   src/device.cpp
-  src/enums.hpp
   src/feature.cpp
   src/guidevice.cpp
   src/main.cpp

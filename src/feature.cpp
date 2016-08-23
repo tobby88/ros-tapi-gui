@@ -4,7 +4,7 @@ using namespace std;
 
 // Constructor/Destructor
 
-Feature::Feature(FeatureType type, string name, string description, string uuid)
+Feature::Feature(uint8_t type, string name, string description, string uuid)
 {
   this->type = type;
   this->name = name;
@@ -31,7 +31,7 @@ string Feature::GetName() const
     return name;
 }
 
-FeatureType Feature::GetType() { return type; }
+uint8_t Feature::GetType() { return type; }
 
 string Feature::GetUUID() { return uuid; }
 

@@ -1,5 +1,4 @@
 #include "api.hpp"
-#include "enums.hpp"
 #include "feature.hpp"
 #include "tobbyapi_msgs/Config.h"
 #include "tobbyapi_msgs/Feature.h"
@@ -54,7 +53,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid,
 
   // Who is sender, who receiver?
   string senderUUID, receiverUUID, senderFeatureUUID, receiverFeatureUUID;
-  if (device1->GetType() == DeviceType::ReceiverDevice)
+  if (device1->GetType() == tobbyapi_msgs::HelloRequest::Type_ReceiverDevice)
   {
     receiverUUID = device1->GetUUID();
     receiverFeatureUUID = feature1uuid;
@@ -199,19 +198,18 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq,
     unsigned long lastSeq = helloReq.Header.seq;
     Time lastSeen = helloReq.Header.stamp;
     string name = helloReq.Name;
-    DeviceType type = (DeviceType)helloReq.DeviceType;
+    uint8_t type = helloReq.DeviceType;
     unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     Device device(type, name, uuid, lastSeq, lastSeen, heartbeat);
     devices.emplace(uuid, device);
     for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
     {
-      Feature feature((FeatureType)helloReq.Features[i].FeatureType,
-                      helloReq.Features[i].Name,
-                      helloReq.Features[i].Description,
-                      helloReq.Features[i].UUID);
+      Feature feature(
+          helloReq.Features[i].FeatureType, helloReq.Features[i].Name,
+          helloReq.Features[i].Description, helloReq.Features[i].UUID);
       devices.at(uuid).AddFeature(feature);
     }
-    helloResp.Status = (unsigned short)DeviceStatusResponse::OK;
+    helloResp.Status = tobbyapi_msgs::HelloResponse::StatusOK;
     helloResp.Heartbeat = heartbeat;
     changed();
   }
@@ -220,11 +218,11 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq,
     unsigned long lastSeq = helloReq.Header.seq;
     Time lastSeen = helloReq.Header.stamp;
     string name = helloReq.Name;
-    DeviceType type = (DeviceType)helloReq.DeviceType;
+    uint8_t type = helloReq.DeviceType;
     unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat);
     // TODO: Updating feature-list
-    helloResp.Status = (unsigned short)DeviceStatusResponse::OK;
+    helloResp.Status = tobbyapi_msgs::HelloResponse::StatusOK;
     helloResp.Heartbeat = heartbeat;
     changed();
   }
@@ -233,7 +231,7 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq,
     ROS_ERROR("Hello message couldn't be decoded, looks like there is "
               "something wrong with the devices database. Please try to "
               "restart the Hello-Service.");
-    helloResp.Status = (unsigned short)DeviceStatusResponse::Error;
+    helloResp.Status = tobbyapi_msgs::HelloResponse::StatusError;
     helloResp.Heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     return false;
   }
