@@ -56,3 +56,10 @@ void Feature::IncrementConnections()
 {
   connections++;
 }
+
+void Feature::Update(uint8_t type, std::string name, std::string description)
+{
+  this->type = type;
+  this->name = name;
+  this->description = description;
+}

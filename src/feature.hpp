@@ -18,6 +18,7 @@ public:
   uint8_t GetType();
   std::string GetUUID();
   void IncrementConnections();
+  void Update(uint8_t type, std::string name, std::string description);
 
 private:
   // Private member variables
