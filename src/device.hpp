@@ -16,7 +16,9 @@ public:
   ~Device();
 
   // Public member functions
+  bool Active();
   void AddFeature(Feature feature);
+  void Deactivate();
   Feature* GetFeatureByUUID(std::string uuid);
   unsigned long GetHeartbeat();
   ros::Time GetLastSeen();
@@ -30,6 +32,7 @@ public:
 
 private:
   // Private member variables
+  bool active;
   std::map<std::string, Feature> features;
   unsigned long heartbeat;
   ros::Time lastSeen;

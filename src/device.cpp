@@ -14,17 +14,22 @@ Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq,
   this->lastSeq = lastSeq;
   this->lastSeen = lastSeen;
   this->heartbeat = heartbeat;
+  active = true;
 }
 
 Device::~Device() {}
 
 // Public member functions
 
+bool Device::Active() { return active; }
+
 void Device::AddFeature(Feature feature)
 {
   if (features.count(feature.GetUUID()) == 0)
     features.emplace(feature.GetUUID(), feature);
 }
+
+void Device::Deactivate() { active = false; }
 
 Feature* Device::GetFeatureByUUID(string uuid)
 {
@@ -71,6 +76,7 @@ void Device::Update(uint8_t type, string name, unsigned long lastSeq,
   this->lastSeq = lastSeq;
   this->lastSeen = lastSeen;
   this->heartbeat = heartbeat;
+  active = true;
 }
 
 // Private member functions
