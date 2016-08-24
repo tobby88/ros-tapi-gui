@@ -77,7 +77,10 @@ void GuiDevice::paintEvent(QPaintEvent*)
   line_end = line_start + line_width;
 
   // draw main box
-  painter.setBrush(Qt::white);
+  if (device->Active())
+    painter.setBrush(Qt::white);
+  else
+    painter.setBrush(Qt::gray);
   painter.setPen(Qt::black);
 
   QSize a(line_width, this->height() - 1);
@@ -95,24 +98,25 @@ void GuiDevice::paintEvent(QPaintEvent*)
   {
     int line_y = header_end + i * line_height;
 
-    switch ((*it)->GetType())
-    {
-    case tobbyapi_msgs::Feature::Type_AnalogValue:
-      painter.setBrush(Qt::red);
-      break;
-    case tobbyapi_msgs::Feature::Type_Images:
-      painter.setBrush(Qt::green);
-      break;
-    case tobbyapi_msgs::Feature::Type_Switch:
-      painter.setBrush(Qt::blue);
-      break;
-    case tobbyapi_msgs::Feature::Type_Tristate:
-      painter.setBrush(Qt::cyan);
-      break;
-    default:
-      painter.setBrush(QColor("#f1aa00"));
-      break;
-    }
+    if (device->Active())
+      switch ((*it)->GetType())
+      {
+      case tobbyapi_msgs::Feature::Type_AnalogValue:
+        painter.setBrush(Qt::red);
+        break;
+      case tobbyapi_msgs::Feature::Type_Images:
+        painter.setBrush(Qt::green);
+        break;
+      case tobbyapi_msgs::Feature::Type_Switch:
+        painter.setBrush(Qt::blue);
+        break;
+      case tobbyapi_msgs::Feature::Type_Tristate:
+        painter.setBrush(Qt::cyan);
+        break;
+      default:
+        painter.setBrush(QColor("#f1aa00"));
+        break;
+      }
 
     painter.drawLine(QPoint(line_start, line_y), QPoint(line_end, line_y));
 
