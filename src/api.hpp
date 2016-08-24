@@ -1,6 +1,8 @@
 #ifndef API_H
 #define API_H
 
+// Intervals in ms
+#define HEARTBEAT_CHECK_INTERVAL 100L
 #define STANDARD_HEARTBEAT_INTERVAL 2000L
 
 #include "assignment.hpp"
@@ -34,6 +36,7 @@ private:
   ros::Publisher configPub;
   std::map<std::string, Assignment> connections;
   std::map<std::string, Device> devices;
+  ros::Timer heartbeatCheckTimer;
   ros::ServiceServer helloServ;
   ros::NodeHandle* nh;
   bool pendingChanges;
@@ -43,6 +46,7 @@ private:
   void changed();
   static bool compareDeviceNames(const Device* first, const Device* second);
   Device* getDeviceByFeatureUUID(std::string uuid);
+  void heartbeatCheck(const ros::TimerEvent& e);
   bool hello(tobbyapi_msgs::Hello::Request& helloReq,
              tobbyapi_msgs::Hello::Response& helloResp);
   void sendAllConnections();

@@ -16,10 +16,14 @@ Api::Api(NodeHandle* nh)
   configPub = nh->advertise<tobbyapi_msgs::Config>("TobbyAPI/Config", 1000);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
   pendingChanges = false;
+  heartbeatCheckTimer = nh->createTimer(
+      Duration(HEARTBEAT_CHECK_INTERVAL / 1000.0), &Api::heartbeatCheck, this);
+  heartbeatCheckTimer.start();
 }
 
 Api::~Api()
 {
+  // heartbeatCheckTimer.stop();
   helloServ.shutdown();
   configPub.shutdown();
   spinner->stop();
@@ -183,6 +187,22 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
       return &(it->second);
   }
   return 0;
+}
+
+void Api::heartbeatCheck(const ros::TimerEvent& e)
+{
+  bool deactivatedDevices = false;
+  for (map<string, Device>::iterator it = devices.begin(); it != devices.end();
+       it++)
+    if ((it->second.Active()) &&
+        (ros::Time::now().toSec() - it->second.GetLastSeen().toSec() >
+         2.5 * STANDARD_HEARTBEAT_INTERVAL / 1000.0))
+    {
+      it->second.Deactivate();
+      deactivatedDevices = true;
+    }
+  if (deactivatedDevices)
+    changed();
 }
 
 bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq,
