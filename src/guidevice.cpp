@@ -38,7 +38,7 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
   else
     x = this->width() - 1;
   i = 0;
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); it++)
   {
     if (*it == feature)
       y = header_end + i * line_height + line_height / 2;
@@ -63,7 +63,7 @@ void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
 {
   int i = 0, y;
   QPoint p = event->pos();
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); it++)
   {
     y = header_end + i * line_height;
 
@@ -99,7 +99,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
 
   // Draw Features
   int i = 0;
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); it++)
   {
     int line_y = header_end + i * line_height;
 

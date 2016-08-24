@@ -72,7 +72,7 @@ string Device::GetName() const
 vector<Feature*> Device::GetSortedFeatures()
 {
   vector<Feature*> featureList;
-  for (map<string, Feature>::iterator it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); it++)
     featureList.push_back(&it->second);
   if (featureList.size() > 1)
     sort(featureList.begin(), featureList.end(), compareFeatureNames);

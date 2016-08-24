@@ -88,7 +88,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coeff
 
 void Api::DebugOutput()
 {
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
+  for (auto it = devices.begin(); it != devices.end(); it++)
   {
     ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
     ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, "
@@ -96,7 +96,7 @@ void Api::DebugOutput()
              (unsigned short)it->second.GetType(), it->second.GetName().c_str(), it->second.GetUUID().c_str(),
              it->second.GetLastSeq(), it->second.GetLastSeen().toSec(), it->second.GetHeartbeat());
     vector<Feature*> features = it->second.GetSortedFeatures();
-    for (vector<Feature*>::iterator it2 = features.begin(); it2 != features.end(); it2++)
+    for (auto it2 = features.begin(); it2 != features.end(); it2++)
     {
       ROS_INFO("Debug: Device-Feature: ID: %s, Feature-Type: %u, Feature-Name: "
                "%s, Feature-Description: %s",
@@ -138,7 +138,7 @@ void Api::Done()
 vector<Assignment*> Api::GetConnections()
 {
   vector<Assignment*> connectionList;
-  for (map<string, Assignment>::iterator it = connections.begin(); it != connections.end(); it++)
+  for (auto it = connections.begin(); it != connections.end(); it++)
     connectionList.push_back(&it->second);
   return connectionList;
 }
@@ -146,7 +146,7 @@ vector<Assignment*> Api::GetConnections()
 vector<Device*> Api::GetDevicesSorted()
 {
   vector<Device*> devicesList;
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
+  for (auto it = devices.begin(); it != devices.end(); it++)
     devicesList.push_back(&it->second);
   if (devicesList.size() > 1)
     sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
@@ -176,7 +176,7 @@ bool Api::compareDeviceNames(const Device* first, const Device* second)
 
 Device* Api::getDeviceByFeatureUUID(string uuid)
 {
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
+  for (auto it = devices.begin(); it != devices.end(); it++)
   {
     if (it->second.GetFeatureByUUID(uuid))
       return &(it->second);
@@ -187,7 +187,7 @@ Device* Api::getDeviceByFeatureUUID(string uuid)
 void Api::heartbeatCheck(const ros::TimerEvent& e)
 {
   bool deactivatedDevices = false;
-  for (map<string, Device>::iterator it = devices.begin(); it != devices.end(); it++)
+  for (auto it = devices.begin(); it != devices.end(); it++)
     if ((it->second.Active()) &&
         (ros::Time::now().toSec() - it->second.GetLastSeen().toSec() > 2.5 * STANDARD_HEARTBEAT_INTERVAL / 1000.0))
     {
@@ -249,7 +249,7 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::R
 
 void Api::sendAllConnections()
 {
-  for (map<string, Assignment>::iterator it = connections.begin(); it != connections.end(); it++)
+  for (auto it = connections.begin(); it != connections.end(); it++)
   {
     tobbyapi_msgs::Config msg;
     msg.SenderUUID = it->second.GetSenderUUID();

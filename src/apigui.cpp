@@ -46,7 +46,7 @@ void ApiGui::paintEvent(QPaintEvent*)
   // Draw all connections
   vector<Assignment*> connections;
   connections = api->GetConnections();
-  for (vector<Assignment*>::iterator it = connections.begin(); it != connections.end(); it++)
+  for (auto it = connections.begin(); it != connections.end(); it++)
   {
     string senderUUID = (*it)->GetSenderUUID();
     string senderFeatureUUID = (*it)->GetSenderFeatureUUID();
@@ -55,7 +55,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     GuiDevice *sender, *receiver;
     sender = 0;
     receiver = 0;
-    for (vector<GuiDevice*>::iterator it2 = senderGuiDevices.begin(); it2 != senderGuiDevices.end(); it2++)
+    for (auto it2 = senderGuiDevices.begin(); it2 != senderGuiDevices.end(); it2++)
     {
       if ((*it2)->GetDevice()->GetUUID() == senderUUID)
       {
@@ -65,7 +65,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     }
     if (!sender)
       continue;
-    for (vector<GuiDevice*>::iterator it2 = receiverGuiDevices.begin(); it2 != receiverGuiDevices.end(); it2++)
+    for (auto it2 = receiverGuiDevices.begin(); it2 != receiverGuiDevices.end(); it2++)
     {
       if ((*it2)->GetDevice()->GetUUID() == receiverUUID)
       {
@@ -135,14 +135,14 @@ void ApiGui::checkApiForUpdate()
 
   if (api->CheckPending())
   {
-    for (vector<GuiDevice*>::iterator it = senderGuiDevices.begin(); it != senderGuiDevices.end(); it++)
+    for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); it++)
     {
       (*it)->hide();
       layoutSender->removeWidget(*it);
       delete *it;
     }
     senderGuiDevices.clear();
-    for (vector<GuiDevice*>::iterator it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); it++)
+    for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); it++)
     {
       (*it)->hide();
       layoutReceiver->removeWidget(*it);
@@ -150,7 +150,7 @@ void ApiGui::checkApiForUpdate()
     }
     receiverGuiDevices.clear();
     vector<Device*> devices = api->GetDevicesSorted();
-    for (vector<Device*>::iterator it = devices.begin(); it != devices.end(); it++)
+    for (auto it = devices.begin(); it != devices.end(); it++)
       addDevice(*it);
     api->Done();
     // Reselect Guidevice, because the selection was deleted above
