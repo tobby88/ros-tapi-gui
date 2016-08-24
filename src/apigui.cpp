@@ -153,6 +153,28 @@ void ApiGui::checkApiForUpdate()
     for (vector<Device*>::iterator it = devices.begin(); it != devices.end(); it++)
       addDevice(*it);
     api->Done();
+    // Reselect Guidevice, because the selection was deleted above
+    if (selectedFeature)
+    {
+      bool found = false;
+      for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); it++)
+        if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
+        {
+          selectedGuiDevice = *it;
+          found = true;
+        }
+      for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); it++)
+        if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
+        {
+          selectedGuiDevice = *it;
+          found = true;
+        }
+      if (!found)
+      {
+        selectedGuiDevice = 0;
+        selectedFeature = 0;
+      }
+    }
   }
 }
 
