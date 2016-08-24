@@ -1,6 +1,8 @@
 #ifndef API_H
 #define API_H
 
+#define STANDARD_HEARTBEAT_INTERVAL 2000L
+
 #include "assignment.hpp"
 #include "device.hpp"
 #include "ros/ros.h"

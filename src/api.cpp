@@ -3,8 +3,6 @@
 #include "tobbyapi_msgs/Config.h"
 #include "tobbyapi_msgs/Feature.h"
 
-#define STANDARD_HEARTBEAT_INTERVAL 2000L
-
 using namespace ros;
 using namespace std;
 
