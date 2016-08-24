@@ -3,8 +3,7 @@
 
 // Constructor/Destructor
 
-MainGui::MainGui(Api* api, QWidget* parent)
-    : QMainWindow(parent), ui(new Ui::MainGui)
+MainGui::MainGui(Api* api, QWidget* parent) : QMainWindow(parent), ui(new Ui::MainGui)
 {
   this->api = api;
   ui->setupUi(this);
@@ -14,4 +13,6 @@ MainGui::MainGui(Api* api, QWidget* parent)
   apiui->show();
 }
 
-MainGui::~MainGui() {}
+MainGui::~MainGui()
+{
+}

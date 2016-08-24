@@ -7,8 +7,7 @@ class Feature
 {
 public:
   // Constructor/Destructor
-  Feature(uint8_t type, std::string name, std::string description,
-          std::string uuid);
+  Feature(uint8_t type, std::string name, std::string description, std::string uuid);
   ~Feature();
 
   // Public member functions
@@ -29,4 +28,4 @@ private:
   int connections;
 };
 
-#endif // FEATURE_H
+#endif  // FEATURE_H

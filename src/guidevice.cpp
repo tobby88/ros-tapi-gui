@@ -1,7 +1,7 @@
 #include "guidevice.hpp"
-#include "tobbyapi_msgs/HelloRequest.h"
 #include <QPainter>
 #include <QString>
+#include "tobbyapi_msgs/HelloRequest.h"
 
 using namespace std;
 
@@ -23,7 +23,9 @@ GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
   this->setMaximumHeight(header_end + line_height * items + footer_height);
 }
 
-GuiDevice::~GuiDevice() {}
+GuiDevice::~GuiDevice()
+{
+}
 
 // Public member functions
 
@@ -36,8 +38,7 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
   else
     x = this->width() - 1;
   i = 0;
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
-       it++)
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end(); it++)
   {
     if (*it == feature)
       y = header_end + i * line_height + line_height / 2;
@@ -46,9 +47,15 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
   return QPoint(x, y);
 }
 
-Device* GuiDevice::GetDevice() { return device; }
+Device* GuiDevice::GetDevice()
+{
+  return device;
+}
 
-vector<Feature*> GuiDevice::GetFeatures() { return features; }
+vector<Feature*> GuiDevice::GetFeatures()
+{
+  return features;
+}
 
 // Protected member functions
 
@@ -56,8 +63,7 @@ void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
 {
   int i = 0, y;
   QPoint p = event->pos();
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
-       it++)
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end(); it++)
   {
     y = header_end + i * line_height;
 
@@ -88,34 +94,33 @@ void GuiDevice::paintEvent(QPaintEvent*)
 
   // print heading
   painter.setFont(QFont("Arial", 11));
-  painter.drawText(QRect(QPoint(line_start, 0), QPoint(line_end, header_end)),
-                   Qt::AlignCenter, QString::fromStdString(device->GetName()));
+  painter.drawText(QRect(QPoint(line_start, 0), QPoint(line_end, header_end)), Qt::AlignCenter,
+                   QString::fromStdString(device->GetName()));
 
   // Draw Features
   int i = 0;
-  for (vector<Feature*>::iterator it = features.begin(); it != features.end();
-       it++)
+  for (vector<Feature*>::iterator it = features.begin(); it != features.end(); it++)
   {
     int line_y = header_end + i * line_height;
 
     QColor color;
     switch ((*it)->GetType())
     {
-    case tobbyapi_msgs::Feature::Type_AnalogValue:
-      color = Qt::red;
-      break;
-    case tobbyapi_msgs::Feature::Type_Images:
-      color = Qt::green;
-      break;
-    case tobbyapi_msgs::Feature::Type_Switch:
-      color = Qt::blue;
-      break;
-    case tobbyapi_msgs::Feature::Type_Tristate:
-      color = Qt::cyan;
-      break;
-    default:
-      color = QColor("#f1aa00");
-      break;
+      case tobbyapi_msgs::Feature::Type_AnalogValue:
+        color = Qt::red;
+        break;
+      case tobbyapi_msgs::Feature::Type_Images:
+        color = Qt::green;
+        break;
+      case tobbyapi_msgs::Feature::Type_Switch:
+        color = Qt::blue;
+        break;
+      case tobbyapi_msgs::Feature::Type_Tristate:
+        color = Qt::cyan;
+        break;
+      default:
+        color = QColor("#f1aa00");
+        break;
     }
     if (!device->Active())
       color = color.darker();
@@ -134,13 +139,11 @@ void GuiDevice::paintEvent(QPaintEvent*)
     painter.drawRect(connect_box);
 
     painter.setFont(QFont("Arial", 10));
-    painter.drawText(QRect(QPoint(line_start, line_y),
-                           QPoint(line_end, line_y + line_height)),
-                     Qt::AlignCenter, QString::fromStdString((*it)->GetName()));
+    painter.drawText(QRect(QPoint(line_start, line_y), QPoint(line_end, line_y + line_height)), Qt::AlignCenter,
+                     QString::fromStdString((*it)->GetName()));
     i++;
   }
 
   // footer line
-  painter.drawLine(QPoint(line_start, footer_start),
-                   QPoint(line_end, footer_start));
+  painter.drawLine(QPoint(line_start, footer_start), QPoint(line_end, footer_start));
 }

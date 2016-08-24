@@ -1,14 +1,14 @@
 #ifndef APIGUI_HPP
 #define APIGUI_HPP
 
-#include "api.hpp"
-#include "device.hpp"
-#include "guidevice.hpp"
 #include <QPoint>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <vector>
+#include "api.hpp"
+#include "device.hpp"
+#include "guidevice.hpp"
 
 namespace Ui
 {
@@ -51,4 +51,4 @@ private slots:
   void featureClicked(GuiDevice* guidevice, Feature* feature);
 };
 
-#endif // APIGUI_HPP
+#endif  // APIGUI_HPP

@@ -5,13 +5,13 @@
 #define HEARTBEAT_CHECK_INTERVAL 100L
 #define STANDARD_HEARTBEAT_INTERVAL 2000L
 
+#include <map>
+#include <string>
+#include <vector>
 #include "assignment.hpp"
 #include "device.hpp"
 #include "ros/ros.h"
 #include "tobbyapi_msgs/Hello.h"
-#include <map>
-#include <string>
-#include <vector>
 
 class Api
 {
@@ -22,8 +22,7 @@ public:
 
   // Public member functions
   bool CheckPending();
-  bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID,
-                       double coefficient);
+  bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
   void DebugOutput();
   bool DeleteConnection(std::string receiverFeatureUUID);
   void Done();
@@ -47,9 +46,8 @@ private:
   static bool compareDeviceNames(const Device* first, const Device* second);
   Device* getDeviceByFeatureUUID(std::string uuid);
   void heartbeatCheck(const ros::TimerEvent& e);
-  bool hello(tobbyapi_msgs::Hello::Request& helloReq,
-             tobbyapi_msgs::Hello::Response& helloResp);
+  bool hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::Response& helloResp);
   void sendAllConnections();
 };
 
-#endif // API_H
+#endif  // API_H

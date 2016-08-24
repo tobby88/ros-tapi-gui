@@ -1,9 +1,9 @@
 #ifndef MAINGUI_HPP
 #define MAINGUI_HPP
 
+#include <QMainWindow>
 #include "api.hpp"
 #include "apigui.hpp"
-#include <QMainWindow>
 
 namespace Ui
 {
@@ -26,4 +26,4 @@ private:
   Ui::MainGui* ui;
 };
 
-#endif // MAINGUI_HPP
+#endif  // MAINGUI_HPP

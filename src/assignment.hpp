@@ -7,9 +7,8 @@ class Assignment
 {
 public:
   // Constructor/Destructor
-  Assignment(std::string senderUUID, std::string senderFeatureUUID,
-             std::string receiverUUID, std::string receiverFeatureUUID,
-             double coefficient);
+  Assignment(std::string senderUUID, std::string senderFeatureUUID, std::string receiverUUID,
+             std::string receiverFeatureUUID, double coefficient);
   ~Assignment();
 
   // Public member functions
@@ -28,4 +27,4 @@ private:
   std::string senderUUID;
 };
 
-#endif // ASSIGNMENT_H
+#endif  // ASSIGNMENT_H

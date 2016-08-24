@@ -4,8 +4,7 @@ using namespace std;
 
 // Constructor/Destructor
 
-Assignment::Assignment(string senderUUID, string senderFeatureUUID,
-                       string receiverUUID, string receiverFeatureUUID,
+Assignment::Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID, string receiverFeatureUUID,
                        double coefficient)
 {
   this->senderUUID = senderUUID;
@@ -15,16 +14,33 @@ Assignment::Assignment(string senderUUID, string senderFeatureUUID,
   this->coefficient = coefficient;
 }
 
-Assignment::~Assignment() {}
+Assignment::~Assignment()
+{
+}
 
 // Public member functions
 
-double Assignment::GetCoefficient() { return coefficient; }
+double Assignment::GetCoefficient()
+{
+  return coefficient;
+}
 
-string Assignment::GetReceiverFeatureUUID() { return receiverFeatureUUID; }
+string Assignment::GetReceiverFeatureUUID()
+{
+  return receiverFeatureUUID;
+}
 
-string Assignment::GetReceiverUUID() { return receiverUUID; }
+string Assignment::GetReceiverUUID()
+{
+  return receiverUUID;
+}
 
-string Assignment::GetSenderFeatureUUID() { return senderFeatureUUID; }
+string Assignment::GetSenderFeatureUUID()
+{
+  return senderFeatureUUID;
+}
 
-string Assignment::GetSenderUUID() { return senderUUID; }
+string Assignment::GetSenderUUID()
+{
+  return senderUUID;
+}

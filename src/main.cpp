@@ -1,7 +1,7 @@
+#include <QApplication>
 #include "api.hpp"
 #include "maingui.hpp"
 #include "ros/ros.h"
-#include <QApplication>
 
 int main(int argc, char** argv)
 {

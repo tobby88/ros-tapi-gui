@@ -1,18 +1,18 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include "feature.hpp"
-#include "ros/ros.h"
 #include <map>
 #include <string>
 #include <vector>
+#include "feature.hpp"
+#include "ros/ros.h"
 
 class Device
 {
 public:
   // Constructor/Destructor
-  Device(uint8_t type, std::string name, std::string uuid,
-         unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat);
+  Device(uint8_t type, std::string name, std::string uuid, unsigned long lastSeq, ros::Time lastSeen,
+         unsigned long heartbeat);
   ~Device();
 
   // Public member functions
@@ -27,8 +27,7 @@ public:
   std::vector<Feature*> GetSortedFeatures();
   uint8_t GetType();
   std::string GetUUID();
-  void Update(uint8_t type, std::string name, unsigned long lastSeq,
-              ros::Time lastSeen, unsigned long heartbeat);
+  void Update(uint8_t type, std::string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat);
 
 private:
   // Private member variables
@@ -45,4 +44,4 @@ private:
   static bool compareFeatureNames(const Feature* first, const Feature* second);
 };
 
-#endif // DEVICE_H
+#endif  // DEVICE_H

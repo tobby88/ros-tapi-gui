@@ -1,11 +1,11 @@
 #ifndef GUIDEVICE_H
 #define GUIDEVICE_H
 
-#include "device.hpp"
-#include "feature.hpp"
 #include <QMouseEvent>
 #include <QWidget>
 #include <vector>
+#include "device.hpp"
+#include "feature.hpp"
 
 class GuiDevice : public QWidget
 {
@@ -45,4 +45,4 @@ signals:
   void featureClicked(GuiDevice* guidevice, Feature* feature);
 };
 
-#endif // GuiDevice_H
+#endif  // GuiDevice_H

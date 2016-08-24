@@ -1,14 +1,14 @@
 #include "apigui.hpp"
-#include "assignment.hpp"
-#include "tobbyapi_msgs/Feature.h"
-#include "tobbyapi_msgs/HelloRequest.h"
-#include "ui_apigui.h"
 #include <QCursor>
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QPainter>
 #include <QString>
 #include <string>
+#include "assignment.hpp"
+#include "tobbyapi_msgs/Feature.h"
+#include "tobbyapi_msgs/HelloRequest.h"
+#include "ui_apigui.h"
 
 using namespace std;
 
@@ -46,8 +46,7 @@ void ApiGui::paintEvent(QPaintEvent*)
   // Draw all connections
   vector<Assignment*> connections;
   connections = api->GetConnections();
-  for (vector<Assignment*>::iterator it = connections.begin();
-       it != connections.end(); it++)
+  for (vector<Assignment*>::iterator it = connections.begin(); it != connections.end(); it++)
   {
     string senderUUID = (*it)->GetSenderUUID();
     string senderFeatureUUID = (*it)->GetSenderFeatureUUID();
@@ -56,8 +55,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     GuiDevice *sender, *receiver;
     sender = 0;
     receiver = 0;
-    for (vector<GuiDevice*>::iterator it2 = senderGuiDevices.begin();
-         it2 != senderGuiDevices.end(); it2++)
+    for (vector<GuiDevice*>::iterator it2 = senderGuiDevices.begin(); it2 != senderGuiDevices.end(); it2++)
     {
       if ((*it2)->GetDevice()->GetUUID() == senderUUID)
       {
@@ -67,8 +65,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     }
     if (!sender)
       continue;
-    for (vector<GuiDevice*>::iterator it2 = receiverGuiDevices.begin();
-         it2 != receiverGuiDevices.end(); it2++)
+    for (vector<GuiDevice*>::iterator it2 = receiverGuiDevices.begin(); it2 != receiverGuiDevices.end(); it2++)
     {
       if ((*it2)->GetDevice()->GetUUID() == receiverUUID)
       {
@@ -118,9 +115,8 @@ void ApiGui::addDevice(Device* device)
     layoutReceiver->addWidget(guidevice);
     receiverGuiDevices.push_back(guidevice);
   }
-  guidevice->show(); // dont forget to show it ;)
-  connect(guidevice, SIGNAL(featureClicked(GuiDevice*, Feature*)), this,
-          SLOT(featureClicked(GuiDevice*, Feature*)));
+  guidevice->show();  // dont forget to show it ;)
+  connect(guidevice, SIGNAL(featureClicked(GuiDevice*, Feature*)), this, SLOT(featureClicked(GuiDevice*, Feature*)));
 }
 
 // Slot functions
@@ -139,16 +135,14 @@ void ApiGui::checkApiForUpdate()
 
   if (api->CheckPending())
   {
-    for (vector<GuiDevice*>::iterator it = senderGuiDevices.begin();
-         it != senderGuiDevices.end(); it++)
+    for (vector<GuiDevice*>::iterator it = senderGuiDevices.begin(); it != senderGuiDevices.end(); it++)
     {
       (*it)->hide();
       layoutSender->removeWidget(*it);
       delete *it;
     }
     senderGuiDevices.clear();
-    for (vector<GuiDevice*>::iterator it = receiverGuiDevices.begin();
-         it != receiverGuiDevices.end(); it++)
+    for (vector<GuiDevice*>::iterator it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); it++)
     {
       (*it)->hide();
       layoutReceiver->removeWidget(*it);
@@ -156,8 +150,7 @@ void ApiGui::checkApiForUpdate()
     }
     receiverGuiDevices.clear();
     vector<Device*> devices = api->GetDevicesSorted();
-    for (vector<Device*>::iterator it = devices.begin(); it != devices.end();
-         it++)
+    for (vector<Device*>::iterator it = devices.begin(); it != devices.end(); it++)
       addDevice(*it);
     api->Done();
   }
@@ -177,14 +170,11 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() ==
-          tobbyapi_msgs::HelloRequest::Type_ReceiverDevice &&
+  if (guidevice->GetDevice()->GetType() == tobbyapi_msgs::HelloRequest::Type_ReceiverDevice &&
       feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
-    if (selectedFeature &&
-        guidevice->GetDevice()->GetType() !=
-            selectedGuiDevice->GetDevice()->GetType() &&
+    if (selectedFeature && guidevice->GetDevice()->GetType() != selectedGuiDevice->GetDevice()->GetType() &&
         selectedFeature->GetType() == feature->GetType())
     {
       string msg = "Replace connection of \"" + feature->GetName() + "\"?";
@@ -205,14 +195,14 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     timer->start(timerInterval);
     switch (ret)
     {
-    case QMessageBox::No:
-      return;
-    case QMessageBox::Yes:
-      api->DeleteConnection(feature->GetUUID());
-      update();
-      break;
-    default:
-      break;
+      case QMessageBox::No:
+        return;
+      case QMessageBox::Yes:
+        api->DeleteConnection(feature->GetUUID());
+        update();
+        break;
+      default:
+        break;
     }
     if (!selectedFeature)
       return;
@@ -227,8 +217,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() ==
-      selectedGuiDevice->GetDevice()->GetType())
+  if (guidevice->GetDevice()->GetType() == selectedGuiDevice->GetDevice()->GetType())
   // Selected the same device type, so no connection is possible. Drop old
   // selection and select the new one
   {
@@ -253,15 +242,13 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   {
     timer->stop();
     QString input =
-        QInputDialog::getText(this, "Coefficient?", "Multiply all values with:",
-                              QLineEdit::Normal, "1.0", &ok);
+        QInputDialog::getText(this, "Coefficient?", "Multiply all values with:", QLineEdit::Normal, "1.0", &ok);
     coefficient = input.toDouble(&ok);
     timer->start(timerInterval);
   }
   if (ok)
   {
-    api->ConnectFeatures(selectedFeature->GetUUID(), feature->GetUUID(),
-                         coefficient);
+    api->ConnectFeatures(selectedFeature->GetUUID(), feature->GetUUID(), coefficient);
     selectedFeature = 0;
     selectedGuiDevice = 0;
     update();
