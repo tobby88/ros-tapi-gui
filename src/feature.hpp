@@ -13,11 +13,12 @@ public:
   // Public member functions
   void DecrementConnections();
   int GetConnectionCount();
-  std::string GetDescription();
+  std::string GetDescription() const;
   std::string GetName() const;
-  uint8_t GetType();
-  std::string GetUUID();
+  uint8_t GetType() const;
+  std::string GetUUID() const;
   void IncrementConnections();
+  bool operator==(const Feature &other) const;
   void Update(uint8_t type, std::string name, std::string description);
 
 private:

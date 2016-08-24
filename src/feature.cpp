@@ -29,7 +29,7 @@ int Feature::GetConnectionCount()
   return connections;
 }
 
-string Feature::GetDescription()
+string Feature::GetDescription() const
 {
   return description;
 }
@@ -42,12 +42,12 @@ string Feature::GetName() const
     return name;
 }
 
-uint8_t Feature::GetType()
+uint8_t Feature::GetType() const
 {
   return type;
 }
 
-string Feature::GetUUID()
+string Feature::GetUUID() const
 {
   return uuid;
 }
@@ -55,6 +55,15 @@ string Feature::GetUUID()
 void Feature::IncrementConnections()
 {
   connections++;
+}
+
+bool Feature::operator==(const Feature &other) const
+{
+  if (GetUUID() == other.GetUUID() && GetType() == other.GetType() && GetName() == other.GetName() &&
+      GetDescription() == other.GetDescription())
+    return true;
+  else
+    return false;
 }
 
 void Feature::Update(uint8_t type, std::string name, std::string description)
