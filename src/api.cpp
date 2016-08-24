@@ -4,7 +4,6 @@
 #include "tobbyapi_msgs/Feature.h"
 
 #define STANDARD_HEARTBEAT_INTERVAL 2000L
-#define DEBUG
 
 using namespace ros;
 using namespace std;
