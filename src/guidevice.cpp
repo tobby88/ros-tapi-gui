@@ -95,7 +95,24 @@ void GuiDevice::paintEvent(QPaintEvent*)
   {
     int line_y = header_end + i * line_height;
 
-    painter.setBrush(QColor("#f1aa00"));
+    switch ((*it)->GetType())
+    {
+    case tobbyapi_msgs::Feature::Type_AnalogValue:
+      painter.setBrush(Qt::red);
+      break;
+    case tobbyapi_msgs::Feature::Type_Images:
+      painter.setBrush(Qt::green);
+      break;
+    case tobbyapi_msgs::Feature::Type_Switch:
+      painter.setBrush(Qt::blue);
+      break;
+    case tobbyapi_msgs::Feature::Type_Tristate:
+      painter.setBrush(Qt::cyan);
+      break;
+    default:
+      painter.setBrush(QColor("#f1aa00"));
+      break;
+    }
 
     painter.drawLine(QPoint(line_start, line_y), QPoint(line_end, line_y));
 
