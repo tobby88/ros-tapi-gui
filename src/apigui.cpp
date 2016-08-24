@@ -175,6 +175,7 @@ void ApiGui::checkApiForUpdate()
         selectedFeature = 0;
       }
     }
+    update();
   }
 }
 
