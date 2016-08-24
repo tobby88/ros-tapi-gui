@@ -7,8 +7,6 @@
 #include <QWidget>
 #include <vector>
 
-using namespace std;
-
 class GuiDevice : public QWidget
 {
   Q_OBJECT
@@ -21,7 +19,7 @@ public:
   // Public member functions
   QPoint FeatureBoxPosition(Feature* feature);
   Device* GetDevice();
-  vector<Feature*> GetFeatures();
+  std::vector<Feature*> GetFeatures();
 
 protected:
   // Protected member functions
@@ -32,7 +30,7 @@ private:
   // Private member variables
   int connectbox_size;
   Device* device;
-  vector<Feature*> features;
+  std::vector<Feature*> features;
   int footer_height;
   int footer_start;
   int header_end;

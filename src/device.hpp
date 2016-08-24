@@ -7,39 +7,36 @@
 #include <string>
 #include <vector>
 
-using namespace ros;
-using namespace std;
-
 class Device
 {
 public:
   // Constructor/Destructor
-  Device(uint8_t type, string name, string uuid, unsigned long lastSeq,
-         Time lastSeen, unsigned long heartbeat);
+  Device(uint8_t type, std::string name, std::string uuid,
+         unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat);
   ~Device();
 
   // Public member functions
   void AddFeature(Feature feature);
-  Feature* GetFeatureByUUID(string uuid);
+  Feature* GetFeatureByUUID(std::string uuid);
   unsigned long GetHeartbeat();
-  Time GetLastSeen();
+  ros::Time GetLastSeen();
   unsigned long GetLastSeq();
-  string GetName() const;
-  vector<Feature*> GetSortedFeatures();
+  std::string GetName() const;
+  std::vector<Feature*> GetSortedFeatures();
   uint8_t GetType();
-  string GetUUID();
-  void Update(uint8_t type, string name, unsigned long lastSeq, Time lastSeen,
-              unsigned long heartbeat);
+  std::string GetUUID();
+  void Update(uint8_t type, std::string name, unsigned long lastSeq,
+              ros::Time lastSeen, unsigned long heartbeat);
 
 private:
   // Private member variables
-  map<string, Feature> features;
+  std::map<std::string, Feature> features;
   unsigned long heartbeat;
-  Time lastSeen;
+  ros::Time lastSeen;
   unsigned long lastSeq;
-  string name;
+  std::string name;
   uint8_t type;
-  string uuid;
+  std::string uuid;
 
   // Private member functions
   static bool compareFeatureNames(const Feature* first, const Feature* second);

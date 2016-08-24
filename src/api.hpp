@@ -11,41 +11,38 @@
 #include <string>
 #include <vector>
 
-using namespace ros;
-using namespace std;
-
 class Api
 {
 public:
   // Constructor/Destructor
-  Api(NodeHandle* nh);
+  Api(ros::NodeHandle* nh);
   ~Api();
 
   // Public member functions
   bool CheckPending();
-  bool ConnectFeatures(string feature1UUID, string feature2UUID,
+  bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID,
                        double coefficient);
   void DebugOutput();
-  bool DeleteConnection(string receiverFeatureUUID);
+  bool DeleteConnection(std::string receiverFeatureUUID);
   void Done();
-  vector<Assignment*> GetConnections();
-  vector<Device*> GetDevicesSorted();
+  std::vector<Assignment*> GetConnections();
+  std::vector<Device*> GetDevicesSorted();
   void Run();
 
 private:
   // Private member variables
-  Publisher configPub;
-  map<string, Assignment> connections;
-  map<string, Device> devices;
-  ServiceServer helloServ;
-  NodeHandle* nh;
+  ros::Publisher configPub;
+  std::map<std::string, Assignment> connections;
+  std::map<std::string, Device> devices;
+  ros::ServiceServer helloServ;
+  ros::NodeHandle* nh;
   bool pendingChanges;
-  AsyncSpinner* spinner;
+  ros::AsyncSpinner* spinner;
 
   // Private member functions
   void changed();
   static bool compareDeviceNames(const Device* first, const Device* second);
-  Device* getDeviceByFeatureUUID(string uuid);
+  Device* getDeviceByFeatureUUID(std::string uuid);
   bool hello(tobbyapi_msgs::Hello::Request& helloReq,
              tobbyapi_msgs::Hello::Response& helloResp);
   void sendAllConnections();

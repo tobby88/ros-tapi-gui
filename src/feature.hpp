@@ -3,30 +3,29 @@
 
 #include <string>
 
-using namespace std;
-
 class Feature
 {
 public:
   // Constructor/Destructor
-  Feature(uint8_t type, string name, string description, string uuid);
+  Feature(uint8_t type, std::string name, std::string description,
+          std::string uuid);
   ~Feature();
 
   // Public member functions
   void DecrementConnections();
   int GetConnectionCount();
-  string GetDescription();
-  string GetName() const;
+  std::string GetDescription();
+  std::string GetName() const;
   uint8_t GetType();
-  string GetUUID();
+  std::string GetUUID();
   void IncrementConnections();
 
 private:
   // Private member variables
   uint8_t type;
-  string name;
-  string description;
-  string uuid;
+  std::string name;
+  std::string description;
+  std::string uuid;
   int connections;
 };
 

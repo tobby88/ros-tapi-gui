@@ -10,8 +10,6 @@
 #include <QWidget>
 #include <vector>
 
-using namespace std;
-
 namespace Ui
 {
 class ApiGui;
@@ -36,10 +34,10 @@ private:
   QVBoxLayout* layoutReceiver;
   QVBoxLayout* layoutSender;
   QPoint mousePosition;
-  vector<GuiDevice*> receiverGuiDevices;
+  std::vector<GuiDevice*> receiverGuiDevices;
   Feature* selectedFeature;
   GuiDevice* selectedGuiDevice;
-  vector<GuiDevice*> senderGuiDevices;
+  std::vector<GuiDevice*> senderGuiDevices;
   QTimer* timer;
   int timerInterval;
   Ui::ApiGui* ui;
