@@ -5,7 +5,8 @@ using namespace std;
 
 // Constructor/Destructor
 
-Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat)
+Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat,
+               map<string, Feature> features)
 {
   this->type = type;
   this->name = name;
@@ -13,6 +14,7 @@ Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq, Ti
   this->lastSeq = lastSeq;
   this->lastSeen = lastSeen;
   this->heartbeat = heartbeat;
+  this->features = features;
   active = true;
 }
 
@@ -25,12 +27,6 @@ Device::~Device()
 bool Device::Active()
 {
   return active;
-}
-
-void Device::AddFeature(Feature feature)
-{
-  if (features.count(feature.GetUUID()) == 0)
-    features.emplace(feature.GetUUID(), feature);
 }
 
 void Device::Deactivate()
@@ -89,13 +85,50 @@ string Device::GetUUID()
   return uuid;
 }
 
-void Device::Update(uint8_t type, string name, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat)
+void Device::Update(uint8_t type, string name, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat,
+                    map<string, Feature> featureUpdate)
 {
   this->type = type;
   this->name = name;
   this->lastSeq = lastSeq;
   this->lastSeen = lastSeen;
   this->heartbeat = heartbeat;
+  if (features.size() == 0)
+  {
+    features = featureUpdate;
+    return;
+  }
+
+  bool equ = true;
+  if (features.size() == featureUpdate.size())
+  {
+    for (auto it = features.begin(); it != features.end(); it++)
+    {
+      if (!featureUpdate.count(it->second.GetUUID()) == 1)
+        equ = false;
+      else if (!(featureUpdate.at(it->second.GetUUID()) == it->second))
+        equ = false;
+    }
+  }
+  else
+    equ = false;
+
+  if (!equ)
+  {
+    for (auto it = featureUpdate.begin(); it != featureUpdate.end(); it++)
+    {
+      if (features.count(it->second.GetUUID()) == 0)
+        features.emplace(it->second.GetUUID(), it->second);
+      else
+        features.at(it->second.GetUUID())
+            .Update(it->second.GetType(), it->second.GetName(), it->second.GetDescription());
+    }
+    for (auto it = features.begin(); it != features.end(); it++)
+    {
+      if (featureUpdate.count(it->second.GetUUID()) == 0)
+        features.erase(it->second.GetUUID());
+    }
+  }
   active = true;
 }
 

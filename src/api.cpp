@@ -201,50 +201,45 @@ void Api::heartbeatCheck(const ros::TimerEvent& e)
 bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::Response& helloResp)
 {
   string uuid = helloReq.UUID;
+  unsigned long lastSeq = helloReq.Header.seq;
+  Time lastSeen = helloReq.Header.stamp;
+  string name = helloReq.Name;
+  uint8_t type = helloReq.DeviceType;
+  unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
+  std::map<std::string, Feature> features;
+  for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
+  {
+    Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].Description,
+                    helloReq.Features[i].UUID);
+    if (features.count(feature.GetUUID()) == 0)
+      features.emplace(feature.GetUUID(), feature);
+  }
   if (devices.empty() || devices.count(uuid) == 0)
   {
-    // New device:
-    unsigned long lastSeq = helloReq.Header.seq;
-    Time lastSeen = helloReq.Header.stamp;
-    string name = helloReq.Name;
-    uint8_t type = helloReq.DeviceType;
-    unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-    Device device(type, name, uuid, lastSeq, lastSeen, heartbeat);
+    Device device(type, name, uuid, lastSeq, lastSeen, heartbeat, features);
     devices.emplace(uuid, device);
-    for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
-    {
-      Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].Description,
-                      helloReq.Features[i].UUID);
-      devices.at(uuid).AddFeature(feature);
-    }
     helloResp.Status = tobbyapi_msgs::HelloResponse::StatusOK;
     helloResp.Heartbeat = heartbeat;
     changed();
+    return true;
   }
   else if (devices.count(uuid) == 1)
   {
-    unsigned long lastSeq = helloReq.Header.seq;
-    Time lastSeen = helloReq.Header.stamp;
-    string name = helloReq.Name;
-    uint8_t type = helloReq.DeviceType;
-    unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-    devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat);
-    // TODO: Updating feature-list
+    devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat, features);
     helloResp.Status = tobbyapi_msgs::HelloResponse::StatusOK;
     helloResp.Heartbeat = heartbeat;
     changed();
+    return true;
   }
   else
   {
-    ROS_ERROR("Hello message couldn't be decoded, looks like there is "
-              "something wrong with the devices database. Please try to "
-              "restart the Hello-Service.");
+    ROS_ERROR("Hello message couldn't be decoded, looks like there is something wrong with the devices database. "
+              "Please try to restart the Hello-Service.");
     helloResp.Status = tobbyapi_msgs::HelloResponse::StatusError;
     helloResp.Heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     return false;
   }
-
-  return true;
+  return false;
 }
 
 void Api::sendAllConnections()

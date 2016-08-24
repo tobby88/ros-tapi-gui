@@ -12,12 +12,11 @@ class Device
 public:
   // Constructor/Destructor
   Device(uint8_t type, std::string name, std::string uuid, unsigned long lastSeq, ros::Time lastSeen,
-         unsigned long heartbeat);
+         unsigned long heartbeat, std::map<std::string, Feature> features);
   ~Device();
 
   // Public member functions
   bool Active();
-  void AddFeature(Feature feature);
   void Deactivate();
   Feature* GetFeatureByUUID(std::string uuid);
   unsigned long GetHeartbeat();
@@ -27,7 +26,8 @@ public:
   std::vector<Feature*> GetSortedFeatures();
   uint8_t GetType();
   std::string GetUUID();
-  void Update(uint8_t type, std::string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat);
+  void Update(uint8_t type, std::string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat,
+              std::map<std::string, Feature> features);
 
 private:
   // Private member variables
