@@ -61,11 +61,11 @@ vector<Feature*> GuiDevice::GetFeatures()
 
 void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
 {
-  int i = 0, y;
+  int i = 0;
   QPoint p = event->pos();
   for (auto it = features.begin(); it != features.end(); it++)
   {
-    y = header_end + i * line_height;
+    int y = header_end + i * line_height;
 
     if (p.y() >= y && p.y() < y + line_height)
     {
