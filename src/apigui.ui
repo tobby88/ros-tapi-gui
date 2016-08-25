@@ -42,10 +42,23 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="TestLabel">
-     <property name="text">
-      <string>false</string>
-     </property>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QPushButton" name="saveButton">
+        <property name="text">
+         <string>Save Configuration</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="TestLabel">
+        <property name="text">
+         <string>false</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
