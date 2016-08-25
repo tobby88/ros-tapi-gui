@@ -290,33 +290,33 @@ void ApiGui::saveButtonClicked()
   QString filePicker =
       QFileDialog::getSaveFileName(this, "Save File", QString::fromStdString(filename), "TobbyAPI-Files (*.tobbyapi)");
   filename = filePicker.toStdString();
-  ofstream FileOutput;
-  FileOutput.open(filename);
+  ofstream fileOutput;
+  fileOutput.open(filename);
   for (int i = 0; i < devices.size(); i++)
   {
-    FileOutput << "[Device]\n";
-    FileOutput << devices.at(i)->GetUUID() << "\n";
-    FileOutput << devices.at(i)->GetName() << "\n";
-    FileOutput << (int)devices.at(i)->GetType() << "\n";
-    FileOutput << devices.at(i)->GetHeartbeat() << "\n";
-    FileOutput << "[DeviceFeatures]\n";
+    fileOutput << "[Device]\n";
+    fileOutput << devices.at(i)->GetUUID() << "\n";
+    fileOutput << devices.at(i)->GetName() << "\n";
+    fileOutput << (int)devices.at(i)->GetType() << "\n";
+    fileOutput << devices.at(i)->GetHeartbeat() << "\n";
     vector<Feature*> features = devices.at(i)->GetSortedFeatures();
     for (int j = 0; j < features.size(); j++)
     {
-      FileOutput << features.at(j)->GetUUID() << "\n";
-      FileOutput << features.at(j)->GetName() << "\n";
-      FileOutput << features.at(j)->GetDescription() << "\n";
-      FileOutput << (int)features.at(j)->GetType() << "\n";
+      fileOutput << "[DeviceFeature]\n";
+      fileOutput << features.at(j)->GetUUID() << "\n";
+      fileOutput << features.at(j)->GetName() << "\n";
+      fileOutput << features.at(j)->GetDescription() << "\n";
+      fileOutput << (int)features.at(j)->GetType() << "\n";
     }
   }
   for (int i = 0; i < connections.size(); i++)
   {
-    FileOutput << "[Connection]\n";
-    FileOutput << connections.at(i)->GetReceiverUUID() << "\n";
-    FileOutput << connections.at(i)->GetReceiverFeatureUUID() << "\n";
-    FileOutput << connections.at(i)->GetSenderUUID() << "\n";
-    FileOutput << connections.at(i)->GetSenderFeatureUUID() << "\n";
-    FileOutput << connections.at(i)->GetCoefficient() << "\n";
+    fileOutput << "[Connection]\n";
+    fileOutput << connections.at(i)->GetReceiverUUID() << "\n";
+    fileOutput << connections.at(i)->GetReceiverFeatureUUID() << "\n";
+    fileOutput << connections.at(i)->GetSenderUUID() << "\n";
+    fileOutput << connections.at(i)->GetSenderFeatureUUID() << "\n";
+    fileOutput << connections.at(i)->GetCoefficient() << "\n";
   }
-  FileOutput.close();
+  fileOutput.close();
 }
