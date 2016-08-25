@@ -37,6 +37,15 @@ bool Api::CheckPending()
   return pendingChanges;
 }
 
+void Api::Clear()
+{
+  for (auto it = connections.begin(); it != connections.end(); it++)
+    DeleteConnection(it->second.GetReceiverFeatureUUID());
+  connections.clear();
+  devices.clear();
+  changed();
+}
+
 bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coefficient)
 {
   Device *device1, *device2;
