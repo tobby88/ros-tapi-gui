@@ -15,4 +15,5 @@ MainGui::MainGui(Api* api, QWidget* parent) : QMainWindow(parent), ui(new Ui::Ma
 
 MainGui::~MainGui()
 {
+  delete ui;
 }
