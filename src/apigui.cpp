@@ -194,8 +194,8 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   QString qs = QString::fromStdString(feature->GetName());
   ui->TestLabel->setText(qs);
 
-  if (selectedFeature && selectedFeature == feature)
-  // Clicked twice on the same feature -> demarcate selection
+  if ((selectedFeature && selectedFeature == feature) || !guidevice->GetDevice()->Active())
+  // Clicked twice on the same feature or device is inactive -> demarcate selection
   {
     selectedFeature = 0;
     selectedGuiDevice = 0;
