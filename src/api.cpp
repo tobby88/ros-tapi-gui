@@ -32,6 +32,15 @@ Api::~Api()
 
 // Public member functions
 
+void Api::AddDeviceWithoutHello(uint8_t type, string name, string uuid, unsigned long heartbeat,
+                                map<string, Feature> features)
+{
+  Device device(type, name, uuid, 0, Time(0.0), heartbeat, features);
+  device.Deactivate();
+  devices.emplace(uuid, device);
+  changed();
+}
+
 bool Api::CheckPending()
 {
   return pendingChanges;

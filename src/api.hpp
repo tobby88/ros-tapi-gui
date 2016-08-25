@@ -21,6 +21,8 @@ public:
   ~Api();
 
   // Public member functions
+  void AddDeviceWithoutHello(uint8_t type, std::string name, std::string uuid, unsigned long heartbeat,
+                             std::map<std::string, Feature> features);
   bool CheckPending();
   void Clear();
   bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
