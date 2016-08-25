@@ -23,6 +23,12 @@ ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui),
   connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
   timerInterval = 15;
   timer->start(timerInterval);
+
+  ui->keyAnalogValue->setText("<font color='red'>█</font>  Analog Value/Axis");
+  ui->keyImages->setText("<font color='green'>█</font>  Images/Camera");
+  ui->keySwitch->setText("<font color='blue'>█</font>  Switch/Button");
+  ui->keyTristate->setText("<font color='cyan'>█</font>  Tristate");
+
   // Add vertical layouts to the scroll Areas
   layoutReceiver = ui->verticalLayoutReceiver;
   layoutSender = ui->verticalLayoutSender;
