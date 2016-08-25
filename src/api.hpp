@@ -17,7 +17,7 @@ class Api
 {
 public:
   // Constructor/Destructor
-  Api(ros::NodeHandle* nh);
+  explicit Api(ros::NodeHandle* nh);
   ~Api();
 
   // Public member functions
