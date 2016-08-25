@@ -49,6 +49,7 @@ private slots:
   // Slot functions
   void checkApiForUpdate();
   void featureClicked(GuiDevice* guidevice, Feature* feature);
+  void loadButtonClicked();
   void saveButtonClicked();
 };
 

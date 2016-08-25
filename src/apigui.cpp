@@ -30,6 +30,8 @@ ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui)
 
   selectedFeature = 0;
   selectedGuiDevice = 0;
+
+  connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadButtonClicked()));
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
 }
 
@@ -278,6 +280,97 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     selectedFeature = 0;
     selectedGuiDevice = 0;
     update();
+  }
+}
+
+void ApiGui::loadButtonClicked()
+{
+  string homedir = getenv("HOME");
+  string filename = homedir + "/config.tobbyapi";
+  QString filePicker =
+      QFileDialog::getOpenFileName(this, "Open File", QString::fromStdString(filename), "TobbyAPI-Files (*.tobbyapi)");
+  filename = filePicker.toStdString();
+  ifstream fileInput;
+  fileInput.open(filename);
+  bool error = true;
+  if (fileInput.is_open() && !fileInput.eof())
+  {
+    error = false;
+    string temp;
+    api->Clear();
+    getline(fileInput, temp);
+    if (fileInput.eof())
+      error = true;
+    while (!fileInput.eof())
+    {
+      if (temp == "[Device]")
+      {
+        string uuid;
+        string name;
+        uint8_t type;
+        unsigned long heartbeat;
+        getline(fileInput, uuid);
+        getline(fileInput, name);
+        getline(fileInput, temp);
+        type = (uint8_t)stoi(temp);
+        getline(fileInput, temp);
+        heartbeat = (unsigned long)stoul(temp);
+        getline(fileInput, temp);
+        map<string, Feature> features;
+        while (temp == "[DeviceFeature]")
+        {
+          string featureUUID;
+          string featureName;
+          string featureDescription;
+          uint8_t featureType;
+          getline(fileInput, featureUUID);
+          getline(fileInput, featureName);
+          getline(fileInput, featureDescription);
+          getline(fileInput, temp);
+          featureType = (uint8_t)stoi(temp);
+          Feature feature = Feature(featureType, featureName, featureDescription, featureUUID);
+          features.emplace(featureUUID, feature);
+          getline(fileInput, temp);
+        }
+        api->AddDeviceWithoutHello(type, name, uuid, heartbeat, features);
+      }
+      else if (temp == "[Connection]")
+      {
+        string receiverUUID;
+        string receiverFeatureUUID;
+        string senderUUID;
+        string senderFeatureUUID;
+        double coefficient;
+        getline(fileInput, receiverUUID);
+        getline(fileInput, receiverFeatureUUID);
+        getline(fileInput, senderUUID);
+        getline(fileInput, senderFeatureUUID);
+        getline(fileInput, temp);
+        coefficient = stod(temp);
+        api->ConnectFeatures(receiverFeatureUUID, senderFeatureUUID, coefficient);
+        getline(fileInput, temp);
+      }
+      else
+      {
+        ROS_ERROR("Wrong line: %s", temp.c_str());
+        error = true;
+        break;
+      }
+    }
+  }
+
+  if (error)
+  {
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Error");
+    msgBox.setText("Error loading configuration");
+    msgBox.setInformativeText("Maybe the file doesn't exist or is no valid configuration file?");
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.setIcon(QMessageBox::Warning);
+    timer->stop();
+    msgBox.exec();
+    timer->start(timerInterval);
   }
 }
 
