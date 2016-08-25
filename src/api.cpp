@@ -206,7 +206,7 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::R
   string name = helloReq.Name;
   uint8_t type = helloReq.DeviceType;
   unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-  std::map<std::string, Feature> features;
+  map<string, Feature> features;
   for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
   {
     Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].Description,
