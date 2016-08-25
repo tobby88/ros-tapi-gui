@@ -7,20 +7,24 @@ using namespace std;
 
 // Constructor/Destructor
 
-GuiDevice::GuiDevice(QWidget* parent, Device* device) : QWidget(parent)
+GuiDevice::GuiDevice(QWidget* parent, Device* device)
+  : QWidget(parent), device(device), features(device->GetSortedFeatures())
 {
-  this->device = device;
   connectbox_size = 10;
   header_end = 30;
   footer_height = 10;
   line_height = 20;
   line_start = connectbox_size;
-  features = device->GetSortedFeatures();
   items = features.size();
 
   // min height
   this->setMinimumHeight(header_end + line_height * items + footer_height);
   this->setMaximumHeight(header_end + line_height * items + footer_height);
+
+  // Prevent uninitialized usage
+  footer_start = 0;
+  line_end = 0;
+  line_width = 0;
 }
 
 GuiDevice::~GuiDevice()
@@ -38,7 +42,7 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
   else
     x = this->width() - 1;
   i = 0;
-  for (auto it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); ++it)
   {
     if (*it == feature)
       y = header_end + i * line_height + line_height / 2;
@@ -63,7 +67,7 @@ void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
 {
   int i = 0;
   QPoint p = event->pos();
-  for (auto it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); ++it)
   {
     int y = header_end + i * line_height;
 
@@ -99,7 +103,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
 
   // Draw Features
   int i = 0;
-  for (auto it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); ++it)
   {
     int line_y = header_end + i * line_height;
 

@@ -6,12 +6,12 @@ using namespace std;
 
 Assignment::Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID, string receiverFeatureUUID,
                        double coefficient)
+  : senderUUID(senderUUID)
+  , senderFeatureUUID(senderFeatureUUID)
+  , receiverUUID(receiverUUID)
+  , receiverFeatureUUID(receiverFeatureUUID)
+  , coefficient(coefficient)
 {
-  this->senderUUID = senderUUID;
-  this->senderFeatureUUID = senderFeatureUUID;
-  this->receiverUUID = receiverUUID;
-  this->receiverFeatureUUID = receiverFeatureUUID;
-  this->coefficient = coefficient;
 }
 
 Assignment::~Assignment()

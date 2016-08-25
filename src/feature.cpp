@@ -5,11 +5,8 @@ using namespace std;
 // Constructor/Destructor
 
 Feature::Feature(uint8_t type, string name, string description, string uuid)
+  : type(type), name(name), description(description), uuid(uuid)
 {
-  this->type = type;
-  this->name = name;
-  this->description = description;
-  this->uuid = uuid;
   connections = 0;
 }
 

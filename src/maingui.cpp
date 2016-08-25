@@ -3,9 +3,8 @@
 
 // Constructor/Destructor
 
-MainGui::MainGui(Api* api, QWidget* parent) : QMainWindow(parent), ui(new Ui::MainGui)
+MainGui::MainGui(Api* api, QWidget* parent) : QMainWindow(parent), ui(new Ui::MainGui), api(api)
 {
-  this->api = api;
   ui->setupUi(this);
   QWidget::showMaximized();
   apiui = new ApiGui(api, this);

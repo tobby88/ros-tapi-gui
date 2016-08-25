@@ -7,14 +7,8 @@ using namespace std;
 
 Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat,
                map<string, Feature> features)
+  : type(type), name(name), uuid(uuid), lastSeq(lastSeq), lastSeen(lastSeen), heartbeat(heartbeat), features(features)
 {
-  this->type = type;
-  this->name = name;
-  this->uuid = uuid;
-  this->lastSeq = lastSeq;
-  this->lastSeen = lastSeen;
-  this->heartbeat = heartbeat;
-  this->features = features;
   active = true;
 }
 
@@ -68,7 +62,7 @@ string Device::GetName() const
 vector<Feature*> Device::GetSortedFeatures()
 {
   vector<Feature*> featureList;
-  for (auto it = features.begin(); it != features.end(); it++)
+  for (auto it = features.begin(); it != features.end(); ++it)
     featureList.push_back(&it->second);
   if (featureList.size() > 1)
     sort(featureList.begin(), featureList.end(), compareFeatureNames);
@@ -102,7 +96,7 @@ void Device::Update(uint8_t type, string name, unsigned long lastSeq, Time lastS
   bool equ = true;
   if (features.size() == featureUpdate.size())
   {
-    for (auto it = features.begin(); it != features.end(); it++)
+    for (auto it = features.begin(); it != features.end(); ++it)
     {
       if (!featureUpdate.count(it->second.GetUUID()) == 1)
         equ = false;
@@ -115,7 +109,7 @@ void Device::Update(uint8_t type, string name, unsigned long lastSeq, Time lastS
 
   if (!equ)
   {
-    for (auto it = featureUpdate.begin(); it != featureUpdate.end(); it++)
+    for (auto it = featureUpdate.begin(); it != featureUpdate.end(); ++it)
     {
       if (features.count(it->second.GetUUID()) == 0)
         features.emplace(it->second.GetUUID(), it->second);
@@ -123,7 +117,7 @@ void Device::Update(uint8_t type, string name, unsigned long lastSeq, Time lastS
         features.at(it->second.GetUUID())
             .Update(it->second.GetType(), it->second.GetName(), it->second.GetDescription());
     }
-    for (auto it = features.begin(); it != features.end(); it++)
+    for (auto it = features.begin(); it != features.end(); ++it)
     {
       if (featureUpdate.count(it->second.GetUUID()) == 0)
         features.erase(it->second.GetUUID());
