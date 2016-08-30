@@ -109,17 +109,14 @@ void Api::DebugOutput()
   for (auto it = devices.begin(); it != devices.end(); ++it)
   {
     ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
-    ROS_INFO("Debug: Device-Data: Type: %u, Name: %s, UUID: %s, Last Seq: %lu, "
-             "Last Seen: %f, Heartbeat-Interval: %lu",
-             (unsigned short)it->second.GetType(), it->second.GetName().c_str(), it->second.GetUUID().c_str(),
+    ROS_INFO("Debug: Device-Data: Type: %d, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu",
+             (unsigned int)it->second.GetType(), it->second.GetName().c_str(), it->second.GetUUID().c_str(),
              it->second.GetLastSeq(), it->second.GetLastSeen().toSec(), it->second.GetHeartbeat());
     vector<Tapi::Feature*> features = it->second.GetSortedFeatures();
     for (auto it2 = features.begin(); it2 != features.end(); ++it2)
     {
-      ROS_INFO("Debug: Device-Feature: ID: %s, Feature-Type: %u, Feature-Name: "
-               "%s, Feature-Description: %s",
-               (*it2)->GetUUID().c_str(), (unsigned short)(*it2)->GetType(), (*it2)->GetName().c_str(),
-               (*it2)->GetDescription().c_str());
+      ROS_INFO("Debug: Device-Feature: ID: %s, Feature-Type: %s, Feature-Name: %s", (*it2)->GetUUID().c_str(),
+               (*it2)->GetType().c_str(), (*it2)->GetName().c_str());
     }
   }
   // TODO: Print connections
@@ -227,8 +224,7 @@ bool Api::hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response&
   map<string, Tapi::Feature> features;
   for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
   {
-    Tapi::Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].Description,
-                          helloReq.Features[i].UUID);
+    Tapi::Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].UUID);
     if (features.count(feature.GetUUID()) == 0)
       features.emplace(feature.GetUUID(), feature);
   }

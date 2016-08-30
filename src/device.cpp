@@ -115,8 +115,7 @@ void Device::Update(uint8_t type, string name, unsigned long lastSeq, ros::Time 
       if (features.count(it->second.GetUUID()) == 0)
         features.emplace(it->second.GetUUID(), it->second);
       else
-        features.at(it->second.GetUUID())
-            .Update(it->second.GetType(), it->second.GetName(), it->second.GetDescription());
+        features.at(it->second.GetUUID()).Update(it->second.GetType(), it->second.GetName());
     }
     for (auto it = features.begin(); it != features.end(); ++it)
     {

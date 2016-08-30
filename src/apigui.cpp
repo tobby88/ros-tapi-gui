@@ -194,6 +194,7 @@ void ApiGui::checkApiForUpdate()
 
 void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 {
+  ROS_ERROR("%s %s %s", guidevice->GetDevice()->GetName().c_str(), feature->GetName().c_str(), feature->GetType().c_str());
   QString qs = QString::fromStdString(feature->GetName());
   ui->TestLabel->setText(qs);
 
@@ -274,7 +275,10 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
   // Everything ok -> try to connect them (and ask for coefficient if appliable)
   double coefficient = 1.0;
   bool ok = true;
-  if (feature->GetType() == tapi_msgs::Feature::Type_AnalogValue)
+  string type = feature->GetType();
+  if (type == "std_msgs/Byte" || type == "std_msgs/Float32" || type == "std_msgs/Float64" || type == "std_msgs/Int16" ||
+      type == "std_msgs/Int32" || type == "std_msgs/Int64" || type == "std_msgs/Int8" || type == "std_msgs/UInt16" ||
+      type == "std_msgs/UInt32" || type == "std_msgs/UInt64" || type == "std_msgs/UInt8")
   {
     timer->stop();
     QString input =
@@ -330,13 +334,12 @@ void ApiGui::loadButtonClicked()
           string featureUUID;
           string featureName;
           string featureDescription;
-          uint8_t featureType;
+          string featureType;
           getline(fileInput, featureUUID);
           getline(fileInput, featureName);
           getline(fileInput, featureDescription);
-          getline(fileInput, temp);
-          featureType = (uint8_t)stoi(temp);
-          Tapi::Feature feature = Tapi::Feature(featureType, featureName, featureDescription, featureUUID);
+          getline(fileInput, featureType);
+          Tapi::Feature feature = Tapi::Feature(featureType, featureName, featureUUID);
           features.emplace(featureUUID, feature);
           getline(fileInput, temp);
         }
@@ -406,8 +409,7 @@ void ApiGui::saveButtonClicked()
       fileOutput << "[DeviceFeature]\n";
       fileOutput << features.at(j)->GetUUID() << "\n";
       fileOutput << features.at(j)->GetName() << "\n";
-      fileOutput << features.at(j)->GetDescription() << "\n";
-      fileOutput << (int)features.at(j)->GetType() << "\n";
+      fileOutput << features.at(j)->GetType() << "\n";
     }
   }
   for (int i = 0; i < connections.size(); i++)

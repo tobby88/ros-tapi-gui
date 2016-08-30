@@ -110,7 +110,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     int line_y = header_end + i * line_height;
 
     QColor color;
-    switch ((*it)->GetType())
+    /*switch ((*it)->GetType())
     {
       case tapi_msgs::Feature::Type_AnalogValue:
         color = Qt::red;
@@ -124,10 +124,11 @@ void GuiDevice::paintEvent(QPaintEvent*)
       case tapi_msgs::Feature::Type_Tristate:
         color = Qt::cyan;
         break;
-      default:
+      default:*/
+    // TODO: change colours!
         color = QColor("#f1aa00");
-        break;
-    }
+        //break;
+    //}
     if (!device->Active())
       color = color.darker();
     painter.setBrush(color);

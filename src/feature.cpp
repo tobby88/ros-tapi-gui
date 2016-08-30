@@ -6,8 +6,7 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-Feature::Feature(uint8_t type, string name, string description, string uuid)
-  : type(type), name(name), description(description), uuid(uuid)
+Feature::Feature(string type, string name, string uuid) : type(type), name(name), uuid(uuid)
 {
   connections = 0;
 }
@@ -28,11 +27,6 @@ int Feature::GetConnectionCount()
   return connections;
 }
 
-string Feature::GetDescription() const
-{
-  return description;
-}
-
 string Feature::GetName() const
 {
   if (name.empty())
@@ -41,7 +35,7 @@ string Feature::GetName() const
     return name;
 }
 
-uint8_t Feature::GetType() const
+string Feature::GetType() const
 {
   return type;
 }
@@ -58,17 +52,15 @@ void Feature::IncrementConnections()
 
 bool Feature::operator==(const Feature &other) const
 {
-  if (GetUUID() == other.GetUUID() && GetType() == other.GetType() && GetName() == other.GetName() &&
-      GetDescription() == other.GetDescription())
+  if (GetUUID() == other.GetUUID() && GetType() == other.GetType() && GetName() == other.GetName())
     return true;
   else
     return false;
 }
 
-void Feature::Update(uint8_t type, std::string name, std::string description)
+void Feature::Update(string type, std::string name)
 {
   this->type = type;
   this->name = name;
-  this->description = description;
 }
 }

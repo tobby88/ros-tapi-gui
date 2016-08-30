@@ -9,7 +9,7 @@ class Feature
 {
 public:
   // Constructor/Destructor
-  Feature(uint8_t type, std::string name, std::string description, std::string uuid);
+  Feature(std::string type, std::string name, std::string uuid);
   ~Feature();
 
   // Public member functions
@@ -17,17 +17,16 @@ public:
   int GetConnectionCount();
   std::string GetDescription() const;
   std::string GetName() const;
-  uint8_t GetType() const;
+  std::string GetType() const;
   std::string GetUUID() const;
   void IncrementConnections();
   bool operator==(const Feature &other) const;
-  void Update(uint8_t type, std::string name, std::string description);
+  void Update(std::string type, std::string name);
 
 private:
   // Private member variables
-  uint8_t type;
+  std::string type;
   std::string name;
-  std::string description;
   std::string uuid;
   int connections;
 };
