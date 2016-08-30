@@ -7,19 +7,21 @@
 #include "device.hpp"
 #include "feature.hpp"
 
+namespace Tapi
+{
 class GuiDevice : public QWidget
 {
   Q_OBJECT
 
 public:
   // Constructor/Destructor
-  GuiDevice(QWidget* parent, Device* device);
+  GuiDevice(QWidget* parent, Tapi::Device* device);
   ~GuiDevice();
 
   // Public member functions
-  QPoint FeatureBoxPosition(Feature* feature);
-  Device* GetDevice();
-  std::vector<Feature*> GetFeatures();
+  QPoint FeatureBoxPosition(Tapi::Feature* feature);
+  Tapi::Device* GetDevice();
+  std::vector<Tapi::Feature*> GetFeatures();
 
 protected:
   // Protected member functions
@@ -29,8 +31,8 @@ protected:
 private:
   // Private member variables
   int connectbox_size;
-  Device* device;
-  std::vector<Feature*> features;
+  Tapi::Device* device;
+  std::vector<Tapi::Feature*> features;
   int footer_height;
   int footer_start;
   int header_end;
@@ -42,7 +44,8 @@ private:
 
 signals:
   // Signals without implementation
-  void featureClicked(GuiDevice* guidevice, Feature* feature);
+  void featureClicked(GuiDevice* guidevice, Tapi::Feature* feature);
 };
+}
 
 #endif  // GuiDevice_H

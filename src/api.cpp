@@ -6,6 +6,8 @@
 using namespace ros;
 using namespace std;
 
+namespace Tapi
+{
 // Constructor/Destructor
 
 Api::Api(NodeHandle* nh) : nh(nh)
@@ -32,9 +34,9 @@ Api::~Api()
 // Public member functions
 
 void Api::AddDeviceWithoutHello(uint8_t type, string name, string uuid, unsigned long heartbeat,
-                                map<string, Feature> features)
+                                map<string, Tapi::Feature> features)
 {
-  Device device(type, name, uuid, 0, Time(0.0), heartbeat, features);
+  Tapi::Device device(type, name, uuid, 0, Time(0.0), heartbeat, features);
   device.Deactivate();
   devices.emplace(uuid, device);
   changed();
@@ -56,7 +58,7 @@ void Api::Clear()
 
 bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coefficient)
 {
-  Device *device1, *device2;
+  Tapi::Device *device1, *device2;
   device1 = getDeviceByFeatureUUID(feature1uuid);
   device2 = getDeviceByFeatureUUID(feature2uuid);
   if (device1 == 0 || device2 == 0)
@@ -92,7 +94,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coeff
   else
   {
     // Connect devices/features
-    Assignment connection(senderUUID, senderFeatureUUID, receiverUUID, receiverFeatureUUID, coefficient);
+    Tapi::Assignment connection(senderUUID, senderFeatureUUID, receiverUUID, receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
     device1->GetFeatureByUUID(feature1uuid)->IncrementConnections();
     device2->GetFeatureByUUID(feature2uuid)->IncrementConnections();
@@ -112,7 +114,7 @@ void Api::DebugOutput()
              "Last Seen: %f, Heartbeat-Interval: %lu",
              (unsigned short)it->second.GetType(), it->second.GetName().c_str(), it->second.GetUUID().c_str(),
              it->second.GetLastSeq(), it->second.GetLastSeen().toSec(), it->second.GetHeartbeat());
-    vector<Feature*> features = it->second.GetSortedFeatures();
+    vector<Tapi::Feature*> features = it->second.GetSortedFeatures();
     for (auto it2 = features.begin(); it2 != features.end(); ++it2)
     {
       ROS_INFO("Debug: Device-Feature: ID: %s, Feature-Type: %u, Feature-Name: "
@@ -128,7 +130,7 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
 {
   if (connections.count(receiverFeatureUUID) > 0)
   {
-    Assignment* connection = &connections.at(receiverFeatureUUID);
+    Tapi::Assignment* connection = &connections.at(receiverFeatureUUID);
     string senderUUID = connection->GetSenderUUID();
     string senderFeatureUUID = connection->GetSenderFeatureUUID();
     string receiverUUID = connection->GetReceiverUUID();
@@ -152,17 +154,17 @@ void Api::Done()
   pendingChanges = false;
 }
 
-vector<Assignment*> Api::GetConnections()
+vector<Tapi::Assignment*> Api::GetConnections()
 {
-  vector<Assignment*> connectionList;
+  vector<Tapi::Assignment*> connectionList;
   for (auto it = connections.begin(); it != connections.end(); ++it)
     connectionList.push_back(&it->second);
   return connectionList;
 }
 
-vector<Device*> Api::GetDevicesSorted()
+vector<Tapi::Device*> Api::GetDevicesSorted()
 {
-  vector<Device*> devicesList;
+  vector<Tapi::Device*> devicesList;
   for (auto it = devices.begin(); it != devices.end(); ++it)
     devicesList.push_back(&it->second);
   if (devicesList.size() > 1)
@@ -186,12 +188,12 @@ void Api::changed()
 #endif
 }
 
-bool Api::compareDeviceNames(const Device* first, const Device* second)
+bool Api::compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second)
 {
   return first->GetName() < second->GetName();
 }
 
-Device* Api::getDeviceByFeatureUUID(string uuid)
+Tapi::Device* Api::getDeviceByFeatureUUID(string uuid)
 {
   for (auto it = devices.begin(); it != devices.end(); ++it)
   {
@@ -223,17 +225,17 @@ bool Api::hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response&
   string name = helloReq.Name;
   uint8_t type = helloReq.DeviceType;
   unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-  map<string, Feature> features;
+  map<string, Tapi::Feature> features;
   for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
   {
-    Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].Description,
-                    helloReq.Features[i].UUID);
+    Tapi::Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].Description,
+                          helloReq.Features[i].UUID);
     if (features.count(feature.GetUUID()) == 0)
       features.emplace(feature.GetUUID(), feature);
   }
   if (devices.empty() || devices.count(uuid) == 0)
   {
-    Device device(type, name, uuid, lastSeq, lastSeen, heartbeat, features);
+    Tapi::Device device(type, name, uuid, lastSeq, lastSeen, heartbeat, features);
     devices.emplace(uuid, device);
     helloResp.Status = tapi_msgs::HelloResponse::StatusOK;
     helloResp.Heartbeat = heartbeat;
@@ -271,4 +273,5 @@ void Api::sendAllConnections()
     msg.Coefficient = it->second.GetCoefficient();
     configPub.publish(msg);
   }
+}
 }

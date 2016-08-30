@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace Tapi
+{
 class Feature
 {
 public:
@@ -29,5 +31,6 @@ private:
   std::string uuid;
   int connections;
 };
+}
 
 #endif  // FEATURE_H

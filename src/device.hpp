@@ -7,6 +7,8 @@
 #include "feature.hpp"
 #include "ros/ros.h"
 
+namespace Tapi
+{
 class Device
 {
 public:
@@ -43,5 +45,6 @@ private:
   // Private member functions
   static bool compareFeatureNames(const Feature* first, const Feature* second);
 };
+}
 
 #endif  // DEVICE_H

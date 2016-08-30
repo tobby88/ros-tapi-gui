@@ -3,6 +3,8 @@
 using namespace ros;
 using namespace std;
 
+namespace Tapi
+{
 // Constructor/Destructor
 
 Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat,
@@ -131,4 +133,5 @@ void Device::Update(uint8_t type, string name, unsigned long lastSeq, Time lastS
 bool Device::compareFeatureNames(const Feature* first, const Feature* second)
 {
   return first->GetName() < second->GetName();
+}
 }

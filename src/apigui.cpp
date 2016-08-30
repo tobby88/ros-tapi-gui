@@ -14,9 +14,11 @@
 
 using namespace std;
 
+namespace Tapi
+{
 // Constructor/Destructor
 
-ApiGui::ApiGui(Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), api(api)
+ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), api(api)
 {
   ui->setupUi(this);
   timer = new QTimer(this);
@@ -54,7 +56,7 @@ void ApiGui::paintEvent(QPaintEvent*)
   painter.setPen(Qt::black);
 
   // Draw all connections
-  vector<Assignment*> connections;
+  vector<Tapi::Assignment*> connections;
   connections = api->GetConnections();
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
@@ -62,7 +64,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     string senderFeatureUUID = (*it)->GetSenderFeatureUUID();
     string receiverUUID = (*it)->GetReceiverUUID();
     string receiverFeatureUUID = (*it)->GetReceiverFeatureUUID();
-    GuiDevice *sender, *receiver;
+    Tapi::GuiDevice *sender, *receiver;
     sender = 0;
     receiver = 0;
     for (auto it2 = senderGuiDevices.begin(); it2 != senderGuiDevices.end(); ++it2)
@@ -86,7 +88,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     if (!receiver)
       continue;
     QPoint begin, end;
-    Feature* feature = sender->GetDevice()->GetFeatureByUUID(senderFeatureUUID);
+    Tapi::Feature* feature = sender->GetDevice()->GetFeatureByUUID(senderFeatureUUID);
     if (!feature)
       continue;
     begin = sender->mapTo(this, sender->FeatureBoxPosition(feature));
@@ -101,10 +103,10 @@ void ApiGui::paintEvent(QPaintEvent*)
   if (!selectedFeature)
     return;
 
-  GuiDevice* s = selectedGuiDevice;
+  Tapi::GuiDevice* s = selectedGuiDevice;
   QPoint end = mapFromGlobal(mousePosition);
 
-  Feature* fs = selectedFeature;
+  Tapi::Feature* fs = selectedFeature;
 
   QPoint begin = s->mapTo(this, s->FeatureBoxPosition(fs));
   painter.drawLine(begin, end);
@@ -112,9 +114,9 @@ void ApiGui::paintEvent(QPaintEvent*)
 
 // Private member functions
 
-void ApiGui::addDevice(Device* device)
+void ApiGui::addDevice(Tapi::Device* device)
 {
-  GuiDevice* guidevice = new GuiDevice(this, device);
+  Tapi::GuiDevice* guidevice = new Tapi::GuiDevice(this, device);
   if (device->GetType() == tapi_msgs::HelloRequest::Type_SenderDevice)
   {
     layoutSender->addWidget(guidevice);
@@ -126,7 +128,8 @@ void ApiGui::addDevice(Device* device)
     receiverGuiDevices.push_back(guidevice);
   }
   guidevice->show();  // dont forget to show it ;)
-  connect(guidevice, SIGNAL(featureClicked(GuiDevice*, Feature*)), this, SLOT(featureClicked(GuiDevice*, Feature*)));
+  connect(guidevice, SIGNAL(featureClicked(Tapi::GuiDevice*, Feature*)), this,
+          SLOT(featureClicked(Tapi::GuiDevice*, Feature*)));
 }
 
 // Slot functions
@@ -159,7 +162,7 @@ void ApiGui::checkApiForUpdate()
       delete *it;
     }
     receiverGuiDevices.clear();
-    vector<Device*> devices = api->GetDevicesSorted();
+    vector<Tapi::Device*> devices = api->GetDevicesSorted();
     for (auto it = devices.begin(); it != devices.end(); ++it)
       addDevice(*it);
     api->Done();
@@ -189,7 +192,7 @@ void ApiGui::checkApiForUpdate()
   }
 }
 
-void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
+void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 {
   QString qs = QString::fromStdString(feature->GetName());
   ui->TestLabel->setText(qs);
@@ -321,7 +324,7 @@ void ApiGui::loadButtonClicked()
         getline(fileInput, temp);
         heartbeat = (unsigned long)stoul(temp);
         getline(fileInput, temp);
-        map<string, Feature> features;
+        map<string, Tapi::Feature> features;
         while (temp == "[DeviceFeature]")
         {
           string featureUUID;
@@ -333,7 +336,7 @@ void ApiGui::loadButtonClicked()
           getline(fileInput, featureDescription);
           getline(fileInput, temp);
           featureType = (uint8_t)stoi(temp);
-          Feature feature = Feature(featureType, featureName, featureDescription, featureUUID);
+          Tapi::Feature feature = Tapi::Feature(featureType, featureName, featureDescription, featureUUID);
           features.emplace(featureUUID, feature);
           getline(fileInput, temp);
         }
@@ -381,8 +384,8 @@ void ApiGui::loadButtonClicked()
 
 void ApiGui::saveButtonClicked()
 {
-  vector<Device*> devices = api->GetDevicesSorted();
-  vector<Assignment*> connections = api->GetConnections();
+  vector<Tapi::Device*> devices = api->GetDevicesSorted();
+  vector<Tapi::Assignment*> connections = api->GetConnections();
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =
@@ -397,7 +400,7 @@ void ApiGui::saveButtonClicked()
     fileOutput << devices.at(i)->GetName() << "\n";
     fileOutput << (int)devices.at(i)->GetType() << "\n";
     fileOutput << devices.at(i)->GetHeartbeat() << "\n";
-    vector<Feature*> features = devices.at(i)->GetSortedFeatures();
+    vector<Tapi::Feature*> features = devices.at(i)->GetSortedFeatures();
     for (int j = 0; j < features.size(); j++)
     {
       fileOutput << "[DeviceFeature]\n";
@@ -417,4 +420,5 @@ void ApiGui::saveButtonClicked()
     fileOutput << connections.at(i)->GetCoefficient() << "\n";
   }
   fileOutput.close();
+}
 }

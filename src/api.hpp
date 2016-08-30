@@ -13,6 +13,8 @@
 #include "ros/ros.h"
 #include "tapi_msgs/Hello.h"
 
+namespace Tapi
+{
 class Api
 {
 public:
@@ -22,22 +24,22 @@ public:
 
   // Public member functions
   void AddDeviceWithoutHello(uint8_t type, std::string name, std::string uuid, unsigned long heartbeat,
-                             std::map<std::string, Feature> features);
+                             std::map<std::string, Tapi::Feature> features);
   bool CheckPending();
   void Clear();
   bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
   void DebugOutput();
   bool DeleteConnection(std::string receiverFeatureUUID);
   void Done();
-  std::vector<Assignment*> GetConnections();
-  std::vector<Device*> GetDevicesSorted();
+  std::vector<Tapi::Assignment*> GetConnections();
+  std::vector<Tapi::Device*> GetDevicesSorted();
   void Run();
 
 private:
   // Private member variables
   ros::Publisher configPub;
-  std::map<std::string, Assignment> connections;
-  std::map<std::string, Device> devices;
+  std::map<std::string, Tapi::Assignment> connections;
+  std::map<std::string, Tapi::Device> devices;
   ros::Timer heartbeatCheckTimer;
   ros::ServiceServer helloServ;
   ros::NodeHandle* nh;
@@ -46,11 +48,12 @@ private:
 
   // Private member functions
   void changed();
-  static bool compareDeviceNames(const Device* first, const Device* second);
-  Device* getDeviceByFeatureUUID(std::string uuid);
+  static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
+  Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
   void heartbeatCheck(const ros::TimerEvent& e);
   bool hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response& helloResp);
   void sendAllConnections();
 };
+}
 
 #endif  // API_H

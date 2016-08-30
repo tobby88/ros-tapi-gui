@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace Tapi
+{
 class Assignment
 {
 public:
@@ -26,5 +28,6 @@ private:
   std::string senderFeatureUUID;
   std::string senderUUID;
 };
+}
 
 #endif  // ASSIGNMENT_H

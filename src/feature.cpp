@@ -2,6 +2,8 @@
 
 using namespace std;
 
+namespace Tapi
+{
 // Constructor/Destructor
 
 Feature::Feature(uint8_t type, string name, string description, string uuid)
@@ -68,4 +70,5 @@ void Feature::Update(uint8_t type, std::string name, std::string description)
   this->type = type;
   this->name = name;
   this->description = description;
+}
 }

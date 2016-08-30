@@ -2,6 +2,8 @@
 
 using namespace std;
 
+namespace Tapi
+{
 // Constructor/Destructor
 
 Assignment::Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID, string receiverFeatureUUID,
@@ -43,4 +45,5 @@ string Assignment::GetSenderFeatureUUID()
 string Assignment::GetSenderUUID()
 {
   return senderUUID;
+}
 }

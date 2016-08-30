@@ -5,9 +5,11 @@
 
 using namespace std;
 
+namespace Tapi
+{
 // Constructor/Destructor
 
-GuiDevice::GuiDevice(QWidget* parent, Device* device)
+GuiDevice::GuiDevice(QWidget* parent, Tapi::Device* device)
   : QWidget(parent), device(device), features(device->GetSortedFeatures())
 {
   connectbox_size = 10;
@@ -33,7 +35,7 @@ GuiDevice::~GuiDevice()
 
 // Public member functions
 
-QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
+QPoint GuiDevice::FeatureBoxPosition(Tapi::Feature* feature)
 {
   int x, y, i;
   y = 0;
@@ -51,12 +53,12 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
   return QPoint(x, y);
 }
 
-Device* GuiDevice::GetDevice()
+Tapi::Device* GuiDevice::GetDevice()
 {
   return device;
 }
 
-vector<Feature*> GuiDevice::GetFeatures()
+vector<Tapi::Feature*> GuiDevice::GetFeatures()
 {
   return features;
 }
@@ -150,4 +152,5 @@ void GuiDevice::paintEvent(QPaintEvent*)
 
   // footer line
   painter.drawLine(QPoint(line_start, footer_start), QPoint(line_end, footer_start));
+}
 }

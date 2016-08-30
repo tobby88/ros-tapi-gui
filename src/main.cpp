@@ -7,9 +7,9 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "Tapi");
   ros::NodeHandle nh;
-  Api api(&nh);
+  Tapi::Api api(&nh);
   QApplication a(argc, argv);
-  MainGui w(&api);
+  Tapi::MainGui w(&api);
   w.show();
   api.Run();
   return a.exec();

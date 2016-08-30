@@ -15,13 +15,15 @@ namespace Ui
 class ApiGui;
 }
 
+namespace Tapi
+{
 class ApiGui : public QWidget
 {
   Q_OBJECT
 
 public:
   // Constructor/Destructor
-  ApiGui(Api* api, QWidget* parent = 0);
+  ApiGui(Tapi::Api* api, QWidget* parent = 0);
   ~ApiGui();
 
 protected:
@@ -30,27 +32,28 @@ protected:
 
 private:
   // Private member variables
-  Api* api;
+  Tapi::Api* api;
   QVBoxLayout* layoutReceiver;
   QVBoxLayout* layoutSender;
   QPoint mousePosition;
-  std::vector<GuiDevice*> receiverGuiDevices;
-  Feature* selectedFeature;
-  GuiDevice* selectedGuiDevice;
-  std::vector<GuiDevice*> senderGuiDevices;
+  std::vector<Tapi::GuiDevice*> receiverGuiDevices;
+  Tapi::Feature* selectedFeature;
+  Tapi::GuiDevice* selectedGuiDevice;
+  std::vector<Tapi::GuiDevice*> senderGuiDevices;
   QTimer* timer;
   int timerInterval;
   Ui::ApiGui* ui;
 
   // Private member functions
-  void addDevice(Device* device);
+  void addDevice(Tapi::Device* device);
 
 private slots:
   // Slot functions
   void checkApiForUpdate();
-  void featureClicked(GuiDevice* guidevice, Feature* feature);
+  void featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature);
   void loadButtonClicked();
   void saveButtonClicked();
 };
+}
 
 #endif  // APIGUI_HPP
