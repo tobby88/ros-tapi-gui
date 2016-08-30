@@ -8,8 +8,8 @@
 #include <fstream>
 #include <string>
 #include "assignment.hpp"
-#include "tobbyapi_msgs/Feature.h"
-#include "tobbyapi_msgs/HelloRequest.h"
+#include "tapi_msgs/Feature.h"
+#include "tapi_msgs/HelloRequest.h"
 #include "ui_apigui.h"
 
 using namespace std;
@@ -115,7 +115,7 @@ void ApiGui::paintEvent(QPaintEvent*)
 void ApiGui::addDevice(Device* device)
 {
   GuiDevice* guidevice = new GuiDevice(this, device);
-  if (device->GetType() == tobbyapi_msgs::HelloRequest::Type_SenderDevice)
+  if (device->GetType() == tapi_msgs::HelloRequest::Type_SenderDevice)
   {
     layoutSender->addWidget(guidevice);
     senderGuiDevices.push_back(guidevice);
@@ -203,7 +203,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() == tobbyapi_msgs::HelloRequest::Type_ReceiverDevice &&
+  if (guidevice->GetDevice()->GetType() == tapi_msgs::HelloRequest::Type_ReceiverDevice &&
       feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
@@ -271,7 +271,7 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
   // Everything ok -> try to connect them (and ask for coefficient if appliable)
   double coefficient = 1.0;
   bool ok = true;
-  if (feature->GetType() == tobbyapi_msgs::Feature::Type_AnalogValue)
+  if (feature->GetType() == tapi_msgs::Feature::Type_AnalogValue)
   {
     timer->stop();
     QString input =
@@ -291,9 +291,9 @@ void ApiGui::featureClicked(GuiDevice* guidevice, Feature* feature)
 void ApiGui::loadButtonClicked()
 {
   string homedir = getenv("HOME");
-  string filename = homedir + "/config.tobbyapi";
+  string filename = homedir + "/config.tapi";
   QString filePicker =
-      QFileDialog::getOpenFileName(this, "Open File", QString::fromStdString(filename), "TobbyAPI-Files (*.tobbyapi)");
+      QFileDialog::getOpenFileName(this, "Open File", QString::fromStdString(filename), "Tapi-files (*.tapi)");
   filename = filePicker.toStdString();
   ifstream fileInput;
   fileInput.open(filename);
@@ -384,9 +384,9 @@ void ApiGui::saveButtonClicked()
   vector<Device*> devices = api->GetDevicesSorted();
   vector<Assignment*> connections = api->GetConnections();
   string homedir = getenv("HOME");
-  string filename = homedir + "/config.tobbyapi";
+  string filename = homedir + "/config.tapi";
   QString filePicker =
-      QFileDialog::getSaveFileName(this, "Save File", QString::fromStdString(filename), "TobbyAPI-Files (*.tobbyapi)");
+      QFileDialog::getSaveFileName(this, "Save File", QString::fromStdString(filename), "Tapi-files (*.tapi)");
   filename = filePicker.toStdString();
   ofstream fileOutput;
   fileOutput.open(filename);

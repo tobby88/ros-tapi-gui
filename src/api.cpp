@@ -1,7 +1,7 @@
 #include "api.hpp"
 #include "feature.hpp"
-#include "tobbyapi_msgs/Config.h"
-#include "tobbyapi_msgs/Feature.h"
+#include "tapi_msgs/Config.h"
+#include "tapi_msgs/Feature.h"
 
 using namespace ros;
 using namespace std;
@@ -11,8 +11,8 @@ using namespace std;
 Api::Api(NodeHandle* nh) : nh(nh)
 {
   spinner = new AsyncSpinner(1);
-  helloServ = nh->advertiseService("TobbyAPI/HelloServ", &Api::hello, this);
-  configPub = nh->advertise<tobbyapi_msgs::Config>("TobbyAPI/Config", 1000);
+  helloServ = nh->advertiseService("Tapi/HelloServ", &Api::hello, this);
+  configPub = nh->advertise<tapi_msgs::Config>("Tapi/Config", 1000);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
   pendingChanges = false;
   heartbeatCheckTimer = nh->createTimer(Duration(HEARTBEAT_CHECK_INTERVAL / 1000.0), &Api::heartbeatCheck, this);
@@ -71,7 +71,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coeff
 
   // Who is sender, who receiver?
   string senderUUID, receiverUUID, senderFeatureUUID, receiverFeatureUUID;
-  if (device1->GetType() == tobbyapi_msgs::HelloRequest::Type_ReceiverDevice)
+  if (device1->GetType() == tapi_msgs::HelloRequest::Type_ReceiverDevice)
   {
     receiverUUID = device1->GetUUID();
     receiverFeatureUUID = feature1uuid;
@@ -136,7 +136,7 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
       devices.at(senderUUID).GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
     if (devices.count(receiverUUID) > 0)
       devices.at(receiverUUID).GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
-    tobbyapi_msgs::Config msg;
+    tapi_msgs::Config msg;
     msg.SenderUUID = "0";
     msg.SenderFeatureUUID = "0";
     msg.ReceiverUUID = receiverUUID;
@@ -215,7 +215,7 @@ void Api::heartbeatCheck(const ros::TimerEvent& e)
     changed();
 }
 
-bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::Response& helloResp)
+bool Api::hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response& helloResp)
 {
   string uuid = helloReq.UUID;
   unsigned long lastSeq = helloReq.Header.seq;
@@ -235,7 +235,7 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::R
   {
     Device device(type, name, uuid, lastSeq, lastSeen, heartbeat, features);
     devices.emplace(uuid, device);
-    helloResp.Status = tobbyapi_msgs::HelloResponse::StatusOK;
+    helloResp.Status = tapi_msgs::HelloResponse::StatusOK;
     helloResp.Heartbeat = heartbeat;
     changed();
     return true;
@@ -243,7 +243,7 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::R
   else if (devices.count(uuid) == 1)
   {
     devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat, features);
-    helloResp.Status = tobbyapi_msgs::HelloResponse::StatusOK;
+    helloResp.Status = tapi_msgs::HelloResponse::StatusOK;
     helloResp.Heartbeat = heartbeat;
     changed();
     return true;
@@ -252,7 +252,7 @@ bool Api::hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::R
   {
     ROS_ERROR("Hello message couldn't be decoded, looks like there is something wrong with the devices database. "
               "Please try to restart the Hello-Service.");
-    helloResp.Status = tobbyapi_msgs::HelloResponse::StatusError;
+    helloResp.Status = tapi_msgs::HelloResponse::StatusError;
     helloResp.Heartbeat = STANDARD_HEARTBEAT_INTERVAL;
     return false;
   }
@@ -263,7 +263,7 @@ void Api::sendAllConnections()
 {
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
-    tobbyapi_msgs::Config msg;
+    tapi_msgs::Config msg;
     msg.SenderUUID = it->second.GetSenderUUID();
     msg.SenderFeatureUUID = it->second.GetSenderFeatureUUID();
     msg.ReceiverUUID = it->second.GetReceiverUUID();

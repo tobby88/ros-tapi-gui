@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "TobbyAPI");
+  ros::init(argc, argv, "Tapi");
   ros::NodeHandle nh;
   Api api(&nh);
   QApplication a(argc, argv);

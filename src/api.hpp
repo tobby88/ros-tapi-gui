@@ -11,7 +11,7 @@
 #include "assignment.hpp"
 #include "device.hpp"
 #include "ros/ros.h"
-#include "tobbyapi_msgs/Hello.h"
+#include "tapi_msgs/Hello.h"
 
 class Api
 {
@@ -49,7 +49,7 @@ private:
   static bool compareDeviceNames(const Device* first, const Device* second);
   Device* getDeviceByFeatureUUID(std::string uuid);
   void heartbeatCheck(const ros::TimerEvent& e);
-  bool hello(tobbyapi_msgs::Hello::Request& helloReq, tobbyapi_msgs::Hello::Response& helloResp);
+  bool hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response& helloResp);
   void sendAllConnections();
 };
 

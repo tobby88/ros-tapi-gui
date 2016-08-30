@@ -1,7 +1,7 @@
 #include "guidevice.hpp"
 #include <QPainter>
 #include <QString>
-#include "tobbyapi_msgs/HelloRequest.h"
+#include "tapi_msgs/HelloRequest.h"
 
 using namespace std;
 
@@ -37,7 +37,7 @@ QPoint GuiDevice::FeatureBoxPosition(Feature* feature)
 {
   int x, y, i;
   y = 0;
-  if (device->GetType() == tobbyapi_msgs::HelloRequest::Type_ReceiverDevice)
+  if (device->GetType() == tapi_msgs::HelloRequest::Type_ReceiverDevice)
     x = 0;
   else
     x = this->width() - 1;
@@ -110,16 +110,16 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QColor color;
     switch ((*it)->GetType())
     {
-      case tobbyapi_msgs::Feature::Type_AnalogValue:
+      case tapi_msgs::Feature::Type_AnalogValue:
         color = Qt::red;
         break;
-      case tobbyapi_msgs::Feature::Type_Images:
+      case tapi_msgs::Feature::Type_Images:
         color = Qt::green;
         break;
-      case tobbyapi_msgs::Feature::Type_Switch:
+      case tapi_msgs::Feature::Type_Switch:
         color = Qt::blue;
         break;
-      case tobbyapi_msgs::Feature::Type_Tristate:
+      case tapi_msgs::Feature::Type_Tristate:
         color = Qt::cyan;
         break;
       default:
@@ -136,7 +136,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + line_height / 2 - connectbox_size / 2),
                       QSize(connectbox_size, connectbox_size));
 
-    if (device->GetType() == tobbyapi_msgs::HelloRequest::Type_SenderDevice)
+    if (device->GetType() == tapi_msgs::HelloRequest::Type_SenderDevice)
     {
       connect_box.moveLeft(line_end);
     }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(tobbyapi)
+project(tapi)
 
 # Use specified C++ standard
 set(CMAKE_CXX_STANDARD 11)
@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 11)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  tobbyapi_msgs
+  tapi_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -113,7 +113,7 @@ find_package(Qt5Widgets)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES tobby
-  CATKIN_DEPENDS message_runtime roscpp tobbyapi_msgs
+  CATKIN_DEPENDS message_runtime roscpp tapi_msgs
 #  DEPENDS system_lib
 )
 
@@ -139,7 +139,7 @@ include_directories(
 # add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(tobbyapi
+add_executable(tapi
   src/api.cpp
   src/apigui.cpp
   src/apigui.ui
@@ -154,10 +154,10 @@ add_executable(tobbyapi
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(tobbyapi ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(tapi ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(tobbyapi
+target_link_libraries(tapi
   Qt5::Widgets
   ${catkin_LIBRARIES}
 )
