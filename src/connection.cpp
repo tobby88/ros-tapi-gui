@@ -1,4 +1,4 @@
-#include "assignment.hpp"
+#include "connection.hpp"
 
 using namespace std;
 
@@ -6,7 +6,7 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-Assignment::Assignment(string senderUUID, string senderFeatureUUID, string receiverUUID, string receiverFeatureUUID,
+Connection::Connection(string senderUUID, string senderFeatureUUID, string receiverUUID, string receiverFeatureUUID,
                        double coefficient)
   : senderUUID(senderUUID)
   , senderFeatureUUID(senderFeatureUUID)
@@ -16,33 +16,33 @@ Assignment::Assignment(string senderUUID, string senderFeatureUUID, string recei
 {
 }
 
-Assignment::~Assignment()
+Connection::~Connection()
 {
 }
 
 // Public member functions
 
-double Assignment::GetCoefficient()
+double Connection::GetCoefficient()
 {
   return coefficient;
 }
 
-string Assignment::GetReceiverFeatureUUID()
+string Connection::GetReceiverFeatureUUID()
 {
   return receiverFeatureUUID;
 }
 
-string Assignment::GetReceiverUUID()
+string Connection::GetReceiverUUID()
 {
   return receiverUUID;
 }
 
-string Assignment::GetSenderFeatureUUID()
+string Connection::GetSenderFeatureUUID()
 {
   return senderFeatureUUID;
 }
 
-string Assignment::GetSenderUUID()
+string Connection::GetSenderUUID()
 {
   return senderUUID;
 }

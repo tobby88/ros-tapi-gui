@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "assignment.hpp"
+#include "connection.hpp"
 #include "device.hpp"
 #include "ros/ros.h"
 #include "tapi_msgs/Hello.h"
@@ -31,14 +31,14 @@ public:
   void DebugOutput();
   bool DeleteConnection(std::string receiverFeatureUUID);
   void Done();
-  std::vector<Tapi::Assignment*> GetConnections();
+  std::vector<Tapi::Connection*> GetConnections();
   std::vector<Tapi::Device*> GetDevicesSorted();
   void Run();
 
 private:
   // Private member variables
   ros::Publisher configPub;
-  std::map<std::string, Tapi::Assignment> connections;
+  std::map<std::string, Tapi::Connection> connections;
   std::map<std::string, Tapi::Device> devices;
   ros::Timer heartbeatCheckTimer;
   ros::ServiceServer helloServ;

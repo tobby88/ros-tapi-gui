@@ -7,7 +7,7 @@
 #include <QString>
 #include <fstream>
 #include <string>
-#include "assignment.hpp"
+#include "connection.hpp"
 #include "tapi_msgs/Feature.h"
 #include "tapi_msgs/HelloRequest.h"
 #include "ui_apigui.h"
@@ -56,7 +56,7 @@ void ApiGui::paintEvent(QPaintEvent*)
   painter.setPen(Qt::black);
 
   // Draw all connections
-  vector<Tapi::Assignment*> connections;
+  vector<Tapi::Connection*> connections;
   connections = api->GetConnections();
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
@@ -385,7 +385,7 @@ void ApiGui::loadButtonClicked()
 void ApiGui::saveButtonClicked()
 {
   vector<Tapi::Device*> devices = api->GetDevicesSorted();
-  vector<Tapi::Assignment*> connections = api->GetConnections();
+  vector<Tapi::Connection*> connections = api->GetConnections();
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =

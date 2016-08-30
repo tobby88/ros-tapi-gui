@@ -1,17 +1,17 @@
-#ifndef ASSIGNMENT_H
-#define ASSIGNMENT_H
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 #include <string>
 
 namespace Tapi
 {
-class Assignment
+class Connection
 {
 public:
   // Constructor/Destructor
-  Assignment(std::string senderUUID, std::string senderFeatureUUID, std::string receiverUUID,
+  Connection(std::string senderUUID, std::string senderFeatureUUID, std::string receiverUUID,
              std::string receiverFeatureUUID, double coefficient);
-  ~Assignment();
+  ~Connection();
 
   // Public member functions
   double GetCoefficient();
@@ -30,4 +30,4 @@ private:
 };
 }
 
-#endif  // ASSIGNMENT_H
+#endif  // CONNECTION_H

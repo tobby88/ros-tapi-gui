@@ -93,7 +93,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coeff
   else
   {
     // Connect devices/features
-    Tapi::Assignment connection(senderUUID, senderFeatureUUID, receiverUUID, receiverFeatureUUID, coefficient);
+    Tapi::Connection connection(senderUUID, senderFeatureUUID, receiverUUID, receiverFeatureUUID, coefficient);
     connections.emplace(receiverFeatureUUID, connection);
     device1->GetFeatureByUUID(feature1uuid)->IncrementConnections();
     device2->GetFeatureByUUID(feature2uuid)->IncrementConnections();
@@ -129,7 +129,7 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
 {
   if (connections.count(receiverFeatureUUID) > 0)
   {
-    Tapi::Assignment* connection = &connections.at(receiverFeatureUUID);
+    Tapi::Connection* connection = &connections.at(receiverFeatureUUID);
     string senderUUID = connection->GetSenderUUID();
     string senderFeatureUUID = connection->GetSenderFeatureUUID();
     string receiverUUID = connection->GetReceiverUUID();
@@ -153,9 +153,9 @@ void Api::Done()
   pendingChanges = false;
 }
 
-vector<Tapi::Assignment*> Api::GetConnections()
+vector<Tapi::Connection*> Api::GetConnections()
 {
-  vector<Tapi::Assignment*> connectionList;
+  vector<Tapi::Connection*> connectionList;
   for (auto it = connections.begin(); it != connections.end(); ++it)
     connectionList.push_back(&it->second);
   return connectionList;

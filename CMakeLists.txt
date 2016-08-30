@@ -143,7 +143,7 @@ add_executable(tapi
   src/api.cpp
   src/apigui.cpp
   src/apigui.ui
-  src/assignment.cpp
+  src/connection.cpp
   src/device.cpp
   src/feature.cpp
   src/guidevice.cpp
