@@ -44,7 +44,7 @@ private:
 
 signals:
   // Signals without implementation
-  void featureClicked(GuiDevice* guidevice, Tapi::Feature* feature);
+  void featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature);
 };
 }
 

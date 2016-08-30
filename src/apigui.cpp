@@ -128,8 +128,8 @@ void ApiGui::addDevice(Tapi::Device* device)
     receiverGuiDevices.push_back(guidevice);
   }
   guidevice->show();  // dont forget to show it ;)
-  connect(guidevice, SIGNAL(featureClicked(Tapi::GuiDevice*, Feature*)), this,
-          SLOT(featureClicked(Tapi::GuiDevice*, Feature*)));
+  connect(guidevice, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), this,
+          SLOT(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)));
 }
 
 // Slot functions
