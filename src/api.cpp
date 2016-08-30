@@ -3,21 +3,20 @@
 #include "tapi_msgs/Config.h"
 #include "tapi_msgs/Feature.h"
 
-using namespace ros;
 using namespace std;
 
 namespace Tapi
 {
 // Constructor/Destructor
 
-Api::Api(NodeHandle* nh) : nh(nh)
+Api::Api(ros::NodeHandle* nh) : nh(nh)
 {
-  spinner = new AsyncSpinner(1);
+  spinner = new ros::AsyncSpinner(1);
   helloServ = nh->advertiseService("Tapi/HelloServ", &Api::hello, this);
   configPub = nh->advertise<tapi_msgs::Config>("Tapi/Config", 1000);
   ROS_INFO("Started Hello-Service, ready for API-connections.");
   pendingChanges = false;
-  heartbeatCheckTimer = nh->createTimer(Duration(HEARTBEAT_CHECK_INTERVAL / 1000.0), &Api::heartbeatCheck, this);
+  heartbeatCheckTimer = nh->createTimer(ros::Duration(HEARTBEAT_CHECK_INTERVAL / 1000.0), &Api::heartbeatCheck, this);
   heartbeatCheckTimer.start();
 }
 
@@ -36,7 +35,7 @@ Api::~Api()
 void Api::AddDeviceWithoutHello(uint8_t type, string name, string uuid, unsigned long heartbeat,
                                 map<string, Tapi::Feature> features)
 {
-  Tapi::Device device(type, name, uuid, 0, Time(0.0), heartbeat, features);
+  Tapi::Device device(type, name, uuid, 0, ros::Time(0.0), heartbeat, features);
   device.Deactivate();
   devices.emplace(uuid, device);
   changed();
@@ -221,7 +220,7 @@ bool Api::hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response&
 {
   string uuid = helloReq.UUID;
   unsigned long lastSeq = helloReq.Header.seq;
-  Time lastSeen = helloReq.Header.stamp;
+  ros::Time lastSeen = helloReq.Header.stamp;
   string name = helloReq.Name;
   uint8_t type = helloReq.DeviceType;
   unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;

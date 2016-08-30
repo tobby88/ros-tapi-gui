@@ -1,14 +1,13 @@
 #include "device.hpp"
 
-using namespace ros;
 using namespace std;
 
 namespace Tapi
 {
 // Constructor/Destructor
 
-Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat,
-               map<string, Feature> features)
+Device::Device(uint8_t type, string name, string uuid, unsigned long lastSeq, ros::Time lastSeen,
+               unsigned long heartbeat, map<string, Feature> features)
   : type(type), name(name), uuid(uuid), lastSeq(lastSeq), lastSeen(lastSeen), heartbeat(heartbeat), features(features)
 {
   active = true;
@@ -43,7 +42,7 @@ unsigned long Device::GetHeartbeat()
   return heartbeat;
 }
 
-Time Device::GetLastSeen()
+ros::Time Device::GetLastSeen()
 {
   return lastSeen;
 }
@@ -81,7 +80,7 @@ string Device::GetUUID()
   return uuid;
 }
 
-void Device::Update(uint8_t type, string name, unsigned long lastSeq, Time lastSeen, unsigned long heartbeat,
+void Device::Update(uint8_t type, string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat,
                     map<string, Feature> featureUpdate)
 {
   this->type = type;
