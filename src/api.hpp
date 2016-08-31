@@ -38,6 +38,7 @@ public:
 private:
   // Private member variables
   std::map<std::string, Tapi::Connection> connections;
+  ros::Publisher delPub;
   std::map<std::string, Tapi::Device> devices;
   ros::ServiceClient devListClient;
   ros::Timer heartbeatCheckTimer;

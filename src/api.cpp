@@ -1,5 +1,6 @@
 #include "api.hpp"
 #include "feature.hpp"
+#include "std_msgs/String.h"
 #include "tapi_msgs/Connection.h"
 #include "tapi_msgs/Device.h"
 #include "tapi_msgs/Feature.h"
@@ -19,6 +20,7 @@ Api::Api(ros::NodeHandle* nh) : nh(nh)
   heartbeatCheckTimer.start();
   devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
   lastUpdatedSub = nh->subscribe("Tapi/LastChanged", 5, &Api::updateData, this);
+  delPub = nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
 }
 
 Api::~Api()
@@ -28,6 +30,7 @@ Api::~Api()
   delete spinner;
   devListClient.shutdown();
   lastUpdatedSub.shutdown();
+  delPub.shutdown();
 }
 
 // Public member functions
@@ -124,25 +127,10 @@ void Api::DebugOutput()
 
 bool Api::DeleteConnection(string receiverFeatureUUID)
 {
-  /*if (connections.count(receiverFeatureUUID) > 0)
-  {
-    Tapi::Connection* connection = &connections.at(receiverFeatureUUID);
-    string senderUUID = connection->GetSenderUUID();
-    string senderFeatureUUID = connection->GetSenderFeatureUUID();
-    string receiverUUID = connection->GetReceiverUUID();
-    if (devices.count(senderUUID) > 0)
-      devices.at(senderUUID).GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
-    if (devices.count(receiverUUID) > 0)
-      devices.at(receiverUUID).GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
-    tapi_msgs::Connection msg;
-    msg.SenderUUID = "0";
-    msg.SenderFeatureUUID = "0";
-    msg.ReceiverUUID = receiverUUID;
-    msg.ReceiverFeatureUUID = receiverFeatureUUID;
-    msg.Coefficient = 0;
-    configPub.publish(msg);
-    connections.erase(receiverFeatureUUID);
-  }*/
+  std_msgs::String msg;
+  msg.data = receiverFeatureUUID;
+  delPub.publish(msg);
+  changed();
 }
 
 void Api::Done()
