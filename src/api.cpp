@@ -1,7 +1,9 @@
 #include "api.hpp"
 #include "feature.hpp"
-#include "tapi_msgs/Config.h"
+#include "tapi_msgs/Connection.h"
+#include "tapi_msgs/Device.h"
 #include "tapi_msgs/Feature.h"
+#include "tapi_msgs/GetDeviceList.h"
 
 using namespace std;
 
@@ -12,22 +14,20 @@ namespace Tapi
 Api::Api(ros::NodeHandle* nh) : nh(nh)
 {
   spinner = new ros::AsyncSpinner(1);
-  helloServ = nh->advertiseService("Tapi/HelloServ", &Api::hello, this);
-  configPub = nh->advertise<tapi_msgs::Config>("Tapi/Config", 1000);
-  ROS_INFO("Started Hello-Service, ready for API-connections.");
   pendingChanges = false;
   heartbeatCheckTimer = nh->createTimer(ros::Duration(HEARTBEAT_CHECK_INTERVAL / 1000.0), &Api::heartbeatCheck, this);
   heartbeatCheckTimer.start();
+  devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
+  lastUpdatedSub = nh->subscribe("Tapi/LastChanged", 5, &Api::updateData, this);
 }
 
 Api::~Api()
 {
-  // heartbeatCheckTimer.stop();
-  helloServ.shutdown();
-  configPub.shutdown();
+  heartbeatCheckTimer.stop();
   spinner->stop();
   delete spinner;
-  ROS_INFO("Hello-Service has been stopped.");
+  devListClient.shutdown();
+  lastUpdatedSub.shutdown();
 }
 
 // Public member functions
@@ -72,7 +72,7 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coeff
 
   // Who is sender, who receiver?
   string senderUUID, receiverUUID, senderFeatureUUID, receiverFeatureUUID;
-  if (device1->GetType() == tapi_msgs::HelloRequest::Type_ReceiverDevice)
+  if (device1->GetType() == tapi_msgs::Device::Type_ReceiverDevice)
   {
     receiverUUID = device1->GetUUID();
     receiverFeatureUUID = feature1uuid;
@@ -124,7 +124,7 @@ void Api::DebugOutput()
 
 bool Api::DeleteConnection(string receiverFeatureUUID)
 {
-  if (connections.count(receiverFeatureUUID) > 0)
+  /*if (connections.count(receiverFeatureUUID) > 0)
   {
     Tapi::Connection* connection = &connections.at(receiverFeatureUUID);
     string senderUUID = connection->GetSenderUUID();
@@ -134,7 +134,7 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
       devices.at(senderUUID).GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
     if (devices.count(receiverUUID) > 0)
       devices.at(receiverUUID).GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
-    tapi_msgs::Config msg;
+    tapi_msgs::Connection msg;
     msg.SenderUUID = "0";
     msg.SenderFeatureUUID = "0";
     msg.ReceiverUUID = receiverUUID;
@@ -142,7 +142,7 @@ bool Api::DeleteConnection(string receiverFeatureUUID)
     msg.Coefficient = 0;
     configPub.publish(msg);
     connections.erase(receiverFeatureUUID);
-  }
+  }*/
 }
 
 void Api::Done()
@@ -213,60 +213,71 @@ void Api::heartbeatCheck(const ros::TimerEvent& e)
     changed();
 }
 
-bool Api::hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response& helloResp)
-{
-  string uuid = helloReq.UUID;
-  unsigned long lastSeq = helloReq.Header.seq;
-  ros::Time lastSeen = helloReq.Header.stamp;
-  string name = helloReq.Name;
-  uint8_t type = helloReq.DeviceType;
-  unsigned long heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-  map<string, Tapi::Feature> features;
-  for (unsigned int i = 0; i < helloReq.Features.capacity(); i++)
-  {
-    Tapi::Feature feature(helloReq.Features[i].FeatureType, helloReq.Features[i].Name, helloReq.Features[i].UUID);
-    if (features.count(feature.GetUUID()) == 0)
-      features.emplace(feature.GetUUID(), feature);
-  }
-  if (devices.empty() || devices.count(uuid) == 0)
-  {
-    Tapi::Device device(type, name, uuid, lastSeq, lastSeen, heartbeat, features);
-    devices.emplace(uuid, device);
-    helloResp.Status = tapi_msgs::HelloResponse::StatusOK;
-    helloResp.Heartbeat = heartbeat;
-    changed();
-    return true;
-  }
-  else if (devices.count(uuid) == 1)
-  {
-    devices.at(uuid).Update(type, name, lastSeq, lastSeen, heartbeat, features);
-    helloResp.Status = tapi_msgs::HelloResponse::StatusOK;
-    helloResp.Heartbeat = heartbeat;
-    changed();
-    return true;
-  }
-  else
-  {
-    ROS_ERROR("Hello message couldn't be decoded, looks like there is something wrong with the devices database. "
-              "Please try to restart the Hello-Service.");
-    helloResp.Status = tapi_msgs::HelloResponse::StatusError;
-    helloResp.Heartbeat = STANDARD_HEARTBEAT_INTERVAL;
-    return false;
-  }
-  return false;
-}
-
 void Api::sendAllConnections()
 {
-  for (auto it = connections.begin(); it != connections.end(); ++it)
+  /*for (auto it = connections.begin(); it != connections.end(); ++it)
   {
-    tapi_msgs::Config msg;
+    tapi_msgs::Connection msg;
     msg.SenderUUID = it->second.GetSenderUUID();
     msg.SenderFeatureUUID = it->second.GetSenderFeatureUUID();
     msg.ReceiverUUID = it->second.GetReceiverUUID();
     msg.ReceiverFeatureUUID = it->second.GetReceiverFeatureUUID();
     msg.Coefficient = it->second.GetCoefficient();
     configPub.publish(msg);
+  }*/
+}
+
+void Api::updateData(const std_msgs::Time::ConstPtr& time)
+{
+  if (time->data.toNSec() > lastUpdated.toNSec())
+  {
+    lastUpdated = time->data;
+
+    tapi_msgs::GetDeviceList devSrv;
+    devSrv.request.get = true;
+    if (!devListClient.call(devSrv))
+    {
+      ROS_ERROR("Failed to establish connection to hello service");
+      return;
+    }
+    vector<tapi_msgs::Device> devVect = devSrv.response.Devices;
+
+    for (auto it = devVect.begin(); it != devVect.end(); ++it)
+    {
+      bool active = it->Active;
+      uint8_t deviceType = it->DeviceType;
+      unsigned long heartbeat = it->Heartbeat;
+      ros::Time lastSeen = it->LastSeen;
+      unsigned long lastSeq = it->LastSeq;
+      string name = it->Name;
+      string uuid = it->UUID;
+      vector<tapi_msgs::Feature> featureVec = it->Features;
+      map<string, Tapi::Feature> featureMap;
+      for (auto it2 = featureVec.begin(); it2 != featureVec.end(); ++it2)
+      {
+        string featureType = it2->FeatureType;
+        string featureName = it2->Name;
+        string featureUUID = it2->UUID;
+        Tapi::Feature feature(featureType, featureName, featureUUID);
+        featureMap.emplace(featureUUID, feature);
+      }
+      if (devices.empty() || devices.count(uuid) == 0)
+      {
+        Tapi::Device device(deviceType, name, uuid, lastSeq, lastSeen, heartbeat, featureMap);
+        devices.emplace(uuid, device);
+        changed();
+      }
+      else if (devices.count(uuid) == 1)
+      {
+        devices.at(uuid).Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
+        changed();
+      }
+      else
+        return;
+
+      if (!active)
+        devices.at(uuid).Deactivate();
+    }
   }
 }
 }

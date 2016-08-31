@@ -11,7 +11,7 @@
 #include "connection.hpp"
 #include "device.hpp"
 #include "ros/ros.h"
-#include "tapi_msgs/Hello.h"
+#include "std_msgs/Time.h"
 
 namespace Tapi
 {
@@ -37,11 +37,12 @@ public:
 
 private:
   // Private member variables
-  ros::Publisher configPub;
   std::map<std::string, Tapi::Connection> connections;
   std::map<std::string, Tapi::Device> devices;
+  ros::ServiceClient devListClient;
   ros::Timer heartbeatCheckTimer;
-  ros::ServiceServer helloServ;
+  ros::Time lastUpdated;
+  ros::Subscriber lastUpdatedSub;
   ros::NodeHandle* nh;
   bool pendingChanges;
   ros::AsyncSpinner* spinner;
@@ -51,8 +52,8 @@ private:
   static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
   Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
   void heartbeatCheck(const ros::TimerEvent& e);
-  bool hello(tapi_msgs::Hello::Request& helloReq, tapi_msgs::Hello::Response& helloResp);
   void sendAllConnections();
+  void updateData(const std_msgs::Time::ConstPtr& time);
 };
 }
 
