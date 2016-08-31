@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "Tapi");
+  ros::init(argc, argv, "Tapi_GUI");
   ros::NodeHandle nh;
   Tapi::Api api(&nh);
   QApplication a(argc, argv);
