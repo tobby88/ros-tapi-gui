@@ -42,71 +42,62 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+    <widget class="QWidget" name="sideWidget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QPushButton" name="loadButton">
-        <property name="text">
-         <string>Load Configuration</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="saveButton">
-        <property name="text">
-         <string>Save Configuration</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_2" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>100</height>
-         </size>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QLabel" name="keyImages">
-           <property name="text">
-            <string>█  Images/Camera</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="keySwitch">
-           <property name="text">
-            <string>█  Switch/Button</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="keyTristate">
-           <property name="text">
-            <string>█  Tristate</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="keyAnalogValue">
-           <property name="text">
-            <string>█  Analog Value/Axis</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_3" native="true"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="TestLabel">
-        <property name="text">
-         <string>false</string>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayoutKeys">
+        <item>
+         <widget class="QPushButton" name="loadButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>23</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Load Configuration</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="saveButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>23</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Save Configuration</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="TestLabel">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>25</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>false</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

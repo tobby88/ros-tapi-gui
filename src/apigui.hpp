@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <map>
 #include <vector>
 #include "api.hpp"
 #include "device.hpp"
@@ -33,6 +34,7 @@ protected:
 private:
   // Private member variables
   Tapi::Api* api;
+  std::map<std::string, QColor> colorKeys;
   QVBoxLayout* layoutReceiver;
   QVBoxLayout* layoutSender;
   QPoint mousePosition;

@@ -112,7 +112,7 @@ find_package(Qt5Widgets)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES tobby
+#  LIBRARIES tapi
   CATKIN_DEPENDS message_runtime roscpp tapi_msgs
 #  DEPENDS system_lib
 )
@@ -129,14 +129,14 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(tobby
-#   src/${PROJECT_NAME}/tobby.cpp
+# add_library(tapi
+#   src/${PROJECT_NAME}/tapi.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(tobby ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(tapi ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 add_executable(tapi
@@ -177,7 +177,7 @@ target_link_libraries(tapi
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS tobby tobby_node
+# install(TARGETS tapi tapi
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -202,7 +202,7 @@ target_link_libraries(tapi
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_tobby.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_tapi.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

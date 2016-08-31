@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
   <name>tapi</name>
-  <version>1.1.1</version>
-  <description>Tobby's API</description>
+  <version>1.2.0</version>
+  <description>Tapi</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->

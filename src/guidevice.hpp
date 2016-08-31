@@ -22,6 +22,7 @@ public:
   QPoint FeatureBoxPosition(Tapi::Feature* feature);
   Tapi::Device* GetDevice();
   std::vector<Tapi::Feature*> GetFeatures();
+  static QColor stringToColor(std::string messagetype);
 
 protected:
   // Protected member functions

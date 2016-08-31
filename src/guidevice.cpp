@@ -63,6 +63,25 @@ vector<Tapi::Feature*> GuiDevice::GetFeatures()
   return features;
 }
 
+// Public member functions
+QColor GuiDevice::stringToColor(string messagetype)
+{
+  char array[1024];
+  strncpy(array, messagetype.c_str(), sizeof(array));
+  array[sizeof(array) - 1] = 0;
+  unsigned long sum=0;
+  for(int i=0; i<messagetype.length(); i++)
+    sum+=array[i]*i;
+  sum*=7;
+  uint8_t red, green, blue;
+  red = sum%255;
+  green = sum/255;
+  blue = (sum>>6)%255;
+  QColor color;
+  color = QColor(red, green, blue);
+  return color;
+}
+
 // Protected member functions
 
 void GuiDevice::mouseReleaseEvent(QMouseEvent* event)
@@ -110,25 +129,9 @@ void GuiDevice::paintEvent(QPaintEvent*)
     int line_y = header_end + i * line_height;
 
     QColor color;
-    /*switch ((*it)->GetType())
-    {
-      case tapi_msgs::Feature::Type_AnalogValue:
-        color = Qt::red;
-        break;
-      case tapi_msgs::Feature::Type_Images:
-        color = Qt::green;
-        break;
-      case tapi_msgs::Feature::Type_Switch:
-        color = Qt::blue;
-        break;
-      case tapi_msgs::Feature::Type_Tristate:
-        color = Qt::cyan;
-        break;
-      default:*/
-    // TODO: change colours!
-        color = QColor("#f1aa00");
-        //break;
-    //}
+
+    color = stringToColor((*it)->GetType());
+
     if (!device->Active())
       color = color.darker();
     painter.setBrush(color);

@@ -26,14 +26,12 @@ ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::Ap
   timerInterval = 15;
   timer->start(timerInterval);
 
-  ui->keyAnalogValue->setText("<font color='red'>█</font>  Analog Value/Axis");
-  ui->keyImages->setText("<font color='green'>█</font>  Images/Camera");
-  ui->keySwitch->setText("<font color='blue'>█</font>  Switch/Button");
-  ui->keyTristate->setText("<font color='cyan'>█</font>  Tristate");
-
   // Add vertical layouts to the scroll Areas
   layoutReceiver = ui->verticalLayoutReceiver;
   layoutSender = ui->verticalLayoutSender;
+  layoutReceiver->setAlignment(Qt::AlignTop);
+  layoutSender->setAlignment(Qt::AlignTop);
+  ui->verticalLayoutKeys->setAlignment(Qt::AlignTop);
 
   selectedFeature = 0;
   selectedGuiDevice = 0;
@@ -164,37 +162,57 @@ void ApiGui::checkApiForUpdate()
     receiverGuiDevices.clear();
     vector<Tapi::Device*> devices = api->GetDevicesSorted();
     for (auto it = devices.begin(); it != devices.end(); ++it)
-      addDevice(*it);
-    api->Done();
-    // Reselect Guidevice, because the selection was deleted above
-    if (selectedFeature)
     {
-      bool found = false;
-      for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); ++it)
-        if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
-        {
-          selectedGuiDevice = *it;
-          found = true;
-        }
-      for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); ++it)
-        if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
-        {
-          selectedGuiDevice = *it;
-          found = true;
-        }
-      if (!found)
+      addDevice(*it);
+      vector<Tapi::Feature*> features = (*it)->GetSortedFeatures();
+      for (auto it2 = features.begin(); it2 != features.end(); ++it2)
       {
-        selectedGuiDevice = 0;
-        selectedFeature = 0;
+        string type = (*it2)->GetType();
+        if (colorKeys.count(type) < 1)
+        {
+          QColor color = GuiDevice::stringToColor(type);
+          colorKeys.emplace(type, color);
+
+          QLabel* key = new QLabel();
+
+          QString format("<font color=\"%1\">%2</font>  %3");
+          key->setText(format.arg(color.name(), "█  ", type.c_str()));
+          ui->verticalLayoutKeys->addWidget(key);
+          key->show();
+        }
       }
     }
-    update();
+  api->Done();
+  // Reselect Guidevice, because the selection was deleted above
+  if (selectedFeature)
+  {
+    bool found = false;
+    for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); ++it)
+      if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
+      {
+        selectedGuiDevice = *it;
+        found = true;
+      }
+    for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); ++it)
+      if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
+      {
+        selectedGuiDevice = *it;
+        found = true;
+      }
+    if (!found)
+    {
+      selectedGuiDevice = 0;
+      selectedFeature = 0;
+    }
   }
+  update();
+}
 }
 
 void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 {
-  ROS_ERROR("%s %s %s", guidevice->GetDevice()->GetName().c_str(), feature->GetName().c_str(), feature->GetType().c_str());
+  ROS_ERROR("%s %s %s", guidevice->GetDevice()->GetName().c_str(), feature->GetName().c_str(),
+            feature->GetType().c_str());
   QString qs = QString::fromStdString(feature->GetName());
   ui->TestLabel->setText(qs);
 
