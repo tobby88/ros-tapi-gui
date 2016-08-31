@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.0)
-project(tapi)
+project(tapi_gui)
 
 # Use specified C++ standard
 set(CMAKE_CXX_STANDARD 11)
@@ -139,7 +139,7 @@ include_directories(
 # add_dependencies(tapi ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(tapi
+add_executable(gui
   src/api.cpp
   src/apigui.cpp
   src/apigui.ui
@@ -154,10 +154,10 @@ add_executable(tapi
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(tapi ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(gui ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(tapi
+target_link_libraries(gui
   Qt5::Widgets
   ${catkin_LIBRARIES}
 )
