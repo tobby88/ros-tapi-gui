@@ -37,6 +37,7 @@ public:
 
 private:
   // Private member variables
+  ros::Publisher clearPub;
   std::map<std::string, Tapi::Connection> connections;
   ros::ServiceClient conListClient;
   ros::Publisher conPub;

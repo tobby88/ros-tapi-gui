@@ -25,6 +25,7 @@ Api::Api(ros::NodeHandle* nh) : nh(nh)
   delPub = nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
   conPub = nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
   conListClient = nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
+  clearPub = nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
 }
 
 Api::~Api()
@@ -36,6 +37,7 @@ Api::~Api()
   lastUpdatedSub.shutdown();
   delPub.shutdown();
   conPub.shutdown();
+  clearPub.shutdown();
 }
 
 // Public member functions
@@ -56,11 +58,9 @@ bool Api::CheckPending()
 
 void Api::Clear()
 {
-  for (auto it = connections.begin(); it != connections.end(); ++it)
-    DeleteConnection(it->second.GetReceiverFeatureUUID());
-  connections.clear();
-  devices.clear();
-  changed();
+    std_msgs::Bool msg;
+    msg.data=true;
+    clearPub.publish(msg);
 }
 
 bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coefficient)
