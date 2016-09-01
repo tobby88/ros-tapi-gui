@@ -155,7 +155,6 @@ void Api::Run()
 void Api::changed()
 {
   pendingChanges = true;
-  sendAllConnections();
 #ifdef DEBUG
   DebugOutput();
 #endif
@@ -188,20 +187,6 @@ void Api::heartbeatCheck(const ros::TimerEvent& e)
     }
   if (deactivatedDevices)
     changed();
-}
-
-void Api::sendAllConnections()
-{
-  /*for (auto it = connections.begin(); it != connections.end(); ++it)
-  {
-    tapi_msgs::Connection msg;
-    msg.SenderUUID = it->second.GetSenderUUID();
-    msg.SenderFeatureUUID = it->second.GetSenderFeatureUUID();
-    msg.ReceiverUUID = it->second.GetReceiverUUID();
-    msg.ReceiverFeatureUUID = it->second.GetReceiverFeatureUUID();
-    msg.Coefficient = it->second.GetCoefficient();
-    configPub.publish(msg);
-  }*/
 }
 
 void Api::updateData(const std_msgs::Time::ConstPtr& time)

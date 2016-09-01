@@ -56,7 +56,6 @@ private:
   static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
   Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
   void heartbeatCheck(const ros::TimerEvent& e);
-  void sendAllConnections();
   void updateData(const std_msgs::Time::ConstPtr& time);
 };
 }
