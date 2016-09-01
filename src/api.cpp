@@ -24,12 +24,13 @@ Api::Api(ros::NodeHandle* nh) : nh(nh)
   heartbeatCheckTimer = nh->createTimer(ros::Duration(HEARTBEAT_CHECK_INTERVAL / 1000.0), &Api::heartbeatCheck, this);
   heartbeatCheckTimer.start();
   devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
-  lastUpdatedSub = nh->subscribe("Tapi/LastChanged", 5, &Api::updateData, this);
+  lastUpdatedSub = nh->subscribe("Tapi/LastChanged", 5, &Api::updateAvailable, this);
   delPub = nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
   conPub = nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
   conListClient = nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
   clearPub = nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
   helloClient = nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
+  updateData();
 }
 
 Api::~Api()
@@ -168,117 +169,124 @@ void Api::heartbeatCheck(const ros::TimerEvent& e)
     changed();
 }
 
-void Api::updateData(const std_msgs::Time::ConstPtr& time)
+void Api::updateAvailable(const std_msgs::Time::ConstPtr& time)
 {
   if (time->data.toNSec() > lastUpdated.toNSec())
   {
     lastUpdated = time->data;
-    bool updates = false;
-
-    tapi_msgs::GetDeviceList devSrv;
-    devSrv.request.get = true;
-    if (!devListClient.call(devSrv))
-    {
-      ROS_ERROR("Failed to establish connection to core");
-    }
-    vector<tapi_msgs::Device> devVect = devSrv.response.Devices;
-
-    for (auto it = devVect.begin(); it != devVect.end(); ++it)
-    {
-      bool active = it->Active;
-      uint8_t deviceType = it->DeviceType;
-      unsigned long heartbeat = it->Heartbeat;
-      ros::Time lastSeen = it->LastSeen;
-      unsigned long lastSeq = it->LastSeq;
-      string name = it->Name;
-      string uuid = it->UUID;
-      vector<tapi_msgs::Feature> featureVec = it->Features;
-      map<string, Tapi::Feature> featureMap;
-      for (auto it2 = featureVec.begin(); it2 != featureVec.end(); ++it2)
-      {
-        string featureType = it2->FeatureType;
-        string featureName = it2->Name;
-        string featureUUID = it2->UUID;
-        Tapi::Feature feature(featureType, featureName, featureUUID);
-        featureMap.emplace(featureUUID, feature);
-      }
-      if (devices.empty() || devices.count(uuid) == 0)
-      {
-        Tapi::Device device(deviceType, name, uuid, lastSeq, lastSeen, heartbeat, featureMap);
-        devices.emplace(uuid, device);
-        updates = true;
-      }
-      else if (devices.count(uuid) == 1)
-      {
-        devices.at(uuid).Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
-        updates = true;
-      }
-      else
-        return;
-
-      if (!active)
-        devices.at(uuid).Deactivate();
-    }
-
-    tapi_msgs::GetConnectionList conSrv;
-    conSrv.request.get = true;
-    if (!conListClient.call(conSrv))
-    {
-      ROS_ERROR("Failed to establish connection to core");
-      return;
-    }
-    vector<tapi_msgs::Connection> conVect = conSrv.response.Connections;
-    for (auto it = conVect.begin(); it != conVect.end(); ++it)
-    {
-      if (connections.count(it->ReceiverFeatureUUID) == 0)
-      {
-        Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
-                                    it->Coefficient);
-        connections.emplace(it->ReceiverFeatureUUID, connection);
-        devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
-        devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
-        updates = true;
-      }
-      else if (connections.at(it->ReceiverFeatureUUID).GetSenderFeatureUUID() != it->SenderFeatureUUID)
-      {
-        string receiverFeatureUUID = it->ReceiverFeatureUUID;
-        Tapi::Device* receiverDevice = getDeviceByFeatureUUID(receiverFeatureUUID);
-        string senderFeatureUUID = connections.at(receiverFeatureUUID).GetSenderFeatureUUID();
-        Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
-        receiverDevice->GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
-        senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
-        connections.erase(receiverFeatureUUID);
-        Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
-                                    it->Coefficient);
-        connections.emplace(receiverFeatureUUID, connection);
-        devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
-        devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
-        updates = true;
-      }
-    }
-    vector<string> deletableConnections;
-    for (auto it = connections.begin(); it != connections.end(); ++it)
-    {
-      bool found = false;
-      string searchUUID = it->second.GetReceiverFeatureUUID();
-      for (auto it2 = conVect.begin(); it2 != conVect.end(); ++it2)
-        if (searchUUID == it2->ReceiverFeatureUUID)
-          found = true;
-      if (!found)
-      {
-        Tapi::Device* receiverDevice = getDeviceByFeatureUUID(searchUUID);
-        string senderFeatureUUID = connections.at(searchUUID).GetSenderFeatureUUID();
-        Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
-        receiverDevice->GetFeatureByUUID(searchUUID)->DecrementConnections();
-        senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
-        deletableConnections.push_back(searchUUID);
-        updates = true;
-      }
-    }
-    for (auto it = deletableConnections.begin(); it != deletableConnections.end(); ++it)
-      connections.erase(*it);
-    if (updates)
-      changed();
+    updateData();
   }
+}
+
+void Api::updateData()
+{
+  bool updates = false;
+
+  tapi_msgs::GetDeviceList devSrv;
+  devSrv.request.get = true;
+  if (!devListClient.call(devSrv))
+  {
+    ROS_ERROR("Failed to establish connection to core");
+  }
+  vector<tapi_msgs::Device> devVect = devSrv.response.Devices;
+
+  for (auto it = devVect.begin(); it != devVect.end(); ++it)
+  {
+    bool active = it->Active;
+    uint8_t deviceType = it->DeviceType;
+    unsigned long heartbeat = it->Heartbeat;
+    ros::Time lastSeen = it->LastSeen;
+    unsigned long lastSeq = it->LastSeq;
+    string name = it->Name;
+    string uuid = it->UUID;
+    vector<tapi_msgs::Feature> featureVec = it->Features;
+    map<string, Tapi::Feature> featureMap;
+    for (auto it2 = featureVec.begin(); it2 != featureVec.end(); ++it2)
+    {
+      string featureType = it2->FeatureType;
+      string featureName = it2->Name;
+      string featureUUID = it2->UUID;
+      Tapi::Feature feature(featureType, featureName, featureUUID);
+      featureMap.emplace(featureUUID, feature);
+    }
+    if (devices.empty() || devices.count(uuid) == 0)
+    {
+      Tapi::Device device(deviceType, name, uuid, lastSeq, lastSeen, heartbeat, featureMap);
+      devices.emplace(uuid, device);
+      updates = true;
+    }
+    else if (devices.count(uuid) == 1)
+    {
+      devices.at(uuid).Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
+      updates = true;
+    }
+    else
+      return;
+
+    if (!active)
+      devices.at(uuid).Deactivate();
+  }
+
+  tapi_msgs::GetConnectionList conSrv;
+  conSrv.request.get = true;
+  if (!conListClient.call(conSrv))
+  {
+    ROS_ERROR("Failed to establish connection to core");
+    return;
+  }
+  vector<tapi_msgs::Connection> conVect = conSrv.response.Connections;
+  for (auto it = conVect.begin(); it != conVect.end(); ++it)
+  {
+    if (devices.count(it->ReceiverUUID) == 0 || devices.count(it->SenderUUID) == 0)
+      continue;
+    if (connections.count(it->ReceiverFeatureUUID) == 0)
+    {
+      Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
+                                  it->Coefficient);
+      connections.emplace(it->ReceiverFeatureUUID, connection);
+      devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
+      devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      updates = true;
+    }
+    else if (connections.at(it->ReceiverFeatureUUID).GetSenderFeatureUUID() != it->SenderFeatureUUID)
+    {
+      string receiverFeatureUUID = it->ReceiverFeatureUUID;
+      Tapi::Device* receiverDevice = getDeviceByFeatureUUID(receiverFeatureUUID);
+      string senderFeatureUUID = connections.at(receiverFeatureUUID).GetSenderFeatureUUID();
+      Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
+      receiverDevice->GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
+      senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
+      connections.erase(receiverFeatureUUID);
+      Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
+                                  it->Coefficient);
+      connections.emplace(receiverFeatureUUID, connection);
+      devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
+      devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      updates = true;
+    }
+  }
+  vector<string> deletableConnections;
+  for (auto it = connections.begin(); it != connections.end(); ++it)
+  {
+    bool found = false;
+    string searchUUID = it->second.GetReceiverFeatureUUID();
+    for (auto it2 = conVect.begin(); it2 != conVect.end(); ++it2)
+      if (searchUUID == it2->ReceiverFeatureUUID)
+        found = true;
+    if (!found)
+    {
+      Tapi::Device* receiverDevice = getDeviceByFeatureUUID(searchUUID);
+      string senderFeatureUUID = connections.at(searchUUID).GetSenderFeatureUUID();
+      Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
+      receiverDevice->GetFeatureByUUID(searchUUID)->DecrementConnections();
+      senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
+      deletableConnections.push_back(searchUUID);
+      updates = true;
+    }
+  }
+  for (auto it = deletableConnections.begin(); it != deletableConnections.end(); ++it)
+    connections.erase(*it);
+  if (updates)
+    changed();
 }
 }
