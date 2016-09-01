@@ -38,6 +38,7 @@ public:
 private:
   // Private member variables
   std::map<std::string, Tapi::Connection> connections;
+  ros::ServiceClient conListClient;
   ros::Publisher conPub;
   ros::Publisher delPub;
   std::map<std::string, Tapi::Device> devices;
