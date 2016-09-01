@@ -70,7 +70,6 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coeff
   msg.Feature1UUID = feature1uuid;
   msg.Feature2UUID = feature2uuid;
   conPub.publish(msg);
-  changed();
   return true;
 }
 
