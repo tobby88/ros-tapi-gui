@@ -58,9 +58,9 @@ bool Api::CheckPending()
 
 void Api::Clear()
 {
-    std_msgs::Bool msg;
-    msg.data=true;
-    clearPub.publish(msg);
+  std_msgs::Bool msg;
+  msg.data = true;
+  clearPub.publish(msg);
 }
 
 bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coefficient)
@@ -288,7 +288,7 @@ void Api::updateData(const std_msgs::Time::ConstPtr& time)
         updates = true;
       }
     }
-    for (auto it = deletableConnections.begin(); it!=deletableConnections.end(); ++it)
+    for (auto it = deletableConnections.begin(); it != deletableConnections.end(); ++it)
       connections.erase(*it);
     if (updates)
       changed();
