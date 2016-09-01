@@ -351,11 +351,9 @@ void ApiGui::loadButtonClicked()
         {
           string featureUUID;
           string featureName;
-          string featureDescription;
           string featureType;
           getline(fileInput, featureUUID);
           getline(fileInput, featureName);
-          getline(fileInput, featureDescription);
           getline(fileInput, featureType);
           Tapi::Feature feature = Tapi::Feature(featureType, featureName, featureUUID);
           features.emplace(featureUUID, feature);
