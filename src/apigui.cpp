@@ -232,8 +232,6 @@ void ApiGui::checkApiForUpdate()
 
 void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 {
-  ROS_ERROR("%s %s %s", guidevice->GetDevice()->GetName().c_str(), feature->GetName().c_str(),
-            feature->GetType().c_str());
   QString qs = QString::fromStdString(feature->GetName());
   ui->TestLabel->setText(qs);
 
