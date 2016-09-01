@@ -27,7 +27,6 @@ public:
   bool CheckPending();
   void Clear();
   bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
-  void DebugOutput();
   bool DeleteConnection(std::string receiverFeatureUUID);
   void Done();
   std::vector<Tapi::Connection*> GetConnections();

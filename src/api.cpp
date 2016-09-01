@@ -96,24 +96,6 @@ bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coeff
   return true;
 }
 
-void Api::DebugOutput()
-{
-  for (auto it = devices.begin(); it != devices.end(); ++it)
-  {
-    ROS_INFO("Debug: Device-Element UUID: %s", it->first.c_str());
-    ROS_INFO("Debug: Device-Data: Type: %d, Name: %s, UUID: %s, Last Seq: %lu, Last Seen: %f, Heartbeat-Interval: %lu",
-             (unsigned int)it->second.GetType(), it->second.GetName().c_str(), it->second.GetUUID().c_str(),
-             it->second.GetLastSeq(), it->second.GetLastSeen().toSec(), it->second.GetHeartbeat());
-    vector<Tapi::Feature*> features = it->second.GetSortedFeatures();
-    for (auto it2 = features.begin(); it2 != features.end(); ++it2)
-    {
-      ROS_INFO("Debug: Device-Feature: ID: %s, Feature-Type: %s, Feature-Name: %s", (*it2)->GetUUID().c_str(),
-               (*it2)->GetType().c_str(), (*it2)->GetName().c_str());
-    }
-  }
-  // TODO: Print connections
-}
-
 bool Api::DeleteConnection(string receiverFeatureUUID)
 {
   std_msgs::String msg;
@@ -155,9 +137,6 @@ void Api::Run()
 void Api::changed()
 {
   pendingChanges = true;
-#ifdef DEBUG
-  DebugOutput();
-#endif
 }
 
 bool Api::compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second)
