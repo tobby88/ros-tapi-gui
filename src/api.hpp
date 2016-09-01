@@ -2,8 +2,7 @@
 #define API_H
 
 // Intervals in ms
-#define HEARTBEAT_CHECK_INTERVAL 100L
-#define STANDARD_HEARTBEAT_INTERVAL 2000L
+#define CHECK_INTERVAL 1000L
 
 #include <map>
 #include <string>
@@ -42,19 +41,19 @@ private:
   ros::Publisher delPub;
   std::map<std::string, Tapi::Device> devices;
   ros::ServiceClient devListClient;
-  ros::Timer heartbeatCheckTimer;
   ros::ServiceClient helloClient;
   ros::Time lastUpdated;
   ros::Subscriber lastUpdatedSub;
   ros::NodeHandle* nh;
   bool pendingChanges;
   ros::AsyncSpinner* spinner;
+  ros::Timer updateTimer;
 
   // Private member functions
   void changed();
   static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
   Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
-  void heartbeatCheck(const ros::TimerEvent& e);
+  void timer(const ros::TimerEvent& e);
   void updateAvailable(const std_msgs::Time::ConstPtr& time);
   void updateData();
 };

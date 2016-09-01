@@ -21,8 +21,6 @@ Api::Api(ros::NodeHandle* nh) : nh(nh)
 {
   spinner = new ros::AsyncSpinner(1);
   pendingChanges = false;
-  heartbeatCheckTimer = nh->createTimer(ros::Duration(HEARTBEAT_CHECK_INTERVAL / 1000.0), &Api::heartbeatCheck, this);
-  heartbeatCheckTimer.start();
   devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
   lastUpdatedSub = nh->subscribe("Tapi/LastChanged", 5, &Api::updateAvailable, this);
   delPub = nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
@@ -31,11 +29,13 @@ Api::Api(ros::NodeHandle* nh) : nh(nh)
   clearPub = nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
   helloClient = nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
   updateData();
+  updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &Api::timer, this);
+  updateTimer.start();
 }
 
 Api::~Api()
 {
-  heartbeatCheckTimer.stop();
+  updateTimer.stop();
   spinner->stop();
   delete spinner;
   devListClient.shutdown();
@@ -155,18 +155,9 @@ Tapi::Device* Api::getDeviceByFeatureUUID(string uuid)
   return 0;
 }
 
-void Api::heartbeatCheck(const ros::TimerEvent& e)
+void Api::timer(const ros::TimerEvent& e)
 {
-  bool deactivatedDevices = false;
-  for (auto it = devices.begin(); it != devices.end(); ++it)
-    if ((it->second.Active()) &&
-        (ros::Time::now().toSec() - it->second.GetLastSeen().toSec() > 2.5 * STANDARD_HEARTBEAT_INTERVAL / 1000.0))
-    {
-      it->second.Deactivate();
-      deactivatedDevices = true;
-    }
-  if (deactivatedDevices)
-    changed();
+  updateData();
 }
 
 void Api::updateAvailable(const std_msgs::Time::ConstPtr& time)
