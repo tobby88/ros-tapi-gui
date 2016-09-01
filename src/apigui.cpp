@@ -361,7 +361,7 @@ void ApiGui::loadButtonClicked()
           features.emplace(featureUUID, feature);
           getline(fileInput, temp);
         }
-        api->AddDeviceWithoutHello(type, name, uuid, heartbeat, features);
+        api->AddDevice(type, name, uuid, features);
       }
       else if (temp == "[Connection]")
       {

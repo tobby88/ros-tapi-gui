@@ -1,5 +1,7 @@
 #include "api.hpp"
 #include "feature.hpp"
+#include "std_msgs/Bool.h"
+#include "std_msgs/Header.h"
 #include "std_msgs/String.h"
 #include "tapi_msgs/Connect.h"
 #include "tapi_msgs/Connection.h"
@@ -7,6 +9,7 @@
 #include "tapi_msgs/Feature.h"
 #include "tapi_msgs/GetConnectionList.h"
 #include "tapi_msgs/GetDeviceList.h"
+#include "tapi_msgs/Hello.h"
 
 using namespace std;
 
@@ -26,6 +29,7 @@ Api::Api(ros::NodeHandle* nh) : nh(nh)
   conPub = nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
   conListClient = nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
   clearPub = nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
+  helloClient = nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
 }
 
 Api::~Api()
@@ -38,17 +42,36 @@ Api::~Api()
   delPub.shutdown();
   conPub.shutdown();
   clearPub.shutdown();
+  helloClient.shutdown();
 }
 
 // Public member functions
 
-void Api::AddDeviceWithoutHello(uint8_t type, string name, string uuid, unsigned long heartbeat,
-                                map<string, Tapi::Feature> features)
+void Api::AddDevice(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
 {
-  Tapi::Device device(type, name, uuid, 0, ros::Time(0.0), heartbeat, features);
-  device.Deactivate();
-  devices.emplace(uuid, device);
-  changed();
+  tapi_msgs::Hello hello;
+  hello.request.DeviceType = type;
+  vector<tapi_msgs::Feature> featureVec;
+  for (auto it = features.begin(); it != features.end(); ++it)
+  {
+    tapi_msgs::Feature feature;
+    feature.FeatureType = it->second.GetType();
+    feature.Name = it->second.GetName();
+    feature.UUID = it->second.GetUUID();
+    featureVec.push_back(feature);
+  }
+  hello.request.Features = featureVec;
+  std_msgs::Header header;
+  header.seq = 1;
+  ros::Time now = ros::Time::now();
+  header.stamp = now;
+  hello.request.Header = header;
+  hello.request.Name = name;
+  hello.request.UUID = uuid;
+  if (!helloClient.call(hello))
+    ROS_ERROR("Couldn't connect to hello service.");
+  if (hello.response.Status == tapi_msgs::HelloResponse::StatusError)
+    ROS_ERROR("Error when connection to hello service");
 }
 
 bool Api::CheckPending()
