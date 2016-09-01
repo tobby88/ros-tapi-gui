@@ -85,6 +85,8 @@ void Api::Clear()
   std_msgs::Bool msg;
   msg.data = true;
   clearPub.publish(msg);
+  connections.clear();
+  devices.clear();
 }
 
 bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coefficient)

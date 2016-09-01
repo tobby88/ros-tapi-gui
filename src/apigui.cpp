@@ -38,6 +38,7 @@ ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::Ap
 
   connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadButtonClicked()));
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
+  connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
 }
 
 ApiGui::~ApiGui()
@@ -131,6 +132,26 @@ void ApiGui::addDevice(Tapi::Device* device)
 }
 
 // Slot functions
+
+void ApiGui::clearButtonClicked()
+{
+  for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); ++it)
+  {
+    (*it)->hide();
+    layoutSender->removeWidget(*it);
+    delete *it;
+  }
+  senderGuiDevices.clear();
+  for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); ++it)
+  {
+    (*it)->hide();
+    layoutReceiver->removeWidget(*it);
+    delete *it;
+  }
+  receiverGuiDevices.clear();
+  api->Clear();
+  update();
+}
 
 void ApiGui::checkApiForUpdate()
 {

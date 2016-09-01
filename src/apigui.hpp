@@ -52,6 +52,7 @@ private:
 private slots:
   // Slot functions
   void checkApiForUpdate();
+  void clearButtonClicked();
   void featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature);
   void loadButtonClicked();
   void saveButtonClicked();
