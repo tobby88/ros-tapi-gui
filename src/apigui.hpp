@@ -26,7 +26,7 @@ class ApiGui : public QWidget
 
 public:
   // Constructor/Destructor
-  ApiGui(Tapi::Api* api, QWidget* parent = 0);
+  ApiGui(ros::NodeHandle* nh, QWidget* parent = 0);
   ~ApiGui();
 
 protected:
@@ -51,6 +51,7 @@ private:
   QVBoxLayout* layoutReceiver;
   QVBoxLayout* layoutSender;
   QPoint mousePosition;
+  ros::NodeHandle* nh;
   bool pendingChanges;
   std::vector<Tapi::GuiDevice*> receiverGuiDevices;
   Tapi::Feature* selectedFeature;

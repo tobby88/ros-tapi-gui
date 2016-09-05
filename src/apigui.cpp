@@ -23,16 +23,16 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), api(api)
+ApiGui::ApiGui(ros::NodeHandle *nh, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), nh(nh)
 {
   spinner = new ros::AsyncSpinner(1);
   pendingChanges = false;
-  devListClient = api->nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
-  delPub = api->nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
-  conPub = api->nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
-  conListClient = api->nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
-  clearPub = api->nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
-  helloClient = api->nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
+  devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
+  delPub = nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
+  conPub = nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
+  conListClient = nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
+  clearPub = nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
+  helloClient = nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
   updateTimer.start();
 
   ui->setupUi(this);
@@ -55,10 +55,10 @@ ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::Ap
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
   connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
 
-  lastUpdatedSub = api->nh->subscribe("Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
+  lastUpdatedSub = nh->subscribe("Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
   run();
   updateData();
-  updateTimer = api->nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
+  updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
 }
 
 ApiGui::~ApiGui()

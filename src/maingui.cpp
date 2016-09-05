@@ -7,10 +7,9 @@ namespace Tapi
 
 MainGui::MainGui(ros::NodeHandle* nh, QWidget* parent) : QMainWindow(parent), ui(new Ui::MainGui), nh(nh)
 {
-  api = new Tapi::Api(nh);
   ui->setupUi(this);
   QWidget::showMaximized();
-  apiui = new Tapi::ApiGui(api, this);
+  apiui = new Tapi::ApiGui(nh, this);
   ui->scrollAreaWidgetContents->layout()->addWidget(apiui);
   apiui->show();
 }
