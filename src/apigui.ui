@@ -18,7 +18,7 @@
     <widget class="QWidget" name="widgetSender" native="true">
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayoutSender">
+       <layout class="QVBoxLayout" name="verticalLayoutPublisher">
         <property name="sizeConstraint">
          <enum>QLayout::SetMaximumSize</enum>
         </property>
@@ -36,7 +36,7 @@
     <widget class="QWidget" name="widgetReceiver" native="true">
      <layout class="QVBoxLayout" name="verticalLayout_7">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayoutReceiver"/>
+       <layout class="QVBoxLayout" name="verticalLayoutSubscriber"/>
       </item>
      </layout>
     </widget>

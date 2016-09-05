@@ -26,12 +26,12 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
 {
   spinner = new ros::AsyncSpinner(1);
   pendingChanges = false;
-  devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
-  delPub = nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
-  conPub = nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
-  conListClient = nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
-  clearPub = nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
-  helloClient = nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
+  devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("/Tapi/GetDeviceList");
+  delPub = nh->advertise<std_msgs::String>("/Tapi/DeleteConnection", 1000);
+  conPub = nh->advertise<tapi_msgs::Connect>("/Tapi/ConnectFeatures", 1000);
+  conListClient = nh->serviceClient<tapi_msgs::GetConnectionList>("/Tapi/GetConnectionList");
+  clearPub = nh->advertise<std_msgs::Bool>("/Tapi/Clear", 2);
+  helloClient = nh->serviceClient<tapi_msgs::Hello>("/Tapi/HelloServ");
   updateTimer.start();
 
   ui->setupUi(this);
@@ -41,10 +41,10 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
   guitimer->start(timerInterval);
 
   // Add vertical layouts to the scroll Areas
-  layoutReceiver = ui->verticalLayoutReceiver;
-  layoutSender = ui->verticalLayoutSender;
-  layoutReceiver->setAlignment(Qt::AlignTop);
-  layoutSender->setAlignment(Qt::AlignTop);
+  layoutSubscriber = ui->verticalLayoutSubscriber;
+  layoutPublisher = ui->verticalLayoutPublisher;
+  layoutSubscriber->setAlignment(Qt::AlignTop);
+  layoutPublisher->setAlignment(Qt::AlignTop);
   ui->verticalLayoutKeys->setAlignment(Qt::AlignTop);
 
   selectedFeature = 0;
@@ -54,7 +54,7 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
   connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
 
-  lastUpdatedSub = nh->subscribe("Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
+  lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
   run();
   updateData();
   updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
@@ -88,42 +88,42 @@ void ApiGui::paintEvent(QPaintEvent*)
   connections = getConnections();
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
-    string senderUUID = (*it)->GetSenderUUID();
-    string senderFeatureUUID = (*it)->GetSenderFeatureUUID();
-    string receiverUUID = (*it)->GetReceiverUUID();
-    string receiverFeatureUUID = (*it)->GetReceiverFeatureUUID();
-    Tapi::GuiDevice *sender, *receiver;
-    sender = 0;
-    receiver = 0;
-    for (auto it2 = senderGuiDevices.begin(); it2 != senderGuiDevices.end(); ++it2)
+    string publisherUUID = (*it)->GetPublisherUUID();
+    string publisherFeatureUUID = (*it)->GetPublisherFeatureUUID();
+    string subscriberUUID = (*it)->GetSubscriberUUID();
+    string subscriberFeatureUUID = (*it)->GetSubscriberFeatureUUID();
+    Tapi::GuiDevice *publisher, *subscriber;
+    publisher = 0;
+    subscriber = 0;
+    for (auto it2 = publisherGuiDevices.begin(); it2 != publisherGuiDevices.end(); ++it2)
     {
-      if ((*it2)->GetDevice()->GetUUID() == senderUUID)
+      if ((*it2)->GetDevice()->GetUUID() == publisherUUID)
       {
-        sender = *it2;
+        publisher = *it2;
         break;
       }
     }
-    if (!sender)
+    if (!publisher)
       continue;
-    for (auto it2 = receiverGuiDevices.begin(); it2 != receiverGuiDevices.end(); ++it2)
+    for (auto it2 = subscriberGuiDevices.begin(); it2 != subscriberGuiDevices.end(); ++it2)
     {
-      if ((*it2)->GetDevice()->GetUUID() == receiverUUID)
+      if ((*it2)->GetDevice()->GetUUID() == subscriberUUID)
       {
-        receiver = *it2;
+        subscriber = *it2;
         break;
       }
     }
-    if (!receiver)
+    if (!subscriber)
       continue;
     QPoint begin, end;
-    Tapi::Feature* feature = sender->GetDevice()->GetFeatureByUUID(senderFeatureUUID);
+    Tapi::Feature* feature = publisher->GetDevice()->GetFeatureByUUID(publisherFeatureUUID);
     if (!feature)
       continue;
-    begin = sender->mapTo(this, sender->FeatureBoxPosition(feature));
-    feature = receiver->GetDevice()->GetFeatureByUUID(receiverFeatureUUID);
+    begin = publisher->mapTo(this, publisher->FeatureBoxPosition(feature));
+    feature = subscriber->GetDevice()->GetFeatureByUUID(subscriberFeatureUUID);
     if (!feature)
       continue;
-    end = receiver->mapTo(this, receiver->FeatureBoxPosition(feature));
+    end = subscriber->mapTo(this, subscriber->FeatureBoxPosition(feature));
     painter.drawLine(begin, end);
   }
 
@@ -145,15 +145,15 @@ void ApiGui::paintEvent(QPaintEvent*)
 void ApiGui::addDevice(Tapi::Device* device)
 {
   Tapi::GuiDevice* guidevice = new Tapi::GuiDevice(this, device);
-  if (device->GetType() == tapi_msgs::HelloRequest::Type_SenderDevice)
+  if (device->GetType() == tapi_msgs::Device::Type_Publisher)
   {
-    layoutSender->addWidget(guidevice);
-    senderGuiDevices.push_back(guidevice);
+    layoutPublisher->addWidget(guidevice);
+    publisherGuiDevices.push_back(guidevice);
   }
   else
   {
-    layoutReceiver->addWidget(guidevice);
-    receiverGuiDevices.push_back(guidevice);
+    layoutSubscriber->addWidget(guidevice);
+    subscriberGuiDevices.push_back(guidevice);
   }
   guidevice->show();  // dont forget to show it ;)
   connect(guidevice, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), this,
@@ -221,10 +221,10 @@ bool ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double co
   return true;
 }
 
-bool ApiGui::deleteConnection(string receiverFeatureUUID)
+bool ApiGui::deleteConnection(string subscriberFeatureUUID)
 {
   std_msgs::String msg;
-  msg.data = receiverFeatureUUID;
+  msg.data = subscriberFeatureUUID;
   delPub.publish(msg);
   changed();
 }
@@ -286,7 +286,7 @@ void ApiGui::updateData()
   bool updates = false;
 
   tapi_msgs::GetDeviceList devSrv;
-  devSrv.request.get = true;
+  devSrv.request.Get = true;
   if (!devListClient.call(devSrv))
   {
     ROS_ERROR("Failed to establish connection to core");
@@ -331,7 +331,7 @@ void ApiGui::updateData()
   }
 
   tapi_msgs::GetConnectionList conSrv;
-  conSrv.request.get = true;
+  conSrv.request.Get = true;
   if (!conListClient.call(conSrv))
   {
     ROS_ERROR("Failed to establish connection to core");
@@ -340,31 +340,31 @@ void ApiGui::updateData()
   vector<tapi_msgs::Connection> conVect = conSrv.response.Connections;
   for (auto it = conVect.begin(); it != conVect.end(); ++it)
   {
-    if (devices.count(it->ReceiverUUID) == 0 || devices.count(it->SenderUUID) == 0)
+    if (devices.count(it->SubscriberUUID) == 0 || devices.count(it->PublisherUUID) == 0)
       continue;
-    if (connections.count(it->ReceiverFeatureUUID) == 0)
+    if (connections.count(it->SubscriberFeatureUUID) == 0)
     {
-      Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
-                                  it->Coefficient);
-      connections.emplace(it->ReceiverFeatureUUID, connection);
-      devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
-      devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      Tapi::Connection connection(it->PublisherUUID, it->PublisherFeatureUUID, it->SubscriberUUID,
+                                  it->SubscriberFeatureUUID, it->Coefficient);
+      connections.emplace(it->SubscriberFeatureUUID, connection);
+      devices.at(it->PublisherUUID).GetFeatureByUUID(it->PublisherFeatureUUID)->IncrementConnections();
+      devices.at(it->SubscriberUUID).GetFeatureByUUID(it->SubscriberFeatureUUID)->IncrementConnections();
       updates = true;
     }
-    else if (connections.at(it->ReceiverFeatureUUID).GetSenderFeatureUUID() != it->SenderFeatureUUID)
+    else if (connections.at(it->SubscriberFeatureUUID).GetPublisherFeatureUUID() != it->PublisherFeatureUUID)
     {
-      string receiverFeatureUUID = it->ReceiverFeatureUUID;
-      Tapi::Device* receiverDevice = getDeviceByFeatureUUID(receiverFeatureUUID);
-      string senderFeatureUUID = connections.at(receiverFeatureUUID).GetSenderFeatureUUID();
-      Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
-      receiverDevice->GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
-      senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
-      connections.erase(receiverFeatureUUID);
-      Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
-                                  it->Coefficient);
-      connections.emplace(receiverFeatureUUID, connection);
-      devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
-      devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      string subscriberFeatureUUID = it->SubscriberFeatureUUID;
+      Tapi::Device* subscriberDevice = getDeviceByFeatureUUID(subscriberFeatureUUID);
+      string publisherFeatureUUID = connections.at(subscriberFeatureUUID).GetPublisherFeatureUUID();
+      Tapi::Device* publisherDevice = getDeviceByFeatureUUID(publisherFeatureUUID);
+      subscriberDevice->GetFeatureByUUID(subscriberFeatureUUID)->DecrementConnections();
+      publisherDevice->GetFeatureByUUID(publisherFeatureUUID)->DecrementConnections();
+      connections.erase(subscriberFeatureUUID);
+      Tapi::Connection connection(it->PublisherUUID, it->PublisherFeatureUUID, it->SubscriberUUID,
+                                  it->SubscriberFeatureUUID, it->Coefficient);
+      connections.emplace(subscriberFeatureUUID, connection);
+      devices.at(it->PublisherUUID).GetFeatureByUUID(it->PublisherFeatureUUID)->IncrementConnections();
+      devices.at(it->SubscriberUUID).GetFeatureByUUID(it->SubscriberFeatureUUID)->IncrementConnections();
       updates = true;
     }
   }
@@ -372,17 +372,17 @@ void ApiGui::updateData()
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
     bool found = false;
-    string searchUUID = it->second.GetReceiverFeatureUUID();
+    string searchUUID = it->second.GetSubscriberFeatureUUID();
     for (auto it2 = conVect.begin(); it2 != conVect.end(); ++it2)
-      if (searchUUID == it2->ReceiverFeatureUUID)
+      if (searchUUID == it2->SubscriberFeatureUUID)
         found = true;
     if (!found)
     {
-      Tapi::Device* receiverDevice = getDeviceByFeatureUUID(searchUUID);
-      string senderFeatureUUID = connections.at(searchUUID).GetSenderFeatureUUID();
-      Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
-      receiverDevice->GetFeatureByUUID(searchUUID)->DecrementConnections();
-      senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
+      Tapi::Device* subscriberDevice = getDeviceByFeatureUUID(searchUUID);
+      string publisherFeatureUUID = connections.at(searchUUID).GetPublisherFeatureUUID();
+      Tapi::Device* publisherDevice = getDeviceByFeatureUUID(publisherFeatureUUID);
+      subscriberDevice->GetFeatureByUUID(searchUUID)->DecrementConnections();
+      publisherDevice->GetFeatureByUUID(publisherFeatureUUID)->DecrementConnections();
       deletableConnections.push_back(searchUUID);
       updates = true;
     }
@@ -397,20 +397,20 @@ void ApiGui::updateData()
 
 void ApiGui::clearButtonClicked()
 {
-  for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); ++it)
+  for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
   {
     (*it)->hide();
-    layoutSender->removeWidget(*it);
+    layoutPublisher->removeWidget(*it);
     delete *it;
   }
-  senderGuiDevices.clear();
-  for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); ++it)
+  publisherGuiDevices.clear();
+  for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
   {
     (*it)->hide();
-    layoutReceiver->removeWidget(*it);
+    layoutSubscriber->removeWidget(*it);
     delete *it;
   }
-  receiverGuiDevices.clear();
+  subscriberGuiDevices.clear();
   clear();
   update();
 }
@@ -429,20 +429,20 @@ void ApiGui::checkApiForUpdate()
 
   if (checkPending())
   {
-    for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); ++it)
+    for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
     {
       (*it)->hide();
-      layoutSender->removeWidget(*it);
+      layoutPublisher->removeWidget(*it);
       delete *it;
     }
-    senderGuiDevices.clear();
-    for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); ++it)
+    publisherGuiDevices.clear();
+    for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
     {
       (*it)->hide();
-      layoutReceiver->removeWidget(*it);
+      layoutSubscriber->removeWidget(*it);
       delete *it;
     }
-    receiverGuiDevices.clear();
+    subscriberGuiDevices.clear();
     vector<Tapi::Device*> devices = getDevicesSorted();
     for (auto it = devices.begin(); it != devices.end(); ++it)
     {
@@ -470,13 +470,13 @@ void ApiGui::checkApiForUpdate()
     if (selectedFeature)
     {
       bool found = false;
-      for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); ++it)
+      for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
         if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
         {
           selectedGuiDevice = *it;
           found = true;
         }
-      for (auto it = receiverGuiDevices.begin(); it != receiverGuiDevices.end(); ++it)
+      for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
         if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
         {
           selectedGuiDevice = *it;
@@ -506,8 +506,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() == tapi_msgs::HelloRequest::Type_ReceiverDevice &&
-      feature->GetConnectionCount() > 0)
+  if (guidevice->GetDevice()->GetType() == tapi_msgs::Device::Type_Subscriber && feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
     if (selectedFeature && guidevice->GetDevice()->GetType() != selectedGuiDevice->GetDevice()->GetType() &&
@@ -644,18 +643,18 @@ void ApiGui::loadButtonClicked()
       }
       else if (temp == "[Connection]")
       {
-        string receiverUUID;
-        string receiverFeatureUUID;
-        string senderUUID;
-        string senderFeatureUUID;
+        string subscriberUUID;
+        string subscriberFeatureUUID;
+        string publisherUUID;
+        string publisherFeatureUUID;
         double coefficient;
-        getline(fileInput, receiverUUID);
-        getline(fileInput, receiverFeatureUUID);
-        getline(fileInput, senderUUID);
-        getline(fileInput, senderFeatureUUID);
+        getline(fileInput, subscriberUUID);
+        getline(fileInput, subscriberFeatureUUID);
+        getline(fileInput, publisherUUID);
+        getline(fileInput, publisherFeatureUUID);
         getline(fileInput, temp);
         coefficient = stod(temp);
-        connectFeatures(receiverFeatureUUID, senderFeatureUUID, coefficient);
+        connectFeatures(subscriberFeatureUUID, publisherFeatureUUID, coefficient);
         getline(fileInput, temp);
       }
       else
@@ -712,10 +711,10 @@ void ApiGui::saveButtonClicked()
   for (int i = 0; i < connections.size(); i++)
   {
     fileOutput << "[Connection]\n";
-    fileOutput << connections.at(i)->GetReceiverUUID() << "\n";
-    fileOutput << connections.at(i)->GetReceiverFeatureUUID() << "\n";
-    fileOutput << connections.at(i)->GetSenderUUID() << "\n";
-    fileOutput << connections.at(i)->GetSenderFeatureUUID() << "\n";
+    fileOutput << connections.at(i)->GetSubscriberUUID() << "\n";
+    fileOutput << connections.at(i)->GetSubscriberFeatureUUID() << "\n";
+    fileOutput << connections.at(i)->GetPublisherUUID() << "\n";
+    fileOutput << connections.at(i)->GetPublisherFeatureUUID() << "\n";
     fileOutput << connections.at(i)->GetCoefficient() << "\n";
   }
   fileOutput.close();

@@ -44,7 +44,7 @@ QPoint GuiDevice::FeatureBoxPosition(Tapi::Feature* feature)
 {
   int x, y, i;
   y = 0;
-  if (device->GetType() == tapi_msgs::HelloRequest::Type_ReceiverDevice)
+  if (device->GetType() == tapi_msgs::Device::Type_Subscriber)
     x = 0;
   else
     x = this->width() - 1;
@@ -147,7 +147,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + line_height / 2 - connectbox_size / 2),
                       QSize(connectbox_size, connectbox_size));
 
-    if (device->GetType() == tapi_msgs::HelloRequest::Type_SenderDevice)
+    if (device->GetType() == tapi_msgs::Device::Type_Publisher)
     {
       connect_box.moveLeft(line_end);
     }
