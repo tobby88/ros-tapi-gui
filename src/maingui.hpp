@@ -24,7 +24,6 @@ public:
 private:
   // Private member variables
   Tapi::ApiGui* apiui;
-  ros::NodeHandle* nh;
   Ui::MainGui* ui;
 };
 }

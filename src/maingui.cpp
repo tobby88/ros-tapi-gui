@@ -5,7 +5,7 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-MainGui::MainGui(ros::NodeHandle* nh, QWidget* parent) : QMainWindow(parent), ui(new Ui::MainGui), nh(nh)
+MainGui::MainGui(ros::NodeHandle* nh, QWidget* parent) : QMainWindow(parent), ui(new Ui::MainGui)
 {
   ui->setupUi(this);
   QWidget::showMaximized();
