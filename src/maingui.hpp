@@ -18,13 +18,14 @@ class MainGui : public QMainWindow
 
 public:
   // Constructor/Destructor
-  MainGui(Tapi::Api* api, QWidget* parent = 0);
+  MainGui(ros::NodeHandle* nh, QWidget* parent = 0);
   ~MainGui();
 
 private:
   // Private member variables
   Tapi::Api* api;
   Tapi::ApiGui* apiui;
+  ros::NodeHandle* nh;
   Ui::MainGui* ui;
 };
 }
