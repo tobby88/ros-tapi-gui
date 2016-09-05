@@ -158,6 +158,11 @@ void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi:
     ROS_ERROR("Error when connection to hello service");
 }
 
+bool ApiGui::checkPending()
+{
+  return api->pendingChanges;
+}
+
 // Slot functions
 
 void ApiGui::clearButtonClicked()
@@ -192,7 +197,7 @@ void ApiGui::checkApiForUpdate()
     }
   }
 
-  if (api->CheckPending())
+  if (checkPending())
   {
     for (auto it = senderGuiDevices.begin(); it != senderGuiDevices.end(); ++it)
     {

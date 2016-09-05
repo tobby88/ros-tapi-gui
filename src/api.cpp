@@ -47,10 +47,6 @@ Api::~Api()
 }
 
 // Public member functions
-bool Api::CheckPending()
-{
-  return pendingChanges;
-}
 
 void Api::Clear()
 {
