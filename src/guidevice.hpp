@@ -1,6 +1,7 @@
 #ifndef GUIDEVICE_H
 #define GUIDEVICE_H
 
+#include <QColor>
 #include <QMouseEvent>
 #include <QWidget>
 #include <vector>

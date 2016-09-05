@@ -1,6 +1,11 @@
 #include "guidevice.hpp"
+#include <QFont>
 #include <QPainter>
+#include <QPoint>
+#include <QRect>
+#include <QSize>
 #include <QString>
+#include "tapi_msgs/Device.h"
 #include "tapi_msgs/HelloRequest.h"
 
 using namespace std;
