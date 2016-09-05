@@ -140,7 +140,6 @@ include_directories(
 
 ## Declare a C++ executable
 add_executable(gui
-  src/api.cpp
   src/apigui.cpp
   src/apigui.ui
   src/connection.cpp

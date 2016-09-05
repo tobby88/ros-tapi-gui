@@ -2,8 +2,8 @@
 #define MAINGUI_HPP
 
 #include <QMainWindow>
-#include "api.hpp"
 #include "apigui.hpp"
+#include "ros/node_handle.h"
 
 namespace Ui
 {
@@ -23,7 +23,6 @@ public:
 
 private:
   // Private member variables
-  Tapi::Api* api;
   Tapi::ApiGui* apiui;
   ros::NodeHandle* nh;
   Ui::MainGui* ui;

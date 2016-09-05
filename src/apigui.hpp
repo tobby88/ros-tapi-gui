@@ -7,11 +7,15 @@
 #include <QWidget>
 #include <map>
 #include <vector>
-#include "api.hpp"
+#include "connection.hpp"
 #include "device.hpp"
 #include "guidevice.hpp"
+#include "std_msgs/Time.h"
 #include "tapi_msgs/Connection.h"
 #include "tapi_msgs/Device.h"
+#include "ros/ros.h"
+
+#define CHECK_INTERVAL 1000L
 
 namespace Ui
 {
@@ -35,7 +39,6 @@ protected:
 
 private:
   // Private member variables
-  Tapi::Api* api;
   ros::Publisher clearPub;
   std::map<std::string, QColor> colorKeys;
   std::map<std::string, Tapi::Connection> connections;
