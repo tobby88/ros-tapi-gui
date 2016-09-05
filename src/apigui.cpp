@@ -8,11 +8,12 @@
 #include <fstream>
 #include <string>
 #include "connection.hpp"
+#include "std_msgs/Bool.h"
+#include "std_msgs/String.h"
+#include "tapi_msgs/Connect.h"
 #include "tapi_msgs/Feature.h"
 #include "tapi_msgs/Hello.h"
 #include "ui_apigui.h"
-#include "std_msgs/Bool.h"
-#include "tapi_msgs/Connect.h"
 
 using namespace std;
 
@@ -184,6 +185,14 @@ bool ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double co
   return true;
 }
 
+bool ApiGui::deleteConnection(string receiverFeatureUUID)
+{
+  std_msgs::String msg;
+  msg.data = receiverFeatureUUID;
+  api->delPub.publish(msg);
+  api->changed();
+}
+
 // Slot functions
 
 void ApiGui::clearButtonClicked()
@@ -325,7 +334,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
       case QMessageBox::No:
         return;
       case QMessageBox::Yes:
-        api->DeleteConnection(feature->GetUUID());
+        deleteConnection(feature->GetUUID());
         update();
         break;
       default:

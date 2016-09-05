@@ -48,14 +48,6 @@ Api::~Api()
 
 // Public member functions
 
-bool Api::DeleteConnection(string receiverFeatureUUID)
-{
-  std_msgs::String msg;
-  msg.data = receiverFeatureUUID;
-  delPub.publish(msg);
-  changed();
-}
-
 void Api::Done()
 {
   pendingChanges = false;

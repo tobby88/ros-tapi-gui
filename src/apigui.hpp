@@ -52,6 +52,7 @@ private:
   bool checkPending();
   void clear();
   bool connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
+  bool deleteConnection(std::string receiverFeatureUUID);
 
 private slots:
   // Slot functions
