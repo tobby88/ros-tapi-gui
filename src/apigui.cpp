@@ -7,7 +7,6 @@
 #include <QString>
 #include <fstream>
 #include <string>
-#include "connection.hpp"
 #include "std_msgs/Bool.h"
 #include "std_msgs/String.h"
 #include "tapi_msgs/Connect.h"
@@ -23,7 +22,7 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-ApiGui::ApiGui(ros::NodeHandle *nh, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), nh(nh)
+ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), nh(nh)
 {
   spinner = new ros::AsyncSpinner(1);
   pendingChanges = false;
