@@ -50,6 +50,7 @@ private:
   void addDevice(Tapi::Device* device);
   void addDevice(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
   bool checkPending();
+  void clear();
 
 private slots:
   // Slot functions

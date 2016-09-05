@@ -11,6 +11,7 @@
 #include "tapi_msgs/Feature.h"
 #include "tapi_msgs/Hello.h"
 #include "ui_apigui.h"
+#include "std_msgs/Bool.h"
 
 using namespace std;
 
@@ -163,6 +164,15 @@ bool ApiGui::checkPending()
   return api->pendingChanges;
 }
 
+void ApiGui::clear()
+{
+  std_msgs::Bool msg;
+  msg.data = true;
+  api->clearPub.publish(msg);
+  api->connections.clear();
+  api->devices.clear();
+}
+
 // Slot functions
 
 void ApiGui::clearButtonClicked()
@@ -181,7 +191,7 @@ void ApiGui::clearButtonClicked()
     delete *it;
   }
   receiverGuiDevices.clear();
-  api->Clear();
+  clear();
   update();
 }
 
@@ -378,7 +388,7 @@ void ApiGui::loadButtonClicked()
   {
     error = false;
     string temp;
-    api->Clear();
+    clear();
     getline(fileInput, temp);
     if (fileInput.eof())
       error = true;
