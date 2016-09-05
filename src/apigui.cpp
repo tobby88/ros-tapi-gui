@@ -25,6 +25,16 @@ namespace Tapi
 
 ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), api(api)
 {
+  api->spinner = new ros::AsyncSpinner(1);
+  api->pendingChanges = false;
+  api->devListClient = api->nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
+  api->delPub = api->nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
+  api->conPub = api->nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
+  api->conListClient = api->nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
+  api->clearPub = api->nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
+  api->helloClient = api->nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
+  api->updateTimer.start();
+
   ui->setupUi(this);
   guitimer = new QTimer(this);
   connect(guitimer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
@@ -55,6 +65,16 @@ ApiGui::~ApiGui()
 {
   delete guitimer;
   delete ui;
+
+  api->updateTimer.stop();
+  api->spinner->stop();
+  delete api->spinner;
+  api->devListClient.shutdown();
+  api->lastUpdatedSub.shutdown();
+  api->delPub.shutdown();
+  api->conPub.shutdown();
+  api->clearPub.shutdown();
+  api->helloClient.shutdown();
 }
 
 // Protected member functions
