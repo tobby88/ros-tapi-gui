@@ -206,6 +206,16 @@ vector<Tapi::Connection*> ApiGui::getConnections()
   return connectionList;
 }
 
+vector<Tapi::Device*> ApiGui::getDevicesSorted()
+{
+  vector<Tapi::Device*> devicesList;
+  for (auto it = api->devices.begin(); it != api->devices.end(); ++it)
+    devicesList.push_back(&it->second);
+  if (devicesList.size() > 1)
+    sort(devicesList.begin(), devicesList.end(), Api::compareDeviceNames);
+  return devicesList;
+}
+
 // Slot functions
 
 void ApiGui::clearButtonClicked()
@@ -256,7 +266,7 @@ void ApiGui::checkApiForUpdate()
       delete *it;
     }
     receiverGuiDevices.clear();
-    vector<Tapi::Device*> devices = api->GetDevicesSorted();
+    vector<Tapi::Device*> devices = getDevicesSorted();
     for (auto it = devices.begin(); it != devices.end(); ++it)
     {
       addDevice(*it);
@@ -497,7 +507,7 @@ void ApiGui::loadButtonClicked()
 
 void ApiGui::saveButtonClicked()
 {
-  vector<Tapi::Device*> devices = api->GetDevicesSorted();
+  vector<Tapi::Device*> devices = getDevicesSorted();
   vector<Tapi::Connection*> connections = getConnections();
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";

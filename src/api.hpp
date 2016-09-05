@@ -22,7 +22,6 @@ public:
   ~Api();
 
   // Public member functions
-  std::vector<Tapi::Device*> GetDevicesSorted();
   void Run();
 
   void changed();

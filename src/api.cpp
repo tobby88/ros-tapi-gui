@@ -48,16 +48,6 @@ Api::~Api()
 
 // Public member functions
 
-vector<Tapi::Device*> Api::GetDevicesSorted()
-{
-  vector<Tapi::Device*> devicesList;
-  for (auto it = devices.begin(); it != devices.end(); ++it)
-    devicesList.push_back(&it->second);
-  if (devicesList.size() > 1)
-    sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
-  return devicesList;
-}
-
 void Api::Run()
 {
   spinner->start();
