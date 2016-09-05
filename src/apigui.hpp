@@ -48,6 +48,7 @@ private:
 
   // Private member functions
   void addDevice(Tapi::Device* device);
+  void addDevice(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
 
 private slots:
   // Slot functions

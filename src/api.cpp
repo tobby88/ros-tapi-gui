@@ -47,34 +47,6 @@ Api::~Api()
 }
 
 // Public member functions
-
-void Api::AddDevice(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
-{
-  tapi_msgs::Hello hello;
-  hello.request.DeviceType = type;
-  vector<tapi_msgs::Feature> featureVec;
-  for (auto it = features.begin(); it != features.end(); ++it)
-  {
-    tapi_msgs::Feature feature;
-    feature.FeatureType = it->second.GetType();
-    feature.Name = it->second.GetName();
-    feature.UUID = it->second.GetUUID();
-    featureVec.push_back(feature);
-  }
-  hello.request.Features = featureVec;
-  std_msgs::Header header;
-  header.seq = 1;
-  ros::Time now = ros::Time::now();
-  header.stamp = now;
-  hello.request.Header = header;
-  hello.request.Name = name;
-  hello.request.UUID = uuid;
-  if (!helloClient.call(hello))
-    ROS_ERROR("Couldn't connect to hello service.");
-  if (hello.response.Status == tapi_msgs::HelloResponse::StatusError)
-    ROS_ERROR("Error when connection to hello service");
-}
-
 bool Api::CheckPending()
 {
   return pendingChanges;

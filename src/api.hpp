@@ -22,7 +22,6 @@ public:
   ~Api();
 
   // Public member functions
-  void AddDevice(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
   bool CheckPending();
   void Clear();
   bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);

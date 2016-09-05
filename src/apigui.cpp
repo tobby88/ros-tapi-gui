@@ -9,7 +9,7 @@
 #include <string>
 #include "connection.hpp"
 #include "tapi_msgs/Feature.h"
-#include "tapi_msgs/HelloRequest.h"
+#include "tapi_msgs/Hello.h"
 #include "ui_apigui.h"
 
 using namespace std;
@@ -129,6 +129,33 @@ void ApiGui::addDevice(Tapi::Device* device)
   guidevice->show();  // dont forget to show it ;)
   connect(guidevice, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), this,
           SLOT(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)));
+}
+
+void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
+{
+  tapi_msgs::Hello hello;
+  hello.request.DeviceType = type;
+  vector<tapi_msgs::Feature> featureVec;
+  for (auto it = features.begin(); it != features.end(); ++it)
+  {
+    tapi_msgs::Feature feature;
+    feature.FeatureType = it->second.GetType();
+    feature.Name = it->second.GetName();
+    feature.UUID = it->second.GetUUID();
+    featureVec.push_back(feature);
+  }
+  hello.request.Features = featureVec;
+  std_msgs::Header header;
+  header.seq = 1;
+  ros::Time now = ros::Time::now();
+  header.stamp = now;
+  hello.request.Header = header;
+  hello.request.Name = name;
+  hello.request.UUID = uuid;
+  if (!api->helloClient.call(hello))
+    ROS_ERROR("Couldn't connect to hello service.");
+  if (hello.response.Status == tapi_msgs::HelloResponse::StatusError)
+    ROS_ERROR("Error when connection to hello service");
 }
 
 // Slot functions
@@ -378,7 +405,7 @@ void ApiGui::loadButtonClicked()
           features.emplace(featureUUID, feature);
           getline(fileInput, temp);
         }
-        api->AddDevice(type, name, uuid, features);
+        addDevice(type, name, uuid, features);
       }
       else if (temp == "[Connection]")
       {
