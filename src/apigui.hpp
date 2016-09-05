@@ -51,6 +51,7 @@ private:
   void addDevice(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
   bool checkPending();
   void clear();
+  bool connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
 
 private slots:
   // Slot functions

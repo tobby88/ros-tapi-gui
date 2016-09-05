@@ -12,6 +12,7 @@
 #include "tapi_msgs/Hello.h"
 #include "ui_apigui.h"
 #include "std_msgs/Bool.h"
+#include "tapi_msgs/Connect.h"
 
 using namespace std;
 
@@ -171,6 +172,16 @@ void ApiGui::clear()
   api->clearPub.publish(msg);
   api->connections.clear();
   api->devices.clear();
+}
+
+bool ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
+{
+  tapi_msgs::Connect msg;
+  msg.Coefficient = coefficient;
+  msg.Feature1UUID = feature1uuid;
+  msg.Feature2UUID = feature2uuid;
+  api->conPub.publish(msg);
+  return true;
 }
 
 // Slot functions
@@ -367,7 +378,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
   }
   if (ok)
   {
-    api->ConnectFeatures(selectedFeature->GetUUID(), feature->GetUUID(), coefficient);
+    connectFeatures(selectedFeature->GetUUID(), feature->GetUUID(), coefficient);
     selectedFeature = 0;
     selectedGuiDevice = 0;
     update();
@@ -435,7 +446,7 @@ void ApiGui::loadButtonClicked()
         getline(fileInput, senderFeatureUUID);
         getline(fileInput, temp);
         coefficient = stod(temp);
-        api->ConnectFeatures(receiverFeatureUUID, senderFeatureUUID, coefficient);
+        connectFeatures(receiverFeatureUUID, senderFeatureUUID, coefficient);
         getline(fileInput, temp);
       }
       else

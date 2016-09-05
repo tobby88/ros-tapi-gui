@@ -48,16 +48,6 @@ Api::~Api()
 
 // Public member functions
 
-bool Api::ConnectFeatures(string feature1uuid, string feature2uuid, double coefficient)
-{
-  tapi_msgs::Connect msg;
-  msg.Coefficient = coefficient;
-  msg.Feature1UUID = feature1uuid;
-  msg.Feature2UUID = feature2uuid;
-  conPub.publish(msg);
-  return true;
-}
-
 bool Api::DeleteConnection(string receiverFeatureUUID)
 {
   std_msgs::String msg;

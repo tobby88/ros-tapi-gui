@@ -22,7 +22,6 @@ public:
   ~Api();
 
   // Public member functions
-  bool ConnectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
   bool DeleteConnection(std::string receiverFeatureUUID);
   void Done();
   std::vector<Tapi::Connection*> GetConnections();
