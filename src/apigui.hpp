@@ -44,13 +44,14 @@ private:
   Tapi::Feature* selectedFeature;
   Tapi::GuiDevice* selectedGuiDevice;
   std::vector<Tapi::GuiDevice*> senderGuiDevices;
-  QTimer* timer;
+  QTimer* guitimer;
   int timerInterval;
   Ui::ApiGui* ui;
 
   // Private member functions
   void addDevice(Tapi::Device* device);
   void addDevice(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
+  void changed();
   bool checkPending();
   void clear();
   static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
@@ -58,8 +59,12 @@ private:
   bool deleteConnection(std::string receiverFeatureUUID);
   void done();
   std::vector<Tapi::Connection*> getConnections();
+  Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
   std::vector<Tapi::Device*> getDevicesSorted();
   void run();
+  void timer(const ros::TimerEvent& e);
+  void updateAvailable(const std_msgs::Time::ConstPtr& time);
+  void updateData();
 
 private slots:
   // Slot functions

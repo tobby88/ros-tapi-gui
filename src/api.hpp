@@ -21,13 +21,6 @@ public:
   explicit Api(ros::NodeHandle* nh);
   ~Api();
 
-  // Public member functions
-  void changed();
-  Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
-  void timer(const ros::TimerEvent& e);
-  void updateAvailable(const std_msgs::Time::ConstPtr& time);
-  void updateData();
-
   // Public member variables
   ros::Publisher clearPub;
   std::map<std::string, Tapi::Connection> connections;

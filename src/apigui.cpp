@@ -12,6 +12,8 @@
 #include "std_msgs/String.h"
 #include "tapi_msgs/Connect.h"
 #include "tapi_msgs/Feature.h"
+#include "tapi_msgs/GetConnectionList.h"
+#include "tapi_msgs/GetDeviceList.h"
 #include "tapi_msgs/Hello.h"
 #include "ui_apigui.h"
 
@@ -24,10 +26,10 @@ namespace Tapi
 ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), api(api)
 {
   ui->setupUi(this);
-  timer = new QTimer(this);
-  connect(timer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
+  guitimer = new QTimer(this);
+  connect(guitimer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
   timerInterval = 15;
-  timer->start(timerInterval);
+  guitimer->start(timerInterval);
 
   // Add vertical layouts to the scroll Areas
   layoutReceiver = ui->verticalLayoutReceiver;
@@ -43,12 +45,15 @@ ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::Ap
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
   connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
 
+  api->lastUpdatedSub = api->nh->subscribe("Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
   run();
+  updateData();
+  api->updateTimer = api->nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
 }
 
 ApiGui::~ApiGui()
 {
-  delete timer;
+  delete guitimer;
   delete ui;
 }
 
@@ -163,6 +168,11 @@ void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi:
     ROS_ERROR("Error when connection to hello service");
 }
 
+void ApiGui::changed()
+{
+  api->pendingChanges = true;
+}
+
 bool ApiGui::checkPending()
 {
   return api->pendingChanges;
@@ -197,7 +207,7 @@ bool ApiGui::deleteConnection(string receiverFeatureUUID)
   std_msgs::String msg;
   msg.data = receiverFeatureUUID;
   api->delPub.publish(msg);
-  api->changed();
+  changed();
 }
 
 void ApiGui::done()
@@ -213,6 +223,16 @@ vector<Tapi::Connection*> ApiGui::getConnections()
   return connectionList;
 }
 
+Tapi::Device* ApiGui::getDeviceByFeatureUUID(string uuid)
+{
+  for (auto it = api->devices.begin(); it != api->devices.end(); ++it)
+  {
+    if (it->second.GetFeatureByUUID(uuid))
+      return &(it->second);
+  }
+  return 0;
+}
+
 vector<Tapi::Device*> ApiGui::getDevicesSorted()
 {
   vector<Tapi::Device*> devicesList;
@@ -226,6 +246,132 @@ vector<Tapi::Device*> ApiGui::getDevicesSorted()
 void ApiGui::run()
 {
   api->spinner->start();
+}
+
+void ApiGui::timer(const ros::TimerEvent& e)
+{
+  updateData();
+}
+
+void ApiGui::updateAvailable(const std_msgs::Time::ConstPtr& time)
+{
+  if (time->data.toNSec() > api->lastUpdated.toNSec())
+  {
+    api->lastUpdated = time->data;
+    updateData();
+  }
+}
+
+void ApiGui::updateData()
+{
+  bool updates = false;
+
+  tapi_msgs::GetDeviceList devSrv;
+  devSrv.request.get = true;
+  if (!api->devListClient.call(devSrv))
+  {
+    ROS_ERROR("Failed to establish connection to core");
+  }
+  vector<tapi_msgs::Device> devVect = devSrv.response.Devices;
+
+  for (auto it = devVect.begin(); it != devVect.end(); ++it)
+  {
+    bool active = it->Active;
+    uint8_t deviceType = it->DeviceType;
+    unsigned long heartbeat = it->Heartbeat;
+    ros::Time lastSeen = it->LastSeen;
+    unsigned long lastSeq = it->LastSeq;
+    string name = it->Name;
+    string uuid = it->UUID;
+    vector<tapi_msgs::Feature> featureVec = it->Features;
+    map<string, Tapi::Feature> featureMap;
+    for (auto it2 = featureVec.begin(); it2 != featureVec.end(); ++it2)
+    {
+      string featureType = it2->FeatureType;
+      string featureName = it2->Name;
+      string featureUUID = it2->UUID;
+      Tapi::Feature feature(featureType, featureName, featureUUID);
+      featureMap.emplace(featureUUID, feature);
+    }
+    if (api->devices.empty() || api->devices.count(uuid) == 0)
+    {
+      Tapi::Device device(deviceType, name, uuid, lastSeq, lastSeen, heartbeat, featureMap);
+      api->devices.emplace(uuid, device);
+      updates = true;
+    }
+    else if (api->devices.count(uuid) == 1)
+    {
+      api->devices.at(uuid).Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
+      updates = true;
+    }
+    else
+      return;
+
+    if (!active)
+      api->devices.at(uuid).Deactivate();
+  }
+
+  tapi_msgs::GetConnectionList conSrv;
+  conSrv.request.get = true;
+  if (!api->conListClient.call(conSrv))
+  {
+    ROS_ERROR("Failed to establish connection to core");
+    return;
+  }
+  vector<tapi_msgs::Connection> conVect = conSrv.response.Connections;
+  for (auto it = conVect.begin(); it != conVect.end(); ++it)
+  {
+    if (api->devices.count(it->ReceiverUUID) == 0 || api->devices.count(it->SenderUUID) == 0)
+      continue;
+    if (api->connections.count(it->ReceiverFeatureUUID) == 0)
+    {
+      Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
+                                  it->Coefficient);
+      api->connections.emplace(it->ReceiverFeatureUUID, connection);
+      api->devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
+      api->devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      updates = true;
+    }
+    else if (api->connections.at(it->ReceiverFeatureUUID).GetSenderFeatureUUID() != it->SenderFeatureUUID)
+    {
+      string receiverFeatureUUID = it->ReceiverFeatureUUID;
+      Tapi::Device* receiverDevice = getDeviceByFeatureUUID(receiverFeatureUUID);
+      string senderFeatureUUID = api->connections.at(receiverFeatureUUID).GetSenderFeatureUUID();
+      Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
+      receiverDevice->GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
+      senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
+      api->connections.erase(receiverFeatureUUID);
+      Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
+                                  it->Coefficient);
+      api->connections.emplace(receiverFeatureUUID, connection);
+      api->devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
+      api->devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      updates = true;
+    }
+  }
+  vector<string> deletableConnections;
+  for (auto it = api->connections.begin(); it != api->connections.end(); ++it)
+  {
+    bool found = false;
+    string searchUUID = it->second.GetReceiverFeatureUUID();
+    for (auto it2 = conVect.begin(); it2 != conVect.end(); ++it2)
+      if (searchUUID == it2->ReceiverFeatureUUID)
+        found = true;
+    if (!found)
+    {
+      Tapi::Device* receiverDevice = getDeviceByFeatureUUID(searchUUID);
+      string senderFeatureUUID = api->connections.at(searchUUID).GetSenderFeatureUUID();
+      Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
+      receiverDevice->GetFeatureByUUID(searchUUID)->DecrementConnections();
+      senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
+      deletableConnections.push_back(searchUUID);
+      updates = true;
+    }
+  }
+  for (auto it = deletableConnections.begin(); it != deletableConnections.end(); ++it)
+    api->connections.erase(*it);
+  if (updates)
+    changed();
 }
 
 // Slot functions
@@ -361,9 +507,9 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
     msgBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
     msgBox.setDefaultButton(QMessageBox::No);
     msgBox.setIcon(QMessageBox::Question);
-    timer->stop();
+    guitimer->stop();
     int ret = msgBox.exec();
-    timer->start(timerInterval);
+    guitimer->start(timerInterval);
     switch (ret)
     {
       case QMessageBox::No:
@@ -414,11 +560,11 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
       type == "std_msgs/Int32" || type == "std_msgs/Int64" || type == "std_msgs/Int8" || type == "std_msgs/UInt16" ||
       type == "std_msgs/UInt32" || type == "std_msgs/UInt64" || type == "std_msgs/UInt8")
   {
-    timer->stop();
+    guitimer->stop();
     QString input =
         QInputDialog::getText(this, "Coefficient?", "Multiply all values with:", QLineEdit::Normal, "1.0", &ok);
     coefficient = input.toDouble(&ok);
-    timer->start(timerInterval);
+    guitimer->start(timerInterval);
   }
   if (ok)
   {
@@ -511,9 +657,9 @@ void ApiGui::loadButtonClicked()
     msgBox.setStandardButtons(QMessageBox::Ok);
     msgBox.setDefaultButton(QMessageBox::Ok);
     msgBox.setIcon(QMessageBox::Warning);
-    timer->stop();
+    guitimer->stop();
     msgBox.exec();
-    timer->start(timerInterval);
+    guitimer->start(timerInterval);
   }
 }
 
