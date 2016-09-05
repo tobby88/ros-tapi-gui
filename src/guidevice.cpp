@@ -74,14 +74,14 @@ QColor GuiDevice::stringToColor(string messagetype)
   char array[1024];
   strncpy(array, messagetype.c_str(), sizeof(array));
   array[sizeof(array) - 1] = 0;
-  unsigned long sum=0;
-  for(int i=0; i<messagetype.length(); i++)
-    sum+=array[i]*i;
-  sum*=7;
+  unsigned long sum = 0;
+  for (int i = 0; i < messagetype.length(); i++)
+    sum += array[i] * i;
+  sum *= 7;
   uint8_t red, green, blue;
-  red = sum%255;
-  green = sum/255;
-  blue = (sum>>6)%255;
+  red = sum % 255;
+  green = sum / 255;
+  blue = (sum >> 6) % 255;
   QColor color;
   color = QColor(red, green, blue);
   return color;
