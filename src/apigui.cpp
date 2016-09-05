@@ -193,6 +193,11 @@ bool ApiGui::deleteConnection(string receiverFeatureUUID)
   api->changed();
 }
 
+void ApiGui::done()
+{
+  api->pendingChanges = false;
+}
+
 // Slot functions
 
 void ApiGui::clearButtonClicked()
@@ -265,7 +270,7 @@ void ApiGui::checkApiForUpdate()
         }
       }
     }
-    api->Done();
+    done();
     // Reselect Guidevice, because the selection was deleted above
     if (selectedFeature)
     {

@@ -48,11 +48,6 @@ Api::~Api()
 
 // Public member functions
 
-void Api::Done()
-{
-  pendingChanges = false;
-}
-
 vector<Tapi::Connection*> Api::GetConnections()
 {
   vector<Tapi::Connection*> connectionList;
