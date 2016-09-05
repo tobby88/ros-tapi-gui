@@ -59,7 +59,7 @@ void ApiGui::paintEvent(QPaintEvent*)
 
   // Draw all connections
   vector<Tapi::Connection*> connections;
-  connections = api->GetConnections();
+  connections = getConnections();
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
     string senderUUID = (*it)->GetSenderUUID();
@@ -196,6 +196,14 @@ bool ApiGui::deleteConnection(string receiverFeatureUUID)
 void ApiGui::done()
 {
   api->pendingChanges = false;
+}
+
+vector<Tapi::Connection*> ApiGui::getConnections()
+{
+  vector<Tapi::Connection*> connectionList;
+  for (auto it = api->connections.begin(); it != api->connections.end(); ++it)
+    connectionList.push_back(&it->second);
+  return connectionList;
 }
 
 // Slot functions
@@ -490,7 +498,7 @@ void ApiGui::loadButtonClicked()
 void ApiGui::saveButtonClicked()
 {
   vector<Tapi::Device*> devices = api->GetDevicesSorted();
-  vector<Tapi::Connection*> connections = api->GetConnections();
+  vector<Tapi::Connection*> connections = getConnections();
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =

@@ -10,6 +10,7 @@
 #include "api.hpp"
 #include "device.hpp"
 #include "guidevice.hpp"
+#include "tapi_msgs/Connection.h"
 
 namespace Ui
 {
@@ -54,6 +55,7 @@ private:
   bool connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
   bool deleteConnection(std::string receiverFeatureUUID);
   void done();
+  std::vector<Tapi::Connection*> getConnections();
 
 private slots:
   // Slot functions

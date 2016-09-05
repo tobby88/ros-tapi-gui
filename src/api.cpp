@@ -48,14 +48,6 @@ Api::~Api()
 
 // Public member functions
 
-vector<Tapi::Connection*> Api::GetConnections()
-{
-  vector<Tapi::Connection*> connectionList;
-  for (auto it = connections.begin(); it != connections.end(); ++it)
-    connectionList.push_back(&it->second);
-  return connectionList;
-}
-
 vector<Tapi::Device*> Api::GetDevicesSorted()
 {
   vector<Tapi::Device*> devicesList;
