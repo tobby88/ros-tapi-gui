@@ -48,13 +48,6 @@ Api::~Api()
 
 // Public member functions
 
-void Api::Run()
-{
-  spinner->start();
-}
-
-// Private memeber functions
-
 void Api::changed()
 {
   pendingChanges = true;

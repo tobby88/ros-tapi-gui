@@ -22,8 +22,6 @@ public:
   ~Api();
 
   // Public member functions
-  void Run();
-
   void changed();
   static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
   Tapi::Device* getDeviceByFeatureUUID(std::string uuid);

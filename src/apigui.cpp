@@ -42,6 +42,8 @@ ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::Ap
   connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadButtonClicked()));
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
   connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
+
+  run();
 }
 
 ApiGui::~ApiGui()
@@ -214,6 +216,11 @@ vector<Tapi::Device*> ApiGui::getDevicesSorted()
   if (devicesList.size() > 1)
     sort(devicesList.begin(), devicesList.end(), Api::compareDeviceNames);
   return devicesList;
+}
+
+void ApiGui::run()
+{
+  api->spinner->start();
 }
 
 // Slot functions

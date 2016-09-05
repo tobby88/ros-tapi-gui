@@ -11,6 +11,5 @@ int main(int argc, char** argv)
   QApplication a(argc, argv);
   Tapi::MainGui w(&api);
   w.show();
-  api.Run();
   return a.exec();
 }

@@ -58,6 +58,7 @@ private:
   void done();
   std::vector<Tapi::Connection*> getConnections();
   std::vector<Tapi::Device*> getDevicesSorted();
+  void run();
 
 private slots:
   // Slot functions
