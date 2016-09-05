@@ -177,6 +177,11 @@ void ApiGui::clear()
   api->devices.clear();
 }
 
+bool ApiGui::compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second)
+{
+  return first->GetName() < second->GetName();
+}
+
 bool ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
 {
   tapi_msgs::Connect msg;
@@ -214,7 +219,7 @@ vector<Tapi::Device*> ApiGui::getDevicesSorted()
   for (auto it = api->devices.begin(); it != api->devices.end(); ++it)
     devicesList.push_back(&it->second);
   if (devicesList.size() > 1)
-    sort(devicesList.begin(), devicesList.end(), Api::compareDeviceNames);
+    sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
   return devicesList;
 }
 

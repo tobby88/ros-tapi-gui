@@ -53,6 +53,7 @@ private:
   void addDevice(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
   bool checkPending();
   void clear();
+  static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
   bool connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
   bool deleteConnection(std::string receiverFeatureUUID);
   void done();

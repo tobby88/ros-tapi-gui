@@ -23,7 +23,6 @@ public:
 
   // Public member functions
   void changed();
-  static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
   Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
   void timer(const ros::TimerEvent& e);
   void updateAvailable(const std_msgs::Time::ConstPtr& time);

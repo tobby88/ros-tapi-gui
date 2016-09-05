@@ -53,11 +53,6 @@ void Api::changed()
   pendingChanges = true;
 }
 
-bool Api::compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second)
-{
-  return first->GetName() < second->GetName();
-}
-
 Tapi::Device* Api::getDeviceByFeatureUUID(string uuid)
 {
   for (auto it = devices.begin(); it != devices.end(); ++it)
