@@ -32,8 +32,14 @@ public:
   std::vector<Tapi::Device*> GetDevicesSorted();
   void Run();
 
-private:
-  // Private member variables
+  void changed();
+  static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
+  Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
+  void timer(const ros::TimerEvent& e);
+  void updateAvailable(const std_msgs::Time::ConstPtr& time);
+  void updateData();
+
+  // Public member variables
   ros::Publisher clearPub;
   std::map<std::string, Tapi::Connection> connections;
   ros::ServiceClient conListClient;
@@ -49,13 +55,6 @@ private:
   ros::AsyncSpinner* spinner;
   ros::Timer updateTimer;
 
-  // Private member functions
-  void changed();
-  static bool compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second);
-  Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
-  void timer(const ros::TimerEvent& e);
-  void updateAvailable(const std_msgs::Time::ConstPtr& time);
-  void updateData();
 };
 }
 
