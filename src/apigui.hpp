@@ -36,17 +36,30 @@ protected:
 private:
   // Private member variables
   Tapi::Api* api;
+  ros::Publisher clearPub;
   std::map<std::string, QColor> colorKeys;
+  std::map<std::string, Tapi::Connection> connections;
+  ros::ServiceClient conListClient;
+  ros::Publisher conPub;
+  ros::Publisher delPub;
+  std::map<std::string, Tapi::Device> devices;
+  ros::ServiceClient devListClient;
+  QTimer* guitimer;
+  ros::ServiceClient helloClient;
+  ros::Time lastUpdated;
+  ros::Subscriber lastUpdatedSub;
   QVBoxLayout* layoutReceiver;
   QVBoxLayout* layoutSender;
   QPoint mousePosition;
+  bool pendingChanges;
   std::vector<Tapi::GuiDevice*> receiverGuiDevices;
   Tapi::Feature* selectedFeature;
   Tapi::GuiDevice* selectedGuiDevice;
   std::vector<Tapi::GuiDevice*> senderGuiDevices;
-  QTimer* guitimer;
+  ros::AsyncSpinner* spinner;
   int timerInterval;
   Ui::ApiGui* ui;
+  ros::Timer updateTimer;
 
   // Private member functions
   void addDevice(Tapi::Device* device);

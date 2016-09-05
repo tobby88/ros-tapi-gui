@@ -19,24 +19,9 @@ class Api
 public:
   // Constructor/Destructor
   explicit Api(ros::NodeHandle* nh);
-  ~Api();
 
   // Public member variables
-  ros::Publisher clearPub;
-  std::map<std::string, Tapi::Connection> connections;
-  ros::ServiceClient conListClient;
-  ros::Publisher conPub;
-  ros::Publisher delPub;
-  std::map<std::string, Tapi::Device> devices;
-  ros::ServiceClient devListClient;
-  ros::ServiceClient helloClient;
-  ros::Time lastUpdated;
-  ros::Subscriber lastUpdatedSub;
   ros::NodeHandle* nh;
-  bool pendingChanges;
-  ros::AsyncSpinner* spinner;
-  ros::Timer updateTimer;
-
 };
 }
 

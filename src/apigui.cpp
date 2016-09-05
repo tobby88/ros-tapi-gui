@@ -25,15 +25,15 @@ namespace Tapi
 
 ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), api(api)
 {
-  api->spinner = new ros::AsyncSpinner(1);
-  api->pendingChanges = false;
-  api->devListClient = api->nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
-  api->delPub = api->nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
-  api->conPub = api->nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
-  api->conListClient = api->nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
-  api->clearPub = api->nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
-  api->helloClient = api->nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
-  api->updateTimer.start();
+  spinner = new ros::AsyncSpinner(1);
+  pendingChanges = false;
+  devListClient = api->nh->serviceClient<tapi_msgs::GetDeviceList>("Tapi/GetDeviceList");
+  delPub = api->nh->advertise<std_msgs::String>("Tapi/DeleteConnection", 1000);
+  conPub = api->nh->advertise<tapi_msgs::Connect>("Tapi/ConnectFeatures", 1000);
+  conListClient = api->nh->serviceClient<tapi_msgs::GetConnectionList>("Tapi/GetConnectionList");
+  clearPub = api->nh->advertise<std_msgs::Bool>("Tapi/Clear", 2);
+  helloClient = api->nh->serviceClient<tapi_msgs::Hello>("Tapi/HelloServ");
+  updateTimer.start();
 
   ui->setupUi(this);
   guitimer = new QTimer(this);
@@ -55,10 +55,10 @@ ApiGui::ApiGui(Tapi::Api* api, QWidget* parent) : QWidget(parent), ui(new Ui::Ap
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
   connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
 
-  api->lastUpdatedSub = api->nh->subscribe("Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
+  lastUpdatedSub = api->nh->subscribe("Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
   run();
   updateData();
-  api->updateTimer = api->nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
+  updateTimer = api->nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
 }
 
 ApiGui::~ApiGui()
@@ -66,15 +66,15 @@ ApiGui::~ApiGui()
   delete guitimer;
   delete ui;
 
-  api->updateTimer.stop();
-  api->spinner->stop();
-  delete api->spinner;
-  api->devListClient.shutdown();
-  api->lastUpdatedSub.shutdown();
-  api->delPub.shutdown();
-  api->conPub.shutdown();
-  api->clearPub.shutdown();
-  api->helloClient.shutdown();
+  updateTimer.stop();
+  spinner->stop();
+  delete spinner;
+  devListClient.shutdown();
+  lastUpdatedSub.shutdown();
+  delPub.shutdown();
+  conPub.shutdown();
+  clearPub.shutdown();
+  helloClient.shutdown();
 }
 
 // Protected member functions
@@ -182,7 +182,7 @@ void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi:
   hello.request.Header = header;
   hello.request.Name = name;
   hello.request.UUID = uuid;
-  if (!api->helloClient.call(hello))
+  if (!helloClient.call(hello))
     ROS_ERROR("Couldn't connect to hello service.");
   if (hello.response.Status == tapi_msgs::HelloResponse::StatusError)
     ROS_ERROR("Error when connection to hello service");
@@ -190,21 +190,21 @@ void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi:
 
 void ApiGui::changed()
 {
-  api->pendingChanges = true;
+  pendingChanges = true;
 }
 
 bool ApiGui::checkPending()
 {
-  return api->pendingChanges;
+  return pendingChanges;
 }
 
 void ApiGui::clear()
 {
   std_msgs::Bool msg;
   msg.data = true;
-  api->clearPub.publish(msg);
-  api->connections.clear();
-  api->devices.clear();
+  clearPub.publish(msg);
+  connections.clear();
+  devices.clear();
 }
 
 bool ApiGui::compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second)
@@ -218,7 +218,7 @@ bool ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double co
   msg.Coefficient = coefficient;
   msg.Feature1UUID = feature1uuid;
   msg.Feature2UUID = feature2uuid;
-  api->conPub.publish(msg);
+  conPub.publish(msg);
   return true;
 }
 
@@ -226,26 +226,26 @@ bool ApiGui::deleteConnection(string receiverFeatureUUID)
 {
   std_msgs::String msg;
   msg.data = receiverFeatureUUID;
-  api->delPub.publish(msg);
+  delPub.publish(msg);
   changed();
 }
 
 void ApiGui::done()
 {
-  api->pendingChanges = false;
+  pendingChanges = false;
 }
 
 vector<Tapi::Connection*> ApiGui::getConnections()
 {
   vector<Tapi::Connection*> connectionList;
-  for (auto it = api->connections.begin(); it != api->connections.end(); ++it)
+  for (auto it = connections.begin(); it != connections.end(); ++it)
     connectionList.push_back(&it->second);
   return connectionList;
 }
 
 Tapi::Device* ApiGui::getDeviceByFeatureUUID(string uuid)
 {
-  for (auto it = api->devices.begin(); it != api->devices.end(); ++it)
+  for (auto it = devices.begin(); it != devices.end(); ++it)
   {
     if (it->second.GetFeatureByUUID(uuid))
       return &(it->second);
@@ -256,7 +256,7 @@ Tapi::Device* ApiGui::getDeviceByFeatureUUID(string uuid)
 vector<Tapi::Device*> ApiGui::getDevicesSorted()
 {
   vector<Tapi::Device*> devicesList;
-  for (auto it = api->devices.begin(); it != api->devices.end(); ++it)
+  for (auto it = devices.begin(); it != devices.end(); ++it)
     devicesList.push_back(&it->second);
   if (devicesList.size() > 1)
     sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
@@ -265,7 +265,7 @@ vector<Tapi::Device*> ApiGui::getDevicesSorted()
 
 void ApiGui::run()
 {
-  api->spinner->start();
+  spinner->start();
 }
 
 void ApiGui::timer(const ros::TimerEvent& e)
@@ -275,9 +275,9 @@ void ApiGui::timer(const ros::TimerEvent& e)
 
 void ApiGui::updateAvailable(const std_msgs::Time::ConstPtr& time)
 {
-  if (time->data.toNSec() > api->lastUpdated.toNSec())
+  if (time->data.toNSec() > lastUpdated.toNSec())
   {
-    api->lastUpdated = time->data;
+    lastUpdated = time->data;
     updateData();
   }
 }
@@ -288,7 +288,7 @@ void ApiGui::updateData()
 
   tapi_msgs::GetDeviceList devSrv;
   devSrv.request.get = true;
-  if (!api->devListClient.call(devSrv))
+  if (!devListClient.call(devSrv))
   {
     ROS_ERROR("Failed to establish connection to core");
   }
@@ -313,27 +313,27 @@ void ApiGui::updateData()
       Tapi::Feature feature(featureType, featureName, featureUUID);
       featureMap.emplace(featureUUID, feature);
     }
-    if (api->devices.empty() || api->devices.count(uuid) == 0)
+    if (devices.empty() || devices.count(uuid) == 0)
     {
       Tapi::Device device(deviceType, name, uuid, lastSeq, lastSeen, heartbeat, featureMap);
-      api->devices.emplace(uuid, device);
+      devices.emplace(uuid, device);
       updates = true;
     }
-    else if (api->devices.count(uuid) == 1)
+    else if (devices.count(uuid) == 1)
     {
-      api->devices.at(uuid).Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
+      devices.at(uuid).Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
       updates = true;
     }
     else
       return;
 
     if (!active)
-      api->devices.at(uuid).Deactivate();
+      devices.at(uuid).Deactivate();
   }
 
   tapi_msgs::GetConnectionList conSrv;
   conSrv.request.get = true;
-  if (!api->conListClient.call(conSrv))
+  if (!conListClient.call(conSrv))
   {
     ROS_ERROR("Failed to establish connection to core");
     return;
@@ -341,36 +341,36 @@ void ApiGui::updateData()
   vector<tapi_msgs::Connection> conVect = conSrv.response.Connections;
   for (auto it = conVect.begin(); it != conVect.end(); ++it)
   {
-    if (api->devices.count(it->ReceiverUUID) == 0 || api->devices.count(it->SenderUUID) == 0)
+    if (devices.count(it->ReceiverUUID) == 0 || devices.count(it->SenderUUID) == 0)
       continue;
-    if (api->connections.count(it->ReceiverFeatureUUID) == 0)
+    if (connections.count(it->ReceiverFeatureUUID) == 0)
     {
       Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
                                   it->Coefficient);
-      api->connections.emplace(it->ReceiverFeatureUUID, connection);
-      api->devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
-      api->devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      connections.emplace(it->ReceiverFeatureUUID, connection);
+      devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
+      devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
       updates = true;
     }
-    else if (api->connections.at(it->ReceiverFeatureUUID).GetSenderFeatureUUID() != it->SenderFeatureUUID)
+    else if (connections.at(it->ReceiverFeatureUUID).GetSenderFeatureUUID() != it->SenderFeatureUUID)
     {
       string receiverFeatureUUID = it->ReceiverFeatureUUID;
       Tapi::Device* receiverDevice = getDeviceByFeatureUUID(receiverFeatureUUID);
-      string senderFeatureUUID = api->connections.at(receiverFeatureUUID).GetSenderFeatureUUID();
+      string senderFeatureUUID = connections.at(receiverFeatureUUID).GetSenderFeatureUUID();
       Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
       receiverDevice->GetFeatureByUUID(receiverFeatureUUID)->DecrementConnections();
       senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
-      api->connections.erase(receiverFeatureUUID);
+      connections.erase(receiverFeatureUUID);
       Tapi::Connection connection(it->SenderUUID, it->SenderFeatureUUID, it->ReceiverUUID, it->ReceiverFeatureUUID,
                                   it->Coefficient);
-      api->connections.emplace(receiverFeatureUUID, connection);
-      api->devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
-      api->devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
+      connections.emplace(receiverFeatureUUID, connection);
+      devices.at(it->SenderUUID).GetFeatureByUUID(it->SenderFeatureUUID)->IncrementConnections();
+      devices.at(it->ReceiverUUID).GetFeatureByUUID(it->ReceiverFeatureUUID)->IncrementConnections();
       updates = true;
     }
   }
   vector<string> deletableConnections;
-  for (auto it = api->connections.begin(); it != api->connections.end(); ++it)
+  for (auto it = connections.begin(); it != connections.end(); ++it)
   {
     bool found = false;
     string searchUUID = it->second.GetReceiverFeatureUUID();
@@ -380,7 +380,7 @@ void ApiGui::updateData()
     if (!found)
     {
       Tapi::Device* receiverDevice = getDeviceByFeatureUUID(searchUUID);
-      string senderFeatureUUID = api->connections.at(searchUUID).GetSenderFeatureUUID();
+      string senderFeatureUUID = connections.at(searchUUID).GetSenderFeatureUUID();
       Tapi::Device* senderDevice = getDeviceByFeatureUUID(senderFeatureUUID);
       receiverDevice->GetFeatureByUUID(searchUUID)->DecrementConnections();
       senderDevice->GetFeatureByUUID(senderFeatureUUID)->DecrementConnections();
@@ -389,7 +389,7 @@ void ApiGui::updateData()
     }
   }
   for (auto it = deletableConnections.begin(); it != deletableConnections.end(); ++it)
-    api->connections.erase(*it);
+    connections.erase(*it);
   if (updates)
     changed();
 }

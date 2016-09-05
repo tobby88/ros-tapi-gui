@@ -19,11 +19,5 @@ namespace Tapi
 
 Api::Api(ros::NodeHandle* nh) : nh(nh)
 {
-
-}
-
-Api::~Api()
-{
-
 }
 }
