@@ -9,11 +9,11 @@
 #include <string>
 #include "std_msgs/Bool.h"
 #include "std_msgs/String.h"
-#include "tapi_msgs/Connect.h"
-#include "tapi_msgs/Feature.h"
-#include "tapi_msgs/GetConnectionList.h"
-#include "tapi_msgs/GetDeviceList.h"
-#include "tapi_msgs/Hello.h"
+#include "tapi_lib/Connect.h"
+#include "tapi_lib/Feature.h"
+#include "tapi_lib/GetConnectionList.h"
+#include "tapi_lib/GetDeviceList.h"
+#include "tapi_lib/Hello.h"
 #include "ui_apigui.h"
 
 using namespace std;
@@ -26,12 +26,12 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
 {
   spinner = new ros::AsyncSpinner(1);
   pendingChanges = false;
-  devListClient = nh->serviceClient<tapi_msgs::GetDeviceList>("/Tapi/GetDeviceList");
+  devListClient = nh->serviceClient<tapi_lib::GetDeviceList>("/Tapi/GetDeviceList");
   delPub = nh->advertise<std_msgs::String>("/Tapi/DeleteConnection", 1000);
-  conPub = nh->advertise<tapi_msgs::Connect>("/Tapi/ConnectFeatures", 1000);
-  conListClient = nh->serviceClient<tapi_msgs::GetConnectionList>("/Tapi/GetConnectionList");
+  conPub = nh->advertise<tapi_lib::Connect>("/Tapi/ConnectFeatures", 1000);
+  conListClient = nh->serviceClient<tapi_lib::GetConnectionList>("/Tapi/GetConnectionList");
   clearPub = nh->advertise<std_msgs::Bool>("/Tapi/Clear", 2);
-  helloClient = nh->serviceClient<tapi_msgs::Hello>("/Tapi/HelloServ");
+  helloClient = nh->serviceClient<tapi_lib::Hello>("/Tapi/HelloServ");
   updateTimer.start();
 
   ui->setupUi(this);
@@ -145,7 +145,7 @@ void ApiGui::paintEvent(QPaintEvent*)
 void ApiGui::addDevice(Tapi::Device* device)
 {
   Tapi::GuiDevice* guidevice = new Tapi::GuiDevice(this, device);
-  if (device->GetType() == tapi_msgs::Device::Type_Publisher)
+  if (device->GetType() == tapi_lib::Device::Type_Publisher)
   {
     layoutPublisher->addWidget(guidevice);
     publisherGuiDevices.push_back(guidevice);
@@ -162,12 +162,12 @@ void ApiGui::addDevice(Tapi::Device* device)
 
 void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
 {
-  tapi_msgs::Hello hello;
+  tapi_lib::Hello hello;
   hello.request.DeviceType = type;
-  vector<tapi_msgs::Feature> featureVec;
+  vector<tapi_lib::Feature> featureVec;
   for (auto it = features.begin(); it != features.end(); ++it)
   {
-    tapi_msgs::Feature feature;
+    tapi_lib::Feature feature;
     feature.FeatureType = it->second.GetType();
     feature.Name = it->second.GetName();
     feature.UUID = it->second.GetUUID();
@@ -183,7 +183,7 @@ void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi:
   hello.request.UUID = uuid;
   if (!helloClient.call(hello))
     ROS_ERROR("Couldn't connect to hello service.");
-  if (hello.response.Status == tapi_msgs::HelloResponse::StatusError)
+  if (hello.response.Status == tapi_lib::HelloResponse::StatusError)
     ROS_ERROR("Error when connection to hello service");
 }
 
@@ -213,7 +213,7 @@ bool ApiGui::compareDeviceNames(const Tapi::Device* first, const Tapi::Device* s
 
 bool ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
 {
-  tapi_msgs::Connect msg;
+  tapi_lib::Connect msg;
   msg.Coefficient = coefficient;
   msg.Feature1UUID = feature1uuid;
   msg.Feature2UUID = feature2uuid;
@@ -285,13 +285,13 @@ void ApiGui::updateData()
 {
   bool updates = false;
 
-  tapi_msgs::GetDeviceList devSrv;
+  tapi_lib::GetDeviceList devSrv;
   devSrv.request.Get = true;
   if (!devListClient.call(devSrv))
   {
     ROS_ERROR("Failed to establish connection to core");
   }
-  vector<tapi_msgs::Device> devVect = devSrv.response.Devices;
+  vector<tapi_lib::Device> devVect = devSrv.response.Devices;
 
   for (auto it = devVect.begin(); it != devVect.end(); ++it)
   {
@@ -302,7 +302,7 @@ void ApiGui::updateData()
     unsigned long lastSeq = it->LastSeq;
     string name = it->Name;
     string uuid = it->UUID;
-    vector<tapi_msgs::Feature> featureVec = it->Features;
+    vector<tapi_lib::Feature> featureVec = it->Features;
     map<string, Tapi::Feature> featureMap;
     for (auto it2 = featureVec.begin(); it2 != featureVec.end(); ++it2)
     {
@@ -330,14 +330,14 @@ void ApiGui::updateData()
       devices.at(uuid).Deactivate();
   }
 
-  tapi_msgs::GetConnectionList conSrv;
+  tapi_lib::GetConnectionList conSrv;
   conSrv.request.Get = true;
   if (!conListClient.call(conSrv))
   {
     ROS_ERROR("Failed to establish connection to core");
     return;
   }
-  vector<tapi_msgs::Connection> conVect = conSrv.response.Connections;
+  vector<tapi_lib::Connection> conVect = conSrv.response.Connections;
   for (auto it = conVect.begin(); it != conVect.end(); ++it)
   {
     if (devices.count(it->SubscriberUUID) == 0 || devices.count(it->PublisherUUID) == 0)
@@ -506,7 +506,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() == tapi_msgs::Device::Type_Subscriber && feature->GetConnectionCount() > 0)
+  if (guidevice->GetDevice()->GetType() == tapi_lib::Device::Type_Subscriber && feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
     if (selectedFeature && guidevice->GetDevice()->GetType() != selectedGuiDevice->GetDevice()->GetType() &&
