@@ -7,8 +7,6 @@
 #include <QWidget>
 #include <map>
 #include <vector>
-#include "connection.hpp"
-#include "device.hpp"
 #include "guidevice.hpp"
 #include "ros/node_handle.h"
 #include "ros/publisher.h"
@@ -17,6 +15,8 @@
 #include "ros/subscriber.h"
 #include "ros/timer.h"
 #include "std_msgs/Time.h"
+#include "tapi_lib/connection.hpp"
+#include "tapi_lib/device.hpp"
 
 #define CHECK_INTERVAL 1000L
 

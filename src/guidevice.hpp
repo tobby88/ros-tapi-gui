@@ -5,8 +5,8 @@
 #include <QMouseEvent>
 #include <QWidget>
 #include <vector>
-#include "device.hpp"
-#include "feature.hpp"
+#include "tapi_lib/device.hpp"
+#include "tapi_lib/feature.hpp"
 
 namespace Tapi
 {

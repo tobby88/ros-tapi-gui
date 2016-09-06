@@ -142,9 +142,6 @@ include_directories(
 add_executable(gui
   src/apigui.cpp
   src/apigui.ui
-  src/connection.cpp
-  src/device.cpp
-  src/feature.cpp
   src/guidevice.cpp
   src/main.cpp
   src/maingui.cpp
