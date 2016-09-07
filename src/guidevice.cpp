@@ -16,10 +16,9 @@ namespace Tapi
 
 GuiDevice::GuiDevice(QWidget* parent, Tapi::Device* device)
   : QWidget(parent)
-  , device(device)
   , Device(device->GetType(), device->GetName(), device->GetUUID(), device->GetLastSeq(), device->GetLastSeen(),
            device->GetHeartbeat(), device->GetFeatureMap())
-  , features(device->GetSortedFeatures())
+  , features(GetSortedFeatures())
 {
   connectbox_size = 10;
   header_end = 30;
@@ -48,7 +47,7 @@ QPoint GuiDevice::FeatureBoxPosition(Tapi::Feature* feature)
 {
   int x, y, i;
   y = 0;
-  if (device->GetType() == tapi_lib::Device::Type_Subscriber)
+  if (GetType() == tapi_lib::Device::Type_Subscriber)
     x = 0;
   else
     x = this->width() - 1;
@@ -62,9 +61,9 @@ QPoint GuiDevice::FeatureBoxPosition(Tapi::Feature* feature)
   return QPoint(x, y);
 }
 
-Tapi::Device* GuiDevice::GetDevice()
+Tapi::GuiDevice* GuiDevice::GetDevice()
 {
-  return device;
+  return this;
 }
 
 vector<Tapi::Feature*> GuiDevice::GetFeatures()
@@ -117,7 +116,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
   line_end = line_start + line_width;
 
   // draw main box
-  if (device->Active())
+  if (Active())
     painter.setBrush(Qt::white);
   else
     painter.setBrush(Qt::gray);
@@ -129,7 +128,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
   // print heading
   painter.setFont(QFont("Arial", 11));
   painter.drawText(QRect(QPoint(line_start, 0), QPoint(line_end, header_end)), Qt::AlignCenter,
-                   QString::fromStdString(device->GetName()));
+                   QString::fromStdString(GetName()));
 
   // Draw Features
   int i = 0;
@@ -141,7 +140,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
 
     color = stringToColor((*it)->GetType());
 
-    if (!device->Active())
+    if (!Active())
       color = color.darker();
     painter.setBrush(color);
 
@@ -151,7 +150,7 @@ void GuiDevice::paintEvent(QPaintEvent*)
     QRect connect_box(QPoint(0, line_y + line_height / 2 - connectbox_size / 2),
                       QSize(connectbox_size, connectbox_size));
 
-    if (device->GetType() == tapi_lib::Device::Type_Publisher)
+    if (GetType() == tapi_lib::Device::Type_Publisher)
     {
       connect_box.moveLeft(line_end);
     }

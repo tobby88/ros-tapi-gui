@@ -21,7 +21,7 @@ public:
 
   // Public member functions
   QPoint FeatureBoxPosition(Tapi::Feature* feature);
-  Tapi::Device* GetDevice();
+  Tapi::GuiDevice* GetDevice();
   std::vector<Tapi::Feature*> GetFeatures();
   static QColor stringToColor(std::string messagetype);
 
@@ -33,7 +33,6 @@ protected:
 private:
   // Private member variables
   int connectbox_size;
-  Tapi::Device* device;
   std::vector<Tapi::Feature*> features;
   int footer_height;
   int footer_start;

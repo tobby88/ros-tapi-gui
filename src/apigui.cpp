@@ -136,8 +136,9 @@ void ApiGui::paintEvent(QPaintEvent*)
 
   Tapi::Feature* fs = selectedFeature;
 
-  QPoint begin = s->mapTo(this, s->FeatureBoxPosition(fs));
-  painter.drawLine(begin, end);
+  //TODO: Repair!
+  //QPoint begin = s->mapTo(this, s->FeatureBoxPosition(fs));
+  //painter.drawLine(begin, end);
 }
 
 // Private member functions
@@ -462,7 +463,9 @@ void ApiGui::checkApiForUpdate()
     }
     done();
     // Reselect Guidevice, because the selection was deleted above
-    if (selectedFeature)
+
+    //TODO: Repair!
+    /*if (selectedFeature)
     {
       bool found = false;
       for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
@@ -482,7 +485,7 @@ void ApiGui::checkApiForUpdate()
         selectedGuiDevice = 0;
         selectedFeature = 0;
       }
-    }
+    }*/
     update();
   }
 }
