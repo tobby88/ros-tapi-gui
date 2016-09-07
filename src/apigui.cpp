@@ -573,7 +573,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 
 void ApiGui::loadButtonClicked()
 {
-  /*string homedir = getenv("HOME");
+  string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =
       QFileDialog::getOpenFileName(this, "Open File", QString::fromStdString(filename), "Tapi-files (*.tapi)");
@@ -585,7 +585,7 @@ void ApiGui::loadButtonClicked()
   {
     error = false;
     string temp;
-    clear();
+    clearAllButtonClicked();
     getline(fileInput, temp);
     if (fileInput.eof())
       error = true;
@@ -617,7 +617,7 @@ void ApiGui::loadButtonClicked()
           features.emplace(featureUUID, feature);
           getline(fileInput, temp);
         }
-        addDevice(type, name, uuid, features);
+        addDeviceToApi(type, name, uuid, features);
       }
       else if (temp == "[Connection]")
       {
@@ -656,13 +656,11 @@ void ApiGui::loadButtonClicked()
     guitimer->stop();
     msgBox.exec();
     guitimer->start(timerInterval);
-  }*/
+  }
 }
 
 void ApiGui::saveButtonClicked()
 {
-  /*vector<Tapi::Device*> devices = getDevicesSorted();
-  vector<Tapi::Connection*> connections = getConnections();
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =
@@ -670,14 +668,14 @@ void ApiGui::saveButtonClicked()
   filename = filePicker.toStdString();
   ofstream fileOutput;
   fileOutput.open(filename);
-  for (int i = 0; i < devices.size(); i++)
+  for (auto it = devices.begin(); it != devices.end(); ++it)
   {
     fileOutput << "[Device]\n";
-    fileOutput << devices.at(i)->GetUUID() << "\n";
-    fileOutput << devices.at(i)->GetName() << "\n";
-    fileOutput << (int)devices.at(i)->GetType() << "\n";
-    fileOutput << devices.at(i)->GetHeartbeat() << "\n";
-    vector<Tapi::Feature*> features = devices.at(i)->GetSortedFeatures();
+    fileOutput << it->second->GetUUID() << "\n";
+    fileOutput << it->second->GetName() << "\n";
+    fileOutput << (int)it->second->GetType() << "\n";
+    fileOutput << it->second->GetHeartbeat() << "\n";
+    vector<Tapi::Feature*> features = it->second->GetSortedFeatures();
     for (int j = 0; j < features.size(); j++)
     {
       fileOutput << "[DeviceFeature]\n";
@@ -686,15 +684,15 @@ void ApiGui::saveButtonClicked()
       fileOutput << features.at(j)->GetType() << "\n";
     }
   }
-  for (int i = 0; i < connections.size(); i++)
+  for (auto it=connections.begin(); it!=connections.end(); ++it)
   {
     fileOutput << "[Connection]\n";
-    fileOutput << connections.at(i)->GetSubscriberUUID() << "\n";
-    fileOutput << connections.at(i)->GetSubscriberFeatureUUID() << "\n";
-    fileOutput << connections.at(i)->GetPublisherUUID() << "\n";
-    fileOutput << connections.at(i)->GetPublisherFeatureUUID() << "\n";
-    fileOutput << connections.at(i)->GetCoefficient() << "\n";
+    fileOutput << it->second.GetSubscriberUUID() << "\n";
+    fileOutput << it->second.GetSubscriberFeatureUUID() << "\n";
+    fileOutput << it->second.GetPublisherUUID() << "\n";
+    fileOutput << it->second.GetPublisherFeatureUUID() << "\n";
+    fileOutput << it->second.GetCoefficient() << "\n";
   }
-  fileOutput.close();*/
+  fileOutput.close();
 }
 }
