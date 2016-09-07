@@ -470,6 +470,11 @@ void ApiGui::checkForGuiUpdate()
       mousePosition = newMousePosition;
       update();
     }
+    if (!selectedGuiDevice->Active())
+    {
+      selectedFeature = 0;
+      selectedGuiDevice = 0;
+    }
   }
 }
 
