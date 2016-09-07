@@ -251,6 +251,36 @@ void TapiGui::updateData()
       devices.at(uuid)->Deactivate();
   }
 
+  vector<string> toDelete;
+  for (auto it = devices.begin(); it != devices.end(); ++it)
+  {
+    bool found = false;
+    string devUUID = it->first;
+    for (auto it2 = devVect.begin(); it2 != devVect.end(); ++it2)
+      if (it2->UUID == devUUID)
+      {
+        found = true;
+        break;
+      }
+    if (!found)
+      toDelete.push_back(devUUID);
+  }
+  for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
+  {
+    if (subscriberGuiDevices.count(*it) > 0)
+    {
+      subscriberGuiDevices.at(*it)->hide();
+      subscriberGuiDevices.erase(*it);
+    }
+    else if (publisherGuiDevices.count(*it) > 0)
+    {
+      publisherGuiDevices.at(*it)->hide();
+      publisherGuiDevices.erase(*it);
+    }
+    delete devices.at(*it);
+    devices.erase(*it);
+  }
+
   tapi_lib::GetConnectionList conSrv;
   conSrv.request.Get = true;
   if (!conListClient.call(conSrv))
