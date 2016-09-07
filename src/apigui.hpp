@@ -81,7 +81,6 @@ private:
   std::vector<Tapi::Connection*> getConnections();
   Tapi::Device* getDeviceByFeatureUUID(std::string uuid);
   std::vector<Tapi::Device*> getDevicesSorted();
-  void run();
   void timer(const ros::TimerEvent& e);
   void updateAvailable(const std_msgs::Time::ConstPtr& time);
   void updateData();

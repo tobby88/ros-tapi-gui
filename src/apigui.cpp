@@ -55,8 +55,8 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
   connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
 
   lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
-  run();
   updateData();
+  spinner->start();
   updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
 }
 
@@ -260,11 +260,6 @@ vector<Tapi::Device*> ApiGui::getDevicesSorted()
   if (devicesList.size() > 1)
     sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
   return devicesList;
-}
-
-void ApiGui::run()
-{
-  spinner->start();
 }
 
 void ApiGui::timer(const ros::TimerEvent& e)
