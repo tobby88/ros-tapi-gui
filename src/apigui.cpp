@@ -2,6 +2,7 @@
 #include <QCursor>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QLabel>
 #include <QMessageBox>
 #include <QPainter>
 #include <QString>
@@ -474,9 +475,6 @@ void ApiGui::checkForGuiUpdate()
 
 void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 {
-  QString qs = QString::fromStdString(feature->GetName());
-  ui->TestLabel->setText(qs);
-
   if ((selectedFeature && selectedFeature == feature) || !guidevice->Active())
   // Clicked twice on the same feature or device is inactive -> demarcate selection
   {
