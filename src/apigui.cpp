@@ -22,7 +22,7 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), nh(nh)
+ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), nh(nh), parent(parent)
 {
   spinner = new ros::AsyncSpinner(1);
   pendingChanges = false;
@@ -36,7 +36,7 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
 
   ui->setupUi(this);
   guitimer = new QTimer(this);
-  connect(guitimer, SIGNAL(timeout()), this, SLOT(checkApiForUpdate()));
+  connect(guitimer, SIGNAL(timeout()), this, SLOT(checkForGuiUpdate()));
   timerInterval = 15;
   guitimer->start(timerInterval);
 
@@ -52,28 +52,32 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
 
   connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadButtonClicked()));
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
-  connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clearButtonClicked()));
+  connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clear()));
 
   lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
   updateData();
   spinner->start();
   updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
+  updateTimer.start();
 }
 
 ApiGui::~ApiGui()
 {
+  guitimer->stop();
   delete guitimer;
-  delete ui;
-
   updateTimer.stop();
   spinner->stop();
   delete spinner;
+  conListClient.shutdown();
   devListClient.shutdown();
   lastUpdatedSub.shutdown();
   delPub.shutdown();
   conPub.shutdown();
   clearPub.shutdown();
   helloClient.shutdown();
+  delete ui;
+  for (auto it = devices.begin(); it != devices.end(); ++it)
+    delete it->second;
 }
 
 // Protected member functions
@@ -84,22 +88,20 @@ void ApiGui::paintEvent(QPaintEvent*)
   painter.setPen(Qt::black);
 
   // Draw all connections
-  vector<Tapi::Connection*> connections;
-  connections = getConnections();
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
-    string publisherUUID = (*it)->GetPublisherUUID();
-    string publisherFeatureUUID = (*it)->GetPublisherFeatureUUID();
-    string subscriberUUID = (*it)->GetSubscriberUUID();
-    string subscriberFeatureUUID = (*it)->GetSubscriberFeatureUUID();
+    string publisherUUID = it->second.GetPublisherUUID();
+    string publisherFeatureUUID = it->second.GetPublisherFeatureUUID();
+    string subscriberUUID = it->second.GetSubscriberUUID();
+    string subscriberFeatureUUID = it->second.GetSubscriberFeatureUUID();
     Tapi::GuiDevice *publisher, *subscriber;
     publisher = 0;
     subscriber = 0;
     for (auto it2 = publisherGuiDevices.begin(); it2 != publisherGuiDevices.end(); ++it2)
     {
-      if ((*it2)->GetUUID() == publisherUUID)
+      if (it2->second->GetUUID() == publisherUUID)
       {
-        publisher = *it2;
+        publisher = it2->second;
         break;
       }
     }
@@ -107,9 +109,9 @@ void ApiGui::paintEvent(QPaintEvent*)
       continue;
     for (auto it2 = subscriberGuiDevices.begin(); it2 != subscriberGuiDevices.end(); ++it2)
     {
-      if ((*it2)->GetUUID() == subscriberUUID)
+      if (it2->second->GetUUID() == subscriberUUID)
       {
-        subscriber = *it2;
+        subscriber = it2->second;
         break;
       }
     }
@@ -128,40 +130,16 @@ void ApiGui::paintEvent(QPaintEvent*)
   }
 
   // Draw line for current (pending) connection
-  if (!selectedFeature)
+  if (!selectedFeature || !selectedGuiDevice)
     return;
-
-  Tapi::GuiDevice* s = selectedGuiDevice;
   QPoint end = mapFromGlobal(mousePosition);
-
-  Tapi::Feature* fs = selectedFeature;
-
-  //TODO: Repair!
-  //QPoint begin = s->mapTo(this, s->FeatureBoxPosition(fs));
-  //painter.drawLine(begin, end);
+  QPoint begin = selectedGuiDevice->mapTo(this, selectedGuiDevice->FeatureBoxPosition(selectedFeature));
+  painter.drawLine(begin, end);
 }
 
 // Private member functions
 
-void ApiGui::addDevice(Tapi::Device* device)
-{
-  Tapi::GuiDevice* guidevice = new Tapi::GuiDevice(this, device);
-  if (device->GetType() == tapi_lib::Device::Type_Publisher)
-  {
-    layoutPublisher->addWidget(guidevice);
-    publisherGuiDevices.push_back(guidevice);
-  }
-  else
-  {
-    layoutSubscriber->addWidget(guidevice);
-    subscriberGuiDevices.push_back(guidevice);
-  }
-  guidevice->show();  // dont forget to show it ;)
-  connect(guidevice, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), this,
-          SLOT(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)));
-}
-
-void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
+void ApiGui::addDeviceToApi(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
 {
   tapi_lib::Hello hello;
   hello.request.DeviceType = type;
@@ -188,76 +166,41 @@ void ApiGui::addDevice(uint8_t type, string name, string uuid, map<string, Tapi:
     ROS_ERROR("Error when connection to hello service");
 }
 
-void ApiGui::changed()
-{
-  pendingChanges = true;
-}
-
-bool ApiGui::checkPending()
-{
-  return pendingChanges;
-}
-
-void ApiGui::clear()
-{
-  std_msgs::Bool msg;
-  msg.data = true;
-  clearPub.publish(msg);
-  connections.clear();
-  devices.clear();
-}
-
-bool ApiGui::compareDeviceNames(const Tapi::Device* first, const Tapi::Device* second)
+bool ApiGui::compareDeviceNames(const Tapi::GuiDevice* first, const Tapi::GuiDevice* second)
 {
   return first->GetName() < second->GetName();
 }
 
-bool ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
+void ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
 {
   tapi_lib::Connect msg;
   msg.Coefficient = coefficient;
   msg.Feature1UUID = feature1uuid;
   msg.Feature2UUID = feature2uuid;
   conPub.publish(msg);
-  return true;
 }
 
-bool ApiGui::deleteConnection(string subscriberFeatureUUID)
+void ApiGui::deleteConnection(string subscriberFeatureUUID)
 {
   std_msgs::String msg;
   msg.data = subscriberFeatureUUID;
   delPub.publish(msg);
-  changed();
+  pendingChanges = true;
 }
 
-void ApiGui::done()
-{
-  pendingChanges = false;
-}
-
-vector<Tapi::Connection*> ApiGui::getConnections()
-{
-  vector<Tapi::Connection*> connectionList;
-  for (auto it = connections.begin(); it != connections.end(); ++it)
-    connectionList.push_back(&it->second);
-  return connectionList;
-}
-
-Tapi::Device* ApiGui::getDeviceByFeatureUUID(string uuid)
+Tapi::GuiDevice* ApiGui::getDeviceByFeatureUUID(string uuid)
 {
   for (auto it = devices.begin(); it != devices.end(); ++it)
-  {
-    if (it->second.GetFeatureByUUID(uuid))
-      return &(it->second);
-  }
+    if (it->second->GetFeatureByUUID(uuid))
+      return it->second;
   return 0;
 }
 
-vector<Tapi::Device*> ApiGui::getDevicesSorted()
+vector<Tapi::GuiDevice*> ApiGui::getDevicesSorted()
 {
-  vector<Tapi::Device*> devicesList;
+  vector<Tapi::GuiDevice*> devicesList;
   for (auto it = devices.begin(); it != devices.end(); ++it)
-    devicesList.push_back(&it->second);
+    devicesList.push_back(it->second);
   if (devicesList.size() > 1)
     sort(devicesList.begin(), devicesList.end(), compareDeviceNames);
   return devicesList;
@@ -265,22 +208,20 @@ vector<Tapi::Device*> ApiGui::getDevicesSorted()
 
 void ApiGui::timer(const ros::TimerEvent& e)
 {
-  updateData();
+  if (lastUpdated.toNSec() + (CHECK_INTERVAL * 1000) < ros::Time::now().toNSec())
+    pendingChanges = true;
 }
 
 void ApiGui::updateAvailable(const std_msgs::Time::ConstPtr& time)
 {
   if (time->data.toNSec() > lastUpdated.toNSec())
-  {
-    lastUpdated = time->data;
-    updateData();
-  }
+    pendingChanges = true;
 }
 
 void ApiGui::updateData()
 {
-  bool updates = false;
-
+  pendingChanges = false;
+  lastUpdated = ros::Time::now();
   tapi_lib::GetDeviceList devSrv;
   devSrv.request.Get = true;
   if (!devListClient.call(devSrv))
@@ -310,20 +251,21 @@ void ApiGui::updateData()
     }
     if (devices.empty() || devices.count(uuid) == 0)
     {
-      Tapi::Device device(deviceType, name, uuid, lastSeq, lastSeen, heartbeat, featureMap);
+      Tapi::GuiDevice* device =
+          new Tapi::GuiDevice(parent, deviceType, name, uuid, lastSeq, lastSeen, heartbeat, featureMap);
       devices.emplace(uuid, device);
-      updates = true;
+      pendingChanges = true;
     }
     else if (devices.count(uuid) == 1)
     {
-      devices.at(uuid).Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
-      updates = true;
+      devices.at(uuid)->Update(deviceType, name, lastSeq, lastSeen, heartbeat, featureMap);
+      pendingChanges = true;
     }
     else
       return;
 
     if (!active)
-      devices.at(uuid).Deactivate();
+      devices.at(uuid)->Deactivate();
   }
 
   tapi_lib::GetConnectionList conSrv;
@@ -337,82 +279,135 @@ void ApiGui::updateData()
   for (auto it = conVect.begin(); it != conVect.end(); ++it)
   {
     if (devices.count(it->SubscriberUUID) == 0 || devices.count(it->PublisherUUID) == 0)
+      // Try to connect non existend devices -> try next connection
       continue;
     if (connections.count(it->SubscriberFeatureUUID) == 0)
+    // No connection on this device yet -> store connection
     {
       Tapi::Connection connection(it->PublisherUUID, it->PublisherFeatureUUID, it->SubscriberUUID,
                                   it->SubscriberFeatureUUID, it->Coefficient);
       connections.emplace(it->SubscriberFeatureUUID, connection);
-      devices.at(it->PublisherUUID).GetFeatureByUUID(it->PublisherFeatureUUID)->IncrementConnections();
-      devices.at(it->SubscriberUUID).GetFeatureByUUID(it->SubscriberFeatureUUID)->IncrementConnections();
-      updates = true;
+      pendingChanges = true;
     }
     else if (connections.at(it->SubscriberFeatureUUID).GetPublisherFeatureUUID() != it->PublisherFeatureUUID)
+    // Subscriber already connected, but publisher has changed, delete old connection and store new one
     {
       string subscriberFeatureUUID = it->SubscriberFeatureUUID;
-      Tapi::Device* subscriberDevice = getDeviceByFeatureUUID(subscriberFeatureUUID);
-      string publisherFeatureUUID = connections.at(subscriberFeatureUUID).GetPublisherFeatureUUID();
-      Tapi::Device* publisherDevice = getDeviceByFeatureUUID(publisherFeatureUUID);
-      subscriberDevice->GetFeatureByUUID(subscriberFeatureUUID)->DecrementConnections();
-      publisherDevice->GetFeatureByUUID(publisherFeatureUUID)->DecrementConnections();
       connections.erase(subscriberFeatureUUID);
       Tapi::Connection connection(it->PublisherUUID, it->PublisherFeatureUUID, it->SubscriberUUID,
                                   it->SubscriberFeatureUUID, it->Coefficient);
       connections.emplace(subscriberFeatureUUID, connection);
-      devices.at(it->PublisherUUID).GetFeatureByUUID(it->PublisherFeatureUUID)->IncrementConnections();
-      devices.at(it->SubscriberUUID).GetFeatureByUUID(it->SubscriberFeatureUUID)->IncrementConnections();
-      updates = true;
+      pendingChanges = true;
     }
   }
   vector<string> deletableConnections;
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
     bool found = false;
-    string searchUUID = it->second.GetSubscriberFeatureUUID();
+    string searchUUID = it->first;
     for (auto it2 = conVect.begin(); it2 != conVect.end(); ++it2)
       if (searchUUID == it2->SubscriberFeatureUUID)
         found = true;
     if (!found)
     {
-      Tapi::Device* subscriberDevice = getDeviceByFeatureUUID(searchUUID);
-      string publisherFeatureUUID = connections.at(searchUUID).GetPublisherFeatureUUID();
-      Tapi::Device* publisherDevice = getDeviceByFeatureUUID(publisherFeatureUUID);
-      subscriberDevice->GetFeatureByUUID(searchUUID)->DecrementConnections();
-      publisherDevice->GetFeatureByUUID(publisherFeatureUUID)->DecrementConnections();
       deletableConnections.push_back(searchUUID);
-      updates = true;
+      pendingChanges = true;
     }
   }
   for (auto it = deletableConnections.begin(); it != deletableConnections.end(); ++it)
     connections.erase(*it);
-  if (updates)
-    changed();
 }
 
 // Slot functions
 
-void ApiGui::clearButtonClicked()
+void ApiGui::clear()
 {
+  selectedFeature = 0;
+  selectedGuiDevice = 0;
   for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
   {
-    (*it)->hide();
-    layoutPublisher->removeWidget(*it);
-    delete *it;
+    disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
+    it->second->hide();
+    layoutPublisher->removeWidget(it->second);
   }
   publisherGuiDevices.clear();
   for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
   {
-    (*it)->hide();
-    layoutSubscriber->removeWidget(*it);
-    delete *it;
+    disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
+    it->second->hide();
+    layoutSubscriber->removeWidget(it->second);
   }
   subscriberGuiDevices.clear();
-  clear();
+  std_msgs::Bool msg;
+  msg.data = true;
+  clearPub.publish(msg);
+  connections.clear();
+  for (auto it = devices.begin(); it != devices.end(); ++it)
+    delete it->second;
+  devices.clear();
   update();
 }
 
-void ApiGui::checkApiForUpdate()
+void ApiGui::checkForGuiUpdate()
 {
+  if (pendingChanges)
+    updateData();
+  if (pendingChanges)
+  {
+    string selectedFeatureUUID = "";
+    if (selectedFeature)
+      selectedFeatureUUID = selectedFeature->GetUUID();
+    for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
+    {
+      disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
+      it->second->hide();
+      layoutPublisher->removeWidget(it->second);
+    }
+    publisherGuiDevices.clear();
+    for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
+    {
+      disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
+      it->second->hide();
+      layoutSubscriber->removeWidget(it->second);
+    }
+    subscriberGuiDevices.clear();
+    vector<Tapi::GuiDevice*> devicesSorted = getDevicesSorted();
+    for (auto it = devicesSorted.begin(); it != devicesSorted.end(); ++it)
+    {
+      if ((*it)->GetType() == tapi_lib::Device::Type_Publisher)
+      {
+        layoutPublisher->addWidget(*it);
+        publisherGuiDevices.emplace((*it)->GetUUID(), *it);
+      }
+      else
+      {
+        layoutSubscriber->addWidget(*it);
+        subscriberGuiDevices.emplace((*it)->GetUUID(), *it);
+      }
+      (*it)->show();  // don't forget to show it
+
+      connect(*it, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), this,
+              SLOT(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)));
+
+      vector<Tapi::Feature*> features = (*it)->GetSortedFeatures();
+      for (auto it2 = features.begin(); it2 != features.end(); ++it2)
+      {
+        string type = (*it2)->GetType();
+        if (colorKeys.count(type) == 0)
+        {
+          QColor color = GuiDevice::stringToColor(type);
+          colorKeys.emplace(type, color);
+          QLabel* key = new QLabel();
+          QString format("<font color=\"%1\">%2</font>  %3");
+          key->setText(format.arg(color.name(), "█  ", type.c_str()));
+          ui->verticalLayoutKeys->addWidget(key);
+          key->show();
+        }
+      }
+    }
+    pendingChanges = false;
+    update();
+  }
   if (selectedFeature)
   {
     QPoint newMousePosition = QCursor::pos();
@@ -421,72 +416,6 @@ void ApiGui::checkApiForUpdate()
       mousePosition = newMousePosition;
       update();
     }
-  }
-
-  if (checkPending())
-  {
-    for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
-    {
-      (*it)->hide();
-      layoutPublisher->removeWidget(*it);
-      delete *it;
-    }
-    publisherGuiDevices.clear();
-    for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
-    {
-      (*it)->hide();
-      layoutSubscriber->removeWidget(*it);
-      delete *it;
-    }
-    subscriberGuiDevices.clear();
-    vector<Tapi::Device*> devices = getDevicesSorted();
-    for (auto it = devices.begin(); it != devices.end(); ++it)
-    {
-      addDevice(*it);
-      vector<Tapi::Feature*> features = (*it)->GetSortedFeatures();
-      for (auto it2 = features.begin(); it2 != features.end(); ++it2)
-      {
-        string type = (*it2)->GetType();
-        if (colorKeys.count(type) < 1)
-        {
-          QColor color = GuiDevice::stringToColor(type);
-          colorKeys.emplace(type, color);
-
-          QLabel* key = new QLabel();
-
-          QString format("<font color=\"%1\">%2</font>  %3");
-          key->setText(format.arg(color.name(), "█  ", type.c_str()));
-          ui->verticalLayoutKeys->addWidget(key);
-          key->show();
-        }
-      }
-    }
-    done();
-    // Reselect Guidevice, because the selection was deleted above
-
-    //TODO: Repair!
-    /*if (selectedFeature)
-    {
-      bool found = false;
-      for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
-        if ((*it)->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
-        {
-          selectedGuiDevice = *it;
-          found = true;
-        }
-      for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
-        if ((*it)->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
-        {
-          selectedGuiDevice = *it;
-          found = true;
-        }
-      if (!found)
-      {
-        selectedGuiDevice = 0;
-        selectedFeature = 0;
-      }
-    }*/
-    update();
   }
 }
 
@@ -504,7 +433,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
     return;
   }
 
-  if (guidevice->GetType() == tapi_lib::Device::Type_Subscriber && feature->GetConnectionCount() > 0)
+  if (guidevice->GetType() == tapi_lib::Device::Type_Subscriber && connections.count(feature->GetUUID()) > 0)
   {
     QMessageBox msgBox;
     if (selectedFeature && guidevice->GetType() != selectedGuiDevice->GetType() &&
@@ -593,7 +522,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 
 void ApiGui::loadButtonClicked()
 {
-  string homedir = getenv("HOME");
+  /*string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =
       QFileDialog::getOpenFileName(this, "Open File", QString::fromStdString(filename), "Tapi-files (*.tapi)");
@@ -676,12 +605,12 @@ void ApiGui::loadButtonClicked()
     guitimer->stop();
     msgBox.exec();
     guitimer->start(timerInterval);
-  }
+  }*/
 }
 
 void ApiGui::saveButtonClicked()
 {
-  vector<Tapi::Device*> devices = getDevicesSorted();
+  /*vector<Tapi::Device*> devices = getDevicesSorted();
   vector<Tapi::Connection*> connections = getConnections();
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
@@ -715,6 +644,6 @@ void ApiGui::saveButtonClicked()
     fileOutput << connections.at(i)->GetPublisherFeatureUUID() << "\n";
     fileOutput << connections.at(i)->GetCoefficient() << "\n";
   }
-  fileOutput.close();
+  fileOutput.close();*/
 }
 }

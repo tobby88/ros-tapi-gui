@@ -16,13 +16,16 @@ class GuiDevice : public QWidget, public Device
 
 public:
   // Constructor/Destructor
-  GuiDevice(QWidget* parent, Tapi::Device* device);
+  GuiDevice(QWidget* parent, uint8_t type, std::string name, std::string uuid, unsigned long lastSeq,
+            ros::Time lastSeen, unsigned long heartbeat, std::map<std::string, Feature> features);
   ~GuiDevice();
 
   // Public member functions
   QPoint FeatureBoxPosition(Tapi::Feature* feature);
   std::vector<Tapi::Feature*> GetFeatures();
   static QColor stringToColor(std::string messagetype);
+  void Update(uint8_t type, std::string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat,
+              std::map<std::string, Feature> features);
 
 protected:
   // Protected member functions

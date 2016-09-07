@@ -14,24 +14,23 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-GuiDevice::GuiDevice(QWidget* parent, Tapi::Device* device)
-  : QWidget(parent)
-  , Device(device->GetType(), device->GetName(), device->GetUUID(), device->GetLastSeq(), device->GetLastSeen(),
-           device->GetHeartbeat(), device->GetFeatureMap())
-  , features(GetSortedFeatures())
+GuiDevice::GuiDevice(QWidget* parent, uint8_t type, string name, string uuid, unsigned long lastSeq, ros::Time lastSeen,
+                     unsigned long heartbeat, map<string, Feature> features)
+  : QWidget(parent), Device(type, name, uuid, lastSeq, lastSeen, heartbeat, features)
 {
   connectbox_size = 10;
   header_end = 30;
   footer_height = 10;
   line_height = 20;
   line_start = connectbox_size;
-  items = features.size();
+  this->features = GetSortedFeatures();
+  items = this->features.size();
 
-  // min height
+  // height
   this->setMinimumHeight(header_end + line_height * items + footer_height);
   this->setMaximumHeight(header_end + line_height * items + footer_height);
 
-  // Prevent uninitialized usage
+  // Prevent uninitialized usage of some member variables
   footer_start = 0;
   line_end = 0;
   line_width = 0;
@@ -83,6 +82,17 @@ QColor GuiDevice::stringToColor(string messagetype)
   QColor color;
   color = QColor(red, green, blue);
   return color;
+}
+
+void GuiDevice::Update(uint8_t type, string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat, map<string, Feature> features)
+{
+  this->features.clear();
+  Device::Update(type, name, lastSeq, lastSeen, heartbeat, features);
+  this->features = GetSortedFeatures();
+  items = this->features.size();
+  // height
+  this->setMinimumHeight(header_end + line_height * items + footer_height);
+  this->setMaximumHeight(header_end + line_height * items + footer_height);
 }
 
 // Protected member functions
