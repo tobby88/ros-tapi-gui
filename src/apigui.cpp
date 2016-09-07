@@ -100,24 +100,12 @@ void ApiGui::paintEvent(QPaintEvent*)
     Tapi::GuiDevice *publisher, *subscriber;
     publisher = 0;
     subscriber = 0;
-    for (auto it2 = publisherGuiDevices.begin(); it2 != publisherGuiDevices.end(); ++it2)
-    {
-      if (it2->second->GetUUID() == publisherUUID)
-      {
-        publisher = it2->second;
-        break;
-      }
-    }
+    if (publisherGuiDevices.count(publisherUUID) > 0)
+      publisher = publisherGuiDevices.at(publisherUUID);
     if (!publisher)
       continue;
-    for (auto it2 = subscriberGuiDevices.begin(); it2 != subscriberGuiDevices.end(); ++it2)
-    {
-      if (it2->second->GetUUID() == subscriberUUID)
-      {
-        subscriber = it2->second;
-        break;
-      }
-    }
+    if (subscriberGuiDevices.count(subscriberUUID) > 0)
+      subscriber = subscriberGuiDevices.at(subscriberUUID);
     if (!subscriber)
       continue;
     QPoint begin, end;
@@ -359,7 +347,11 @@ void ApiGui::clearInactiveButtonClicked()
     }
   }
   for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
+  {
     publisherGuiDevices.erase(*it);
+    delete devices.at(*it);
+    devices.erase(*it);
+  }
   toDelete.clear();
   for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
   {
@@ -378,19 +370,14 @@ void ApiGui::clearInactiveButtonClicked()
     }
   }
   for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
+  {
     subscriberGuiDevices.erase(*it);
-  toDelete.clear();
+    delete devices.at(*it);
+    devices.erase(*it);
+  }
   std_msgs::Bool msg;
   msg.data = true;
   clearInactivePub.publish(msg);
-  for (auto it = devices.begin(); it != devices.end(); ++it)
-    if (!it->second->Active())
-    {
-      toDelete.push_back(it->second->GetUUID());
-      delete it->second;
-    }
-  for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
-    devices.erase(*it);
   update();
 }
 
@@ -681,7 +668,7 @@ void ApiGui::saveButtonClicked()
       fileOutput << features.at(j)->GetType() << "\n";
     }
   }
-  for (auto it=connections.begin(); it!=connections.end(); ++it)
+  for (auto it = connections.begin(); it != connections.end(); ++it)
   {
     fileOutput << "[Connection]\n";
     fileOutput << it->second.GetSubscriberUUID() << "\n";
