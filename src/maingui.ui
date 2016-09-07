@@ -37,7 +37,7 @@
           <locale language="English" country="UnitedKingdom"/>
          </property>
          <property name="text">
-          <string>Publisher</string>
+          <string>Publisher/ServiceServer</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -60,7 +60,7 @@
           <locale language="English" country="UnitedKingdom"/>
          </property>
          <property name="text">
-          <string>Subscriber</string>
+          <string>Subscriber/ServiceClients</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
