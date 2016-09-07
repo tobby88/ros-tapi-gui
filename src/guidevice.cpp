@@ -60,11 +60,6 @@ QPoint GuiDevice::FeatureBoxPosition(Tapi::Feature* feature)
   return QPoint(x, y);
 }
 
-vector<Tapi::Feature*> GuiDevice::GetFeatures()
-{
-  return features;
-}
-
 // Public member functions
 QColor GuiDevice::stringToColor(string messagetype)
 {
@@ -84,7 +79,8 @@ QColor GuiDevice::stringToColor(string messagetype)
   return color;
 }
 
-void GuiDevice::Update(uint8_t type, string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat, map<string, Feature> features)
+void GuiDevice::Update(uint8_t type, string name, unsigned long lastSeq, ros::Time lastSeen, unsigned long heartbeat,
+                       map<string, Feature> features)
 {
   this->features.clear();
   Device::Update(type, name, lastSeq, lastSeen, heartbeat, features);
