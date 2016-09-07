@@ -61,11 +61,6 @@ QPoint GuiDevice::FeatureBoxPosition(Tapi::Feature* feature)
   return QPoint(x, y);
 }
 
-Tapi::GuiDevice* GuiDevice::GetDevice()
-{
-  return this;
-}
-
 vector<Tapi::Feature*> GuiDevice::GetFeatures()
 {
   return features;

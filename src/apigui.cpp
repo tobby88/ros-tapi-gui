@@ -97,7 +97,7 @@ void ApiGui::paintEvent(QPaintEvent*)
     subscriber = 0;
     for (auto it2 = publisherGuiDevices.begin(); it2 != publisherGuiDevices.end(); ++it2)
     {
-      if ((*it2)->GetDevice()->GetUUID() == publisherUUID)
+      if ((*it2)->GetUUID() == publisherUUID)
       {
         publisher = *it2;
         break;
@@ -107,7 +107,7 @@ void ApiGui::paintEvent(QPaintEvent*)
       continue;
     for (auto it2 = subscriberGuiDevices.begin(); it2 != subscriberGuiDevices.end(); ++it2)
     {
-      if ((*it2)->GetDevice()->GetUUID() == subscriberUUID)
+      if ((*it2)->GetUUID() == subscriberUUID)
       {
         subscriber = *it2;
         break;
@@ -116,11 +116,11 @@ void ApiGui::paintEvent(QPaintEvent*)
     if (!subscriber)
       continue;
     QPoint begin, end;
-    Tapi::Feature* feature = publisher->GetDevice()->GetFeatureByUUID(publisherFeatureUUID);
+    Tapi::Feature* feature = publisher->GetFeatureByUUID(publisherFeatureUUID);
     if (!feature)
       continue;
     begin = publisher->mapTo(this, publisher->FeatureBoxPosition(feature));
-    feature = subscriber->GetDevice()->GetFeatureByUUID(subscriberFeatureUUID);
+    feature = subscriber->GetFeatureByUUID(subscriberFeatureUUID);
     if (!feature)
       continue;
     end = subscriber->mapTo(this, subscriber->FeatureBoxPosition(feature));
@@ -469,13 +469,13 @@ void ApiGui::checkApiForUpdate()
     {
       bool found = false;
       for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
-        if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
+        if ((*it)->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
         {
           selectedGuiDevice = *it;
           found = true;
         }
       for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
-        if ((*it)->GetDevice()->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
+        if ((*it)->GetFeatureByUUID(selectedFeature->GetUUID()) != 0)
         {
           selectedGuiDevice = *it;
           found = true;
@@ -495,7 +495,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
   QString qs = QString::fromStdString(feature->GetName());
   ui->TestLabel->setText(qs);
 
-  if ((selectedFeature && selectedFeature == feature) || !guidevice->GetDevice()->Active())
+  if ((selectedFeature && selectedFeature == feature) || !guidevice->Active())
   // Clicked twice on the same feature or device is inactive -> demarcate selection
   {
     selectedFeature = 0;
@@ -504,10 +504,10 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() == tapi_lib::Device::Type_Subscriber && feature->GetConnectionCount() > 0)
+  if (guidevice->GetType() == tapi_lib::Device::Type_Subscriber && feature->GetConnectionCount() > 0)
   {
     QMessageBox msgBox;
-    if (selectedFeature && guidevice->GetDevice()->GetType() != selectedGuiDevice->GetDevice()->GetType() &&
+    if (selectedFeature && guidevice->GetType() != selectedGuiDevice->GetType() &&
         selectedFeature->GetType() == feature->GetType())
     {
       string msg = "Replace connection of \"" + feature->GetName() + "\"?";
@@ -550,7 +550,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
     return;
   }
 
-  if (guidevice->GetDevice()->GetType() == selectedGuiDevice->GetDevice()->GetType())
+  if (guidevice->GetType() == selectedGuiDevice->GetType())
   // Selected the same device type, so no connection is possible. Drop old
   // selection and select the new one
   {
