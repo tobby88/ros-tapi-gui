@@ -75,7 +75,6 @@ private:
   static bool compareDeviceNames(const Tapi::GuiDevice* first, const Tapi::GuiDevice* second);
   void connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
   void deleteConnection(std::string subscriberFeatureUUID);
-  Tapi::GuiDevice* getDeviceByFeatureUUID(std::string uuid);
   std::vector<Tapi::GuiDevice*> getDevicesSorted();
   void timer(const ros::TimerEvent& e);
   void updateAvailable(const std_msgs::Time::ConstPtr& time);

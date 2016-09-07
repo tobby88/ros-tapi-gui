@@ -191,14 +191,6 @@ void ApiGui::deleteConnection(string subscriberFeatureUUID)
   pendingChanges = true;
 }
 
-Tapi::GuiDevice* ApiGui::getDeviceByFeatureUUID(string uuid)
-{
-  for (auto it = devices.begin(); it != devices.end(); ++it)
-    if (it->second->GetFeatureByUUID(uuid))
-      return it->second;
-  return 0;
-}
-
 vector<Tapi::GuiDevice*> ApiGui::getDevicesSorted()
 {
   vector<Tapi::GuiDevice*> devicesList;
