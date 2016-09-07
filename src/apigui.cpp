@@ -30,7 +30,7 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
   delPub = nh->advertise<std_msgs::String>("/Tapi/DeleteConnection", 1000);
   conPub = nh->advertise<tapi_lib::Connect>("/Tapi/ConnectFeatures", 1000);
   conListClient = nh->serviceClient<tapi_lib::GetConnectionList>("/Tapi/GetConnectionList");
-  clearPub = nh->advertise<std_msgs::Bool>("/Tapi/Clear", 2);
+  clearAllPub = nh->advertise<std_msgs::Bool>("/Tapi/ClearAll", 2);
   helloClient = nh->serviceClient<tapi_lib::Hello>("/Tapi/HelloServ");
   updateTimer.start();
 
@@ -52,7 +52,7 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
 
   connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadButtonClicked()));
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
-  connect(ui->clearButton, SIGNAL(clicked(bool)), this, SLOT(clear()));
+  connect(ui->clearAllButton, SIGNAL(clicked(bool)), this, SLOT(clearAllButtonClicked()));
 
   lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
   updateData();
@@ -73,7 +73,7 @@ ApiGui::~ApiGui()
   lastUpdatedSub.shutdown();
   delPub.shutdown();
   conPub.shutdown();
-  clearPub.shutdown();
+  clearAllPub.shutdown();
   helloClient.shutdown();
   delete ui;
   for (auto it = devices.begin(); it != devices.end(); ++it)
@@ -320,7 +320,7 @@ void ApiGui::updateData()
 
 // Slot functions
 
-void ApiGui::clear()
+void ApiGui::clearAllButtonClicked()
 {
   selectedFeature = 0;
   selectedGuiDevice = 0;
@@ -340,7 +340,7 @@ void ApiGui::clear()
   subscriberGuiDevices.clear();
   std_msgs::Bool msg;
   msg.data = true;
-  clearPub.publish(msg);
+  clearAllPub.publish(msg);
   connections.clear();
   for (auto it = devices.begin(); it != devices.end(); ++it)
     delete it->second;

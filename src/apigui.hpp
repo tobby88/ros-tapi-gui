@@ -42,7 +42,7 @@ protected:
 
 private:
   // Private member variables
-  ros::Publisher clearPub;
+  ros::Publisher clearAllPub;
   std::map<std::string, QColor> colorKeys;
   std::map<std::string, Tapi::Connection> connections;
   ros::ServiceClient conListClient;
@@ -83,7 +83,7 @@ private:
 private slots:
   // Slot functions
   void checkForGuiUpdate();
-  void clear();
+  void clearAllButtonClicked();
   void featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature);
   void loadButtonClicked();
   void saveButtonClicked();
