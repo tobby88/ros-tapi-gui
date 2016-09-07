@@ -15,7 +15,11 @@ namespace Tapi
 // Constructor/Destructor
 
 GuiDevice::GuiDevice(QWidget* parent, Tapi::Device* device)
-  : QWidget(parent), device(device), features(device->GetSortedFeatures())
+  : QWidget(parent)
+  , device(device)
+  , Device(device->GetType(), device->GetName(), device->GetUUID(), device->GetLastSeq(), device->GetLastSeen(),
+           device->GetHeartbeat(), device->GetFeatureMap())
+  , features(device->GetSortedFeatures())
 {
   connectbox_size = 10;
   header_end = 30;

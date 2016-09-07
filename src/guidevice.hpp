@@ -10,7 +10,7 @@
 
 namespace Tapi
 {
-class GuiDevice : public QWidget
+class GuiDevice : public QWidget, public Device
 {
   Q_OBJECT
 
