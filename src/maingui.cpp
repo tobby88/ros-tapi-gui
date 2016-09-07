@@ -9,9 +9,9 @@ MainGui::MainGui(ros::NodeHandle* nh, QWidget* parent) : QMainWindow(parent), ui
 {
   ui->setupUi(this);
   QWidget::showMaximized();
-  apiui = new Tapi::ApiGui(nh, this);
-  ui->scrollAreaWidgetContents->layout()->addWidget(apiui);
-  apiui->show();
+  tapiGui = new Tapi::TapiGui(nh, this);
+  ui->scrollAreaWidgetContents->layout()->addWidget(tapiGui);
+  tapiGui->show();
 }
 
 MainGui::~MainGui()

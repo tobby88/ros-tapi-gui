@@ -1,5 +1,5 @@
-#ifndef APIGUI_HPP
-#define APIGUI_HPP
+#ifndef TAPIGUI_HPP
+#define TAPIGUI_HPP
 
 #include <QPoint>
 #include <QTimer>
@@ -22,19 +22,19 @@
 
 namespace Ui
 {
-class ApiGui;
+class TapiGui;
 }
 
 namespace Tapi
 {
-class ApiGui : public QWidget
+class TapiGui : public QWidget
 {
   Q_OBJECT
 
 public:
   // Constructor/Destructor
-  ApiGui(ros::NodeHandle* nh, QWidget* parent = 0);
-  ~ApiGui();
+  TapiGui(ros::NodeHandle* nh, QWidget* parent = 0);
+  ~TapiGui();
 
 protected:
   // Protected member functions
@@ -67,11 +67,11 @@ private:
   ros::AsyncSpinner* spinner;
   std::map<std::string, Tapi::GuiDevice*> subscriberGuiDevices;
   int timerInterval;
-  Ui::ApiGui* ui;
+  Ui::TapiGui* ui;
   ros::Timer updateTimer;
 
   // Private member functions
-  void addDeviceToApi(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
+  void addDeviceToTapi(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
   static bool compareDeviceNames(const Tapi::GuiDevice* first, const Tapi::GuiDevice* second);
   void connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
   void deleteConnection(std::string subscriberFeatureUUID);

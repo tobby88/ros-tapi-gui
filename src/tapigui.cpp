@@ -1,4 +1,4 @@
-#include "apigui.hpp"
+#include "tapigui.hpp"
 #include <QCursor>
 #include <QFileDialog>
 #include <QInputDialog>
@@ -15,7 +15,7 @@
 #include "tapi_lib/GetConnectionList.h"
 #include "tapi_lib/GetDeviceList.h"
 #include "tapi_lib/Hello.h"
-#include "ui_apigui.h"
+#include "ui_tapigui.h"
 
 using namespace std;
 
@@ -23,7 +23,7 @@ namespace Tapi
 {
 // Constructor/Destructor
 
-ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new Ui::ApiGui), nh(nh), parent(parent)
+TapiGui::TapiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new Ui::TapiGui), nh(nh), parent(parent)
 {
   spinner = new ros::AsyncSpinner(1);
   pendingChanges = false;
@@ -57,14 +57,14 @@ ApiGui::ApiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new U
   connect(ui->clearAllButton, SIGNAL(clicked(bool)), this, SLOT(clearAllButtonClicked()));
   connect(ui->clearInactiveButton, SIGNAL(clicked(bool)), this, SLOT(clearInactiveButtonClicked()));
 
-  lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &ApiGui::updateAvailable, this);
+  lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &TapiGui::updateAvailable, this);
   updateData();
   spinner->start();
-  updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &ApiGui::timer, this);
+  updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &TapiGui::timer, this);
   updateTimer.start();
 }
 
-ApiGui::~ApiGui()
+TapiGui::~TapiGui()
 {
   guitimer->stop();
   delete guitimer;
@@ -85,7 +85,7 @@ ApiGui::~ApiGui()
 
 // Protected member functions
 
-void ApiGui::paintEvent(QPaintEvent*)
+void TapiGui::paintEvent(QPaintEvent*)
 {
   QPainter painter(this);
   painter.setPen(Qt::black);
@@ -130,7 +130,7 @@ void ApiGui::paintEvent(QPaintEvent*)
 
 // Private member functions
 
-void ApiGui::addDeviceToApi(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
+void TapiGui::addDeviceToTapi(uint8_t type, string name, string uuid, map<string, Tapi::Feature> features)
 {
   tapi_lib::Hello hello;
   hello.request.DeviceType = type;
@@ -157,12 +157,12 @@ void ApiGui::addDeviceToApi(uint8_t type, string name, string uuid, map<string, 
     ROS_ERROR("Error when connection to hello service");
 }
 
-bool ApiGui::compareDeviceNames(const Tapi::GuiDevice* first, const Tapi::GuiDevice* second)
+bool TapiGui::compareDeviceNames(const Tapi::GuiDevice* first, const Tapi::GuiDevice* second)
 {
   return first->GetName() < second->GetName();
 }
 
-void ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
+void TapiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
 {
   tapi_lib::Connect msg;
   msg.Coefficient = coefficient;
@@ -171,7 +171,7 @@ void ApiGui::connectFeatures(string feature1uuid, string feature2uuid, double co
   conPub.publish(msg);
 }
 
-void ApiGui::deleteConnection(string subscriberFeatureUUID)
+void TapiGui::deleteConnection(string subscriberFeatureUUID)
 {
   std_msgs::String msg;
   msg.data = subscriberFeatureUUID;
@@ -179,7 +179,7 @@ void ApiGui::deleteConnection(string subscriberFeatureUUID)
   pendingChanges = true;
 }
 
-vector<Tapi::GuiDevice*> ApiGui::getDevicesSorted()
+vector<Tapi::GuiDevice*> TapiGui::getDevicesSorted()
 {
   vector<Tapi::GuiDevice*> devicesList;
   for (auto it = devices.begin(); it != devices.end(); ++it)
@@ -189,19 +189,19 @@ vector<Tapi::GuiDevice*> ApiGui::getDevicesSorted()
   return devicesList;
 }
 
-void ApiGui::timer(const ros::TimerEvent& e)
+void TapiGui::timer(const ros::TimerEvent& e)
 {
   if (lastUpdated.toNSec() + (CHECK_INTERVAL * 1000) < ros::Time::now().toNSec())
     pendingChanges = true;
 }
 
-void ApiGui::updateAvailable(const std_msgs::Time::ConstPtr& time)
+void TapiGui::updateAvailable(const std_msgs::Time::ConstPtr& time)
 {
   if (time->data.toNSec() > lastUpdated.toNSec())
     pendingChanges = true;
 }
 
-void ApiGui::updateData()
+void TapiGui::updateData()
 {
   pendingChanges = false;
   lastUpdated = ros::Time::now();
@@ -303,7 +303,7 @@ void ApiGui::updateData()
 
 // Slot functions
 
-void ApiGui::clearAllButtonClicked()
+void TapiGui::clearAllButtonClicked()
 {
   selectedFeature = 0;
   selectedGuiDevice = 0;
@@ -331,7 +331,7 @@ void ApiGui::clearAllButtonClicked()
   update();
 }
 
-void ApiGui::clearInactiveButtonClicked()
+void TapiGui::clearInactiveButtonClicked()
 {
   selectedFeature = 0;
   selectedGuiDevice = 0;
@@ -381,7 +381,7 @@ void ApiGui::clearInactiveButtonClicked()
   update();
 }
 
-void ApiGui::checkForGuiUpdate()
+void TapiGui::checkForGuiUpdate()
 {
   if (pendingChanges)
     updateData();
@@ -457,7 +457,7 @@ void ApiGui::checkForGuiUpdate()
   }
 }
 
-void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
+void TapiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 {
   if ((selectedFeature && selectedFeature == feature) || !guidevice->Active())
   // Clicked twice on the same feature or device is inactive -> demarcate selection
@@ -555,7 +555,7 @@ void ApiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
   }
 }
 
-void ApiGui::loadButtonClicked()
+void TapiGui::loadButtonClicked()
 {
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
@@ -601,7 +601,7 @@ void ApiGui::loadButtonClicked()
           features.emplace(featureUUID, feature);
           getline(fileInput, temp);
         }
-        addDeviceToApi(type, name, uuid, features);
+        addDeviceToTapi(type, name, uuid, features);
       }
       else if (temp == "[Connection]")
       {
@@ -643,7 +643,7 @@ void ApiGui::loadButtonClicked()
   }
 }
 
-void ApiGui::saveButtonClicked()
+void TapiGui::saveButtonClicked()
 {
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";

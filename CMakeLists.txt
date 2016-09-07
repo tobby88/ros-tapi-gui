@@ -142,8 +142,8 @@ include_directories(
 
 ## Declare a C++ executable
 add_executable(gui
-  src/apigui.cpp
-  src/apigui.ui
+  src/tapigui.cpp
+  src/tapigui.ui
   src/guidevice.cpp
   src/main.cpp
   src/maingui.cpp
