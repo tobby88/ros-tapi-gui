@@ -215,9 +215,9 @@ void TapiGui::updateData()
   if (!devListClient.call(devSrv))
   {
     ROS_ERROR("Failed to establish connection to core");
+    return;
   }
   vector<tapi_lib::Device> devVect = devSrv.response.Devices;
-
   for (auto it = devVect.begin(); it != devVect.end(); ++it)
   {
     bool active = it->Active;
@@ -250,7 +250,7 @@ void TapiGui::updateData()
       pendingChanges = true;
     }
     else
-      return;
+      continue;
 
     if (!active)
       devices.at(uuid)->Deactivate();
@@ -274,11 +274,13 @@ void TapiGui::updateData()
   {
     if (subscriberGuiDevices.count(*it) > 0)
     {
+      disconnect(subscriberGuiDevices.at(*it), SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
       subscriberGuiDevices.at(*it)->hide();
       subscriberGuiDevices.erase(*it);
     }
     else if (publisherGuiDevices.count(*it) > 0)
     {
+      disconnect(publisherGuiDevices.at(*it), SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
       publisherGuiDevices.at(*it)->hide();
       publisherGuiDevices.erase(*it);
     }
@@ -405,15 +407,14 @@ void TapiGui::checkForGuiUpdate()
           QColor color = GuiDevice::stringToColor(type);
           colorKeys.emplace(type, color);
           QLabel* key = new QLabel();
-          QString format("<font color=\"%1\">%2</font>  %3");
-          key->setText(format.arg(color.name(), "█  ", type.c_str()));
+          QString format("<font color=\"%1\">%2 </font> %3");
+          key->setText(format.arg(color.name(), "█ ", type.c_str()));
           ui->verticalLayoutKeys->addWidget(key);
           key->show();
         }
       }
     }
     pendingChanges = false;
-    update();
   }
   if (selectedFeature)
   {
@@ -421,7 +422,6 @@ void TapiGui::checkForGuiUpdate()
     if (newMousePosition != mousePosition)
     {
       mousePosition = newMousePosition;
-      update();
     }
     if (!selectedGuiDevice->Active())
     {
@@ -429,6 +429,7 @@ void TapiGui::checkForGuiUpdate()
       selectedGuiDevice = 0;
     }
   }
+  update();
 }
 
 void TapiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
