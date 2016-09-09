@@ -337,27 +337,9 @@ void TapiGui::clearAllButtonClicked()
 {
   selectedFeature = 0;
   selectedGuiDevice = 0;
-  for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
-  {
-    disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
-    it->second->hide();
-    layoutPublisher->removeWidget(it->second);
-  }
-  publisherGuiDevices.clear();
-  for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
-  {
-    disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
-    it->second->hide();
-    layoutSubscriber->removeWidget(it->second);
-  }
-  subscriberGuiDevices.clear();
   std_msgs::Bool msg;
   msg.data = true;
   clearAllPub.publish(msg);
-  connections.clear();
-  for (auto it = devices.begin(); it != devices.end(); ++it)
-    delete it->second;
-  devices.clear();
   update();
 }
 
