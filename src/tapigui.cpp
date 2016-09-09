@@ -363,52 +363,9 @@ void TapiGui::clearAllButtonClicked()
 
 void TapiGui::clearInactiveButtonClicked()
 {
-  selectedFeature = 0;
-  selectedGuiDevice = 0;
-  vector<string> toDelete;
-  for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
-  {
-    if (!it->second->Active())
-    {
-      disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
-      it->second->hide();
-      layoutPublisher->removeWidget(it->second);
-      toDelete.push_back(it->first);
-    }
-  }
-  for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
-  {
-    publisherGuiDevices.erase(*it);
-    delete devices.at(*it);
-    devices.erase(*it);
-  }
-  toDelete.clear();
-  for (auto it = subscriberGuiDevices.begin(); it != subscriberGuiDevices.end(); ++it)
-  {
-    if (!it->second->Active())
-    {
-      disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
-      it->second->hide();
-      layoutSubscriber->removeWidget(it->second);
-      vector<Feature*> features = it->second->GetSortedFeatures();
-      for (auto it2 = features.begin(); it2 != features.end(); ++it2)
-      {
-        if (connections.count((*it2)->GetUUID()) != 0)
-          connections.erase(it->second->GetUUID());
-      }
-      toDelete.push_back(it->first);
-    }
-  }
-  for (auto it = toDelete.begin(); it != toDelete.end(); ++it)
-  {
-    subscriberGuiDevices.erase(*it);
-    delete devices.at(*it);
-    devices.erase(*it);
-  }
   std_msgs::Bool msg;
   msg.data = true;
   clearInactivePub.publish(msg);
-  update();
 }
 
 void TapiGui::checkForGuiUpdate()
