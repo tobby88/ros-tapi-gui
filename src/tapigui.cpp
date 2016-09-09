@@ -234,6 +234,17 @@ void TapiGui::updateData()
       string featureType = it2->FeatureType;
       string featureName = it2->Name;
       string featureUUID = it2->UUID;
+      if ((connections.count(featureUUID) > 0) &&
+          (featureType == "std_msgs/Byte" || featureType == "std_msgs/Float32" || featureType == "std_msgs/Float64" ||
+           featureType == "std_msgs/Int16" || featureType == "std_msgs/Int32" || featureType == "std_msgs/Int64" ||
+           featureType == "std_msgs/Int8" || featureType == "std_msgs/UInt16" || featureType == "std_msgs/UInt32" ||
+           featureType == "std_msgs/UInt64" || featureType == "std_msgs/UInt8"))
+      {
+        double coefficient = connections.at(featureUUID).GetCoefficient();
+        string strCoeff = to_string(coefficient);
+        strCoeff.erase(strCoeff.find_last_not_of('0') + 1, string::npos);
+        featureName = featureName + " (x" + strCoeff + "0)";
+      }
       Tapi::Feature feature(featureType, featureName, featureUUID);
       featureMap.emplace(featureUUID, feature);
     }
