@@ -176,7 +176,6 @@ void TapiGui::deleteConnection(string subscriberFeatureUUID)
   std_msgs::String msg;
   msg.data = subscriberFeatureUUID;
   delPub.publish(msg);
-  pendingChanges = true;
 }
 
 vector<Tapi::GuiDevice*> TapiGui::getDevicesSorted()
