@@ -159,7 +159,13 @@ void TapiGui::addDeviceToTapi(uint8_t type, string name, string uuid, map<string
 
 bool TapiGui::compareDeviceNames(const Tapi::GuiDevice* first, const Tapi::GuiDevice* second)
 {
-  return first->GetName() < second->GetName();
+  string temp1, temp2;
+  temp1 = first->GetName();
+  temp2 = second->GetName();
+  transform(temp1.begin(), temp1.end(), temp1.begin(), ::towlower);
+  transform(temp2.begin(), temp2.end(), temp2.begin(), ::towlower);
+  bool result = temp1 < temp2;
+  return result;
 }
 
 void TapiGui::connectFeatures(string feature1uuid, string feature2uuid, double coefficient)
