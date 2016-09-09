@@ -1,4 +1,5 @@
 #include "guidevice.hpp"
+#include <QCryptographicHash>
 #include <QFont>
 #include <QPainter>
 #include <QPoint>
@@ -63,17 +64,13 @@ QPoint GuiDevice::FeatureBoxPosition(Tapi::Feature* feature)
 // Public member functions
 QColor GuiDevice::stringToColor(string messagetype)
 {
-  char array[1024];
-  strncpy(array, messagetype.c_str(), sizeof(array));
-  array[sizeof(array) - 1] = 0;
-  unsigned long sum = 0;
-  for (int i = 0; i < messagetype.length(); i++)
-    sum += array[i] * i;
-  sum *= 7;
+  QCryptographicHash hasher(QCryptographicHash::Md5);
+  hasher.addData(messagetype.c_str());
+  QByteArray hash = hasher.result();
   uint8_t red, green, blue;
-  red = sum % 255;
-  green = sum / 255;
-  blue = (sum >> 6) % 255;
+  red = hash.at(0);
+  green = hash.at(1);
+  blue = hash.at(2);
   QColor color;
   color = QColor(red, green, blue);
   return color;
