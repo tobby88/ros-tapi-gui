@@ -408,9 +408,6 @@ void TapiGui::checkForGuiUpdate()
     updateData();
   if (pendingChanges)
   {
-    string selectedFeatureUUID = "";
-    if (selectedFeature)
-      selectedFeatureUUID = selectedFeature->GetUUID();
     for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
     {
       disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
