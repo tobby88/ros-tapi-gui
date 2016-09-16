@@ -1,0 +1,17 @@
+actions: []
+authors: tobby <tobby@tobby.eu>
+brief: ''
+bugtracker: ''
+depends:
+- tapi_lib
+- message_runtime
+- catkin
+- roscpp
+description: Simple/Sample GUI for Tapi
+license: GPLv3
+maintainers: tobby <tobby@tobby.eu>
+msgs: []
+package_type: package
+repo_url: https://github.com/tobby88/ros-tapi-gui
+srvs: []
+url: https://tobby88.github.io/ros-tapi-gui/html/
