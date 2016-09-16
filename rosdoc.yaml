@@ -1,0 +1,6 @@
+- builder: doxygen
+  file_patterns: '*.cpp *.hpp *.h *.dox *.md'
+  name: tapi_gui
+  output_dir: docs
+  homepage: https://github.com/tobby88/ros-tapi-gui
+  config: rosdoc.cfg

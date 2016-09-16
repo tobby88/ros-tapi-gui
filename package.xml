@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>tapi_gui</name>
-  <version>4.0.0</version>
-  <description>GUI for Tapi</description>
+  <version>4.0.1</version>
+  <description>Simple/Sample GUI for Tapi</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <maintainer email="tobby@tobby.eu">tobby</maintainer>
@@ -15,6 +15,7 @@
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <url type="repository">https://github.com/tobby88/ros-tapi-gui</url>
+  <url type="website">https://tobby88.github.io/ros-tapi-gui/html/</url>
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
   <!-- Authors do not have to be maintianers, but could be -->
@@ -30,5 +31,6 @@
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
+    <rosdoc config="rosdoc.yaml" />
   </export>
 </package>

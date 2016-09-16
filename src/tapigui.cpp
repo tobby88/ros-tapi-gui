@@ -32,6 +32,14 @@
  *  Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.*
  ******************************************************************************/
 
+/*!
+ * \file tapigui.cpp
+ * \ingroup tapi_gui
+ * \author Tobias Holst
+ * \date 20 Nov 2015
+ * \brief Definition of the Tapi::TapiGui-class and its member functions
+ */
+
 #include "tapigui.hpp"
 #include <QCursor>
 #include <QFileDialog>
@@ -59,8 +67,12 @@ namespace Tapi
 
 TapiGui::TapiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new Ui::TapiGui), nh(nh), parent(parent)
 {
+  // Create an asynchronous spinner so ros callbacks are done in the background
   spinner = new ros::AsyncSpinner(1);
+
   pendingChanges = false;
+
+  // Create all necessary Services, Publishers and Subscribers
   devListClient = nh->serviceClient<tapi_lib::GetDeviceList>("/Tapi/GetDeviceList");
   delPub = nh->advertise<std_msgs::String>("/Tapi/DeleteConnection", 10000);
   conPub = nh->advertise<tapi_lib::Connect>("/Tapi/ConnectFeatures", 10000);
@@ -68,8 +80,12 @@ TapiGui::TapiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new
   clearAllPub = nh->advertise<std_msgs::Bool>("/Tapi/ClearAll", 2);
   clearInactivePub = nh->advertise<std_msgs::Bool>("/Tapi/ClearInactive", 2);
   helloClient = nh->serviceClient<tapi_lib::Hello>("/Tapi/HelloServ");
+  lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &TapiGui::updateAvailable, this);
+  spinner->start();
+  updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &TapiGui::timer, this);
   updateTimer.start();
 
+  // Set up the gui and the gui-timer to renew/redraw the gui
   ui->setupUi(this);
   guitimer = new QTimer(this);
   connect(guitimer, SIGNAL(timeout()), this, SLOT(checkForGuiUpdate()));
@@ -86,20 +102,18 @@ TapiGui::TapiGui(ros::NodeHandle* nh, QWidget* parent) : QWidget(parent), ui(new
   selectedFeature = 0;
   selectedGuiDevice = 0;
 
+  // Connect the buttons to the funtions which shall be called on button clicks
   connect(ui->loadButton, SIGNAL(clicked(bool)), this, SLOT(loadButtonClicked()));
   connect(ui->saveButton, SIGNAL(clicked(bool)), this, SLOT(saveButtonClicked()));
   connect(ui->clearAllButton, SIGNAL(clicked(bool)), this, SLOT(clearAllButtonClicked()));
   connect(ui->clearInactiveButton, SIGNAL(clicked(bool)), this, SLOT(clearInactiveButtonClicked()));
 
-  lastUpdatedSub = nh->subscribe("/Tapi/LastChanged", 5, &TapiGui::updateAvailable, this);
   updateData();
-  spinner->start();
-  updateTimer = nh->createTimer(ros::Duration(CHECK_INTERVAL / 1000.0), &TapiGui::timer, this);
-  updateTimer.start();
 }
 
 TapiGui::~TapiGui()
 {
+  // Stop all publishers/subscribers/services and free allocated memory
   guitimer->stop();
   delete guitimer;
   updateTimer.stop();
@@ -134,6 +148,8 @@ void TapiGui::paintEvent(QPaintEvent*)
     Tapi::GuiDevice *publisher, *subscriber;
     publisher = 0;
     subscriber = 0;
+
+    // Check if both devices exists
     if (publisherGuiDevices.count(publisherUUID) > 0)
       publisher = publisherGuiDevices.at(publisherUUID);
     if (!publisher)
@@ -142,6 +158,8 @@ void TapiGui::paintEvent(QPaintEvent*)
       subscriber = subscriberGuiDevices.at(subscriberUUID);
     if (!subscriber)
       continue;
+
+    // Check if their features acutally exists which shall be connected and get their coordinates
     QPoint begin, end;
     Tapi::Feature* feature = publisher->GetFeatureByUUID(publisherFeatureUUID);
     if (!feature)
@@ -151,6 +169,8 @@ void TapiGui::paintEvent(QPaintEvent*)
     if (!feature)
       continue;
     end = subscriber->mapTo(this, subscriber->FeatureBoxPosition(feature));
+
+    // Draw the connection
     painter.drawLine(begin, end);
   }
 
@@ -168,6 +188,8 @@ void TapiGui::addDeviceToTapi(uint8_t type, string name, string uuid, map<string
 {
   tapi_lib::Hello hello;
   hello.request.DeviceType = type;
+
+  // Copy all features into a vector of feature messages and use this as the features part of the hello request
   vector<tapi_lib::Feature> featureVec;
   for (auto it = features.begin(); it != features.end(); ++it)
   {
@@ -178,13 +200,19 @@ void TapiGui::addDeviceToTapi(uint8_t type, string name, string uuid, map<string
     featureVec.push_back(feature);
   }
   hello.request.Features = featureVec;
+
+  // Generate a standard header
   std_msgs::Header header;
   header.seq = 1;
   ros::Time now = ros::Time::now();
   header.stamp = now;
   hello.request.Header = header;
+
+  // Copy the rest of the necessary data to the hello request
   hello.request.Name = name;
   hello.request.UUID = uuid;
+
+  // Call the hello service
   if (!helloClient.call(hello))
     ROS_ERROR("Couldn't connect to hello service.");
   if (hello.response.Status == tapi_lib::HelloResponse::StatusError)
@@ -220,6 +248,7 @@ void TapiGui::deleteConnection(string subscriberFeatureUUID)
 
 vector<Tapi::GuiDevice*> TapiGui::getDevicesSorted()
 {
+  // Iterate through all devices, save a pointer to each and then sort the vector
   vector<Tapi::GuiDevice*> devicesList;
   for (auto it = devices.begin(); it != devices.end(); ++it)
     devicesList.push_back(it->second);
@@ -230,12 +259,14 @@ vector<Tapi::GuiDevice*> TapiGui::getDevicesSorted()
 
 void TapiGui::timer(const ros::TimerEvent& e)
 {
+  // When there should be an update but there was none, assume that there may have been changes
   if (lastUpdated.toNSec() + (CHECK_INTERVAL * 1000) < ros::Time::now().toNSec())
     pendingChanges = true;
 }
 
 void TapiGui::updateAvailable(const std_msgs::Time::ConstPtr& time)
 {
+  // The core told us he made an update, so we should check that and save this as the last update time
   if (time->data.toNSec() > lastUpdated.toNSec())
     pendingChanges = true;
 }
@@ -244,6 +275,8 @@ void TapiGui::updateData()
 {
   pendingChanges = false;
   lastUpdated = ros::Time::now();
+
+  // Call the core and get the current list of all linked devices
   tapi_lib::GetDeviceList devSrv;
   devSrv.request.Get = true;
   if (!devListClient.call(devSrv))
@@ -251,6 +284,8 @@ void TapiGui::updateData()
     ROS_ERROR("Failed to establish connection to core");
     return;
   }
+
+  // Now iterate through all devices, copy its data and update our devices. If they don't exist: Create them.
   vector<tapi_lib::Device> devVect = devSrv.response.Devices;
   for (auto it = devVect.begin(); it != devVect.end(); ++it)
   {
@@ -268,6 +303,8 @@ void TapiGui::updateData()
       string featureType = it2->FeatureType;
       string featureName = it2->Name;
       string featureUUID = it2->UUID;
+
+      // Manipulate the feature name by adding the coefficient as a suffix to show it to the user
       if ((connections.count(featureUUID) > 0) &&
           (featureType == "std_msgs/Byte" || featureType == "std_msgs/Float32" || featureType == "std_msgs/Float64" ||
            featureType == "std_msgs/Int16" || featureType == "std_msgs/Int32" || featureType == "std_msgs/Int64" ||
@@ -301,6 +338,7 @@ void TapiGui::updateData()
       devices.at(uuid)->Deactivate();
   }
 
+  // Check if there were devices missing in the service call, but we still have them -> delete them in the gui as well
   vector<string> toDelete;
   for (auto it = devices.begin(); it != devices.end(); ++it)
   {
@@ -333,6 +371,7 @@ void TapiGui::updateData()
     devices.erase(*it);
   }
 
+  // Now call the core to get a list of all connections
   tapi_lib::GetConnectionList conSrv;
   conSrv.request.Get = true;
   if (!conListClient.call(conSrv))
@@ -340,6 +379,8 @@ void TapiGui::updateData()
     ROS_ERROR("Failed to establish connection to core");
     return;
   }
+
+  // Iterate through this vector of connections and check what has changed, renew if necessary
   vector<tapi_lib::Connection> conVect = conSrv.response.Connections;
   for (auto it = conVect.begin(); it != conVect.end(); ++it)
   {
@@ -365,6 +406,9 @@ void TapiGui::updateData()
       pendingChanges = true;
     }
   }
+
+  // Now check if the gui know connections, but the core not (anymore). Then we have to delete them, the core is our
+  // boss ;)
   vector<string> deletableConnections;
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
@@ -404,10 +448,14 @@ void TapiGui::clearInactiveButtonClicked()
 
 void TapiGui::checkForGuiUpdate()
 {
+  // Looks like there is new data in the core -> check it
   if (pendingChanges)
     updateData();
+
+  // There really was an update of the data, so we have to redraw the gui
   if (pendingChanges)
   {
+    // Now remove all GuiDevices from the gui
     for (auto it = publisherGuiDevices.begin(); it != publisherGuiDevices.end(); ++it)
     {
       disconnect(it->second, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), 0, 0);
@@ -422,6 +470,8 @@ void TapiGui::checkForGuiUpdate()
       layoutSubscriber->removeWidget(it->second);
     }
     subscriberGuiDevices.clear();
+
+    // Take the new list of devices and draw them
     vector<Tapi::GuiDevice*> devicesSorted = getDevicesSorted();
     for (auto it = devicesSorted.begin(); it != devicesSorted.end(); ++it)
     {
@@ -437,9 +487,12 @@ void TapiGui::checkForGuiUpdate()
       }
       (*it)->show();  // don't forget to show it
 
+      // Always connect the feaureClicked signal of each device to our featureClicked slot
       connect(*it, SIGNAL(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)), this,
               SLOT(featureClicked(Tapi::GuiDevice*, Tapi::Feature*)));
 
+      // Iterate through every feature to check, if we already generated a color in the key-table for its type (if not,
+      // add an entry to the keys)
       vector<Tapi::Feature*> features = (*it)->GetSortedFeatures();
       for (auto it2 = features.begin(); it2 != features.end(); ++it2)
       {
@@ -458,13 +511,16 @@ void TapiGui::checkForGuiUpdate()
     }
     pendingChanges = false;
   }
+
+  // The user has currently a pending selection to connect two devices/features. Track the mouse and save the current
+  // position if it has changes
   if (selectedFeature)
   {
     QPoint newMousePosition = QCursor::pos();
     if (newMousePosition != mousePosition)
-    {
       mousePosition = newMousePosition;
-    }
+
+    // The device became inactive during the try to connect it, now deselect it
     if (!selectedGuiDevice->Active())
     {
       selectedFeature = 0;
@@ -476,8 +532,8 @@ void TapiGui::checkForGuiUpdate()
 
 void TapiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 {
-  if ((selectedFeature && selectedFeature == feature) || !guidevice->Active())
   // Clicked twice on the same feature or device is inactive -> demarcate selection
+  if ((selectedFeature && selectedFeature == feature) || !guidevice->Active())
   {
     selectedFeature = 0;
     selectedGuiDevice = 0;
@@ -485,6 +541,7 @@ void TapiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
     return;
   }
 
+  // Device is a Subscriber or ServiceClient and already connected -> ask for deletion or substitution
   if (guidevice->GetType() == tapi_lib::Device::Type_Subscriber && connections.count(feature->GetUUID()) > 0)
   {
     QMessageBox msgBox;
@@ -522,27 +579,24 @@ void TapiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
       return;
   }
 
+  // Nothing selected before, select first feature of (possible coming) connection
   if (!selectedFeature)
-  // Nothing selected before, select first feature of (possible coming)
-  // connection
   {
     selectedFeature = feature;
     selectedGuiDevice = guidevice;
     return;
   }
 
+  // Selected the same device type, so no connection is possible. Drop old selection and select the new one
   if (guidevice->GetType() == selectedGuiDevice->GetType())
-  // Selected the same device type, so no connection is possible. Drop old
-  // selection and select the new one
   {
     selectedFeature = feature;
     selectedGuiDevice = guidevice;
     return;
   }
 
+  // Selected different feature types, so no connection is possible. Drop old selection and select the new one
   if (selectedFeature->GetType() != feature->GetType())
-  // Selected different feature types, so no connection is possible. Drop old
-  // selection and select the new one
   {
     selectedFeature = feature;
     selectedGuiDevice = guidevice;
@@ -574,6 +628,7 @@ void TapiGui::featureClicked(Tapi::GuiDevice* guidevice, Tapi::Feature* feature)
 
 void TapiGui::loadButtonClicked()
 {
+  // Get the default path (~/config.tapi) ans asks the user to choose a file (there (as a start))
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =
@@ -582,16 +637,25 @@ void TapiGui::loadButtonClicked()
   ifstream fileInput;
   fileInput.open(filename);
   bool error = true;
+
+  // Try to open the file and read it
   if (fileInput.is_open() && !fileInput.eof())
   {
     error = false;
     string temp;
+
+    // Clear everything of the current data in the core
     clearAllButtonClicked();
+
+    // Check if there is more than one line
     getline(fileInput, temp);
     if (fileInput.eof())
       error = true;
+
+    // Now read line by line
     while (!fileInput.eof())
     {
+      // If it's an entry of a device, read its data and tell the core that it shall "connect" this device
       if (temp == "[Device]")
       {
         string uuid;
@@ -620,6 +684,9 @@ void TapiGui::loadButtonClicked()
         }
         addDeviceToTapi(type, name, uuid, features);
       }
+
+      // If it's an entry of a connection, read its data and tell the gui it shall connect the correspondong
+      // devices/features. They have to exist already or the entry is thrown away
       else if (temp == "[Connection]")
       {
         string subscriberUUID;
@@ -636,6 +703,8 @@ void TapiGui::loadButtonClicked()
         connectFeatures(subscriberFeatureUUID, publisherFeatureUUID, coefficient);
         getline(fileInput, temp);
       }
+
+      // Unknown type of entry, maybe an entry of a device or onnection was to short or to long?
       else
       {
         ROS_ERROR("Wrong line: %s", temp.c_str());
@@ -645,6 +714,7 @@ void TapiGui::loadButtonClicked()
     }
   }
 
+  // Print error message if something went wrong during the load of the file
   if (error)
   {
     QMessageBox msgBox;
@@ -662,6 +732,7 @@ void TapiGui::loadButtonClicked()
 
 void TapiGui::saveButtonClicked()
 {
+  // Get the default path (~/config.tapi) ans asks the user to choose a file (there (as a start))
   string homedir = getenv("HOME");
   string filename = homedir + "/config.tapi";
   QString filePicker =
@@ -669,6 +740,9 @@ void TapiGui::saveButtonClicked()
   filename = filePicker.toStdString();
   ofstream fileOutput;
   fileOutput.open(filename);
+
+  // Now just iterate through all devices and save their data as text line by line, including a list of all their
+  // features
   for (auto it = devices.begin(); it != devices.end(); ++it)
   {
     fileOutput << "[Device]\n";
@@ -685,6 +759,8 @@ void TapiGui::saveButtonClicked()
       fileOutput << features.at(j)->GetType() << "\n";
     }
   }
+
+  // After that iterate through all connections and also save their data as text line by line
   for (auto it = connections.begin(); it != connections.end(); ++it)
   {
     fileOutput << "[Connection]\n";

@@ -32,6 +32,14 @@
  *  Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.*
  ******************************************************************************/
 
+/*!
+ * \file maingui.hpp
+ * \ingroup tapi_gui
+ * \author Tobias Holst
+ * \date 20 Aug 2016
+ * \brief Declaration of the Tapi::MainGui-class and definition of its member variables
+ */
+
 #ifndef MAINGUI_HPP
 #define MAINGUI_HPP
 
@@ -46,18 +54,39 @@ class MainGui;
 
 namespace Tapi
 {
+/*!
+ * \brief Main window of tapi_gui
+ *
+ * This class wraps the main windows arund the Tapi::TapiGui class/widget. This makes it easier to control the main
+ * window and the widgets for every device independently
+ * \author Tobias Holst
+ * \version 4.0.1
+ */
 class MainGui : public QMainWindow
 {
   Q_OBJECT
 
 public:
   // Constructor/Destructor
+
+  /*!
+   * \brief Create a MainGui-object (main window of tapi_gui)
+   * \param nh Pointer to a \c ros::NodeHandle created outside of this class
+   * \param parent Pointer to the parent widget of this window - defaults to 0 and shouldn't be changed (or set to 0) on
+   * normal execution
+   */
   MainGui(ros::NodeHandle* nh, QWidget* parent = 0);
+
+  //! Delete the ui-object of this window
   ~MainGui();
 
 private:
   // Private member variables
+
+  //! Pointer to the Tapi::TapiGui object inside the main window, created when creating the Tapi::MainGui object
   Tapi::TapiGui* tapiGui;
+
+  //! Pointer to the ui object, generated from the ui-designer and created in the constructor
   Ui::MainGui* ui;
 };
 }

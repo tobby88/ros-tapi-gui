@@ -32,10 +32,30 @@
  *  Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.*
  ******************************************************************************/
 
+/*!
+ * \defgroup tapi_gui tapi_gui
+ * \file main.cpp
+ * \ingroup tapi_gui
+ * \author Tobias Holst
+ * \date 19 Nov 2015
+ * \brief Main function of tapi_gui
+ */
+
 #include <QApplication>
 #include "maingui.hpp"
 #include "ros/init.h"
 #include "ros/node_handle.h"
+
+/*!
+ * \brief Main function of tapi_gui
+ *
+ * Main function of tapi_gui to initialize ROS, its NodeHandle and then create the Qt-based GUI
+ * \param argc Number of arguments when started from the console
+ * \param argv \c char pointer to the \c char arrays of the given arguments
+ * \return Returns the return value of the QApplication-object
+ * \see Tapi::MainGui
+ * \see Tapi::TapiGui
+ */
 
 int main(int argc, char** argv)
 {

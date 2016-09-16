@@ -32,6 +32,14 @@
  *  Programm erhalten haben. Wenn nicht, siehe <http://www.gnu.org/licenses/>.*
  ******************************************************************************/
 
+/*!
+ * \file maingui.cpp
+ * \ingroup tapi_gui
+ * \author Tobias Holst
+ * \date 20 Aug 2016
+ * \brief Defintion of the Tapi::MainGui-class
+ */
+
 #include "maingui.hpp"
 #include "ui_maingui.h"
 
