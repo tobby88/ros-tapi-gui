@@ -107,7 +107,7 @@ private:
   // Private member functions
   void addDeviceToTapi(uint8_t type, std::string name, std::string uuid, std::map<std::string, Tapi::Feature> features);
   static bool compareDeviceNames(const Tapi::GuiDevice* first, const Tapi::GuiDevice* second);
-  void connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient);
+  void connectFeatures(std::string feature1UUID, std::string feature2UUID, double coefficient = 1.0);
   void deleteConnection(std::string subscriberFeatureUUID);
   std::vector<Tapi::GuiDevice*> getDevicesSorted();
   void timer(const ros::TimerEvent& e);
