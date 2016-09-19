@@ -304,11 +304,11 @@ private:
   /*!
    * \brief Add a device to the core, even if the device is not connected. Necessary to be able to load a config file
    * which may include inactive devices
-   * \param Type of the eevice (tapi_lib::Device::Type_Publisher for Publisher and ServiceServer or
+   * \param type Type of the eevice (tapi_lib::Device::Type_Publisher for Publisher and ServiceServer or
    * tapi_lib::Device::Type_Subscriber for Subscriber and ServiceClients)
-   * \param Name of the device
-   * \param Unique ID of the device
-   * \param Map of the device's features
+   * \param name Name of the device
+   * \param uuid Unique ID of the device
+   * \param features Map of the device's features
    * \see \c Device.msg in the \c tapi_lib package
    * \see \c Tapi::Feature in the \c tapi_lib package
    */
@@ -365,7 +365,7 @@ private:
   void timer(const ros::TimerEvent& e);
 
   /*!
-   * \brief Calles by a ros callback when a new timestamp on /Tapi/LastChanged is got
+   * \brief Called by a ros callback when a new timestamp on /Tapi/LastChanged is got
    * \param time The message waiting in the ros message queue where the timestamp of the last change is stored
    * \see Tapi::TapiGui::lastUpdatedSub
    */

@@ -114,7 +114,6 @@ public:
    * \param type Type of the device (tapi_lib::Device::Type_Publisher for Publisher and ServiceServer or
    * tapi_lib::Device::Type_Subscriber for Subscriber and ServiceClients)
    * \param name Name of the device
-   * \param uuid Unique ID of the device
    * \param lastSeq Sequence number of the header of the device when it has been seen for the last time
    * \param lastSeen Timestamp when the device has been seen for the last time
    * \param heartbeat Heartbeat (delay the device shall wait between two Hello-calls) configured for this device

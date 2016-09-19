@@ -106,7 +106,7 @@ Private Member Functions</h2></td></tr>
 <tr class="memdesc:a91106de6a1be89fdd10548658639801a"><td class="mdescLeft">&#160;</td><td class="mdescRight">"timer" is called by a ros callback when the timer event occurs, it then checks if the gui should do an update of its data from the core, because the core didn't send new data for a too long time  <a href="#a91106de6a1be89fdd10548658639801a">More...</a><br /></td></tr>
 <tr class="separator:a91106de6a1be89fdd10548658639801a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a78dae7068b233cf633a2c253daa345"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTapi_1_1TapiGui.html#a2a78dae7068b233cf633a2c253daa345">updateAvailable</a> (const std_msgs::Time::ConstPtr &amp;time)</td></tr>
-<tr class="memdesc:a2a78dae7068b233cf633a2c253daa345"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calles by a ros callback when a new timestamp on /Tapi/LastChanged is got.  <a href="#a2a78dae7068b233cf633a2c253daa345">More...</a><br /></td></tr>
+<tr class="memdesc:a2a78dae7068b233cf633a2c253daa345"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called by a ros callback when a new timestamp on /Tapi/LastChanged is got.  <a href="#a2a78dae7068b233cf633a2c253daa345">More...</a><br /></td></tr>
 <tr class="separator:a2a78dae7068b233cf633a2c253daa345"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba35714158e14771593dcf383156d2f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTapi_1_1TapiGui.html#aba35714158e14771593dcf383156d2f0">updateData</a> ()</td></tr>
 <tr class="memdesc:aba35714158e14771593dcf383156d2f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actually update all the data in the gui.  <a href="#aba35714158e14771593dcf383156d2f0">More...</a><br /></td></tr>
@@ -314,10 +314,10 @@ Private Attributes</h2></td></tr>
 <p>Add a device to the core, even if the device is not connected. Necessary to be able to load a config file which may include inactive devices. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Type</td><td>of the eevice (tapi_lib::Device::Type_Publisher for Publisher and ServiceServer or tapi_lib::Device::Type_Subscriber for Subscriber and ServiceClients) </td></tr>
-    <tr><td class="paramname">Name</td><td>of the device </td></tr>
-    <tr><td class="paramname">Unique</td><td>ID of the device </td></tr>
-    <tr><td class="paramname">Map</td><td>of the device's features </td></tr>
+    <tr><td class="paramname">type</td><td>Type of the eevice (tapi_lib::Device::Type_Publisher for Publisher and ServiceServer or tapi_lib::Device::Type_Subscriber for Subscriber and ServiceClients) </td></tr>
+    <tr><td class="paramname">name</td><td>Name of the device </td></tr>
+    <tr><td class="paramname">uuid</td><td>Unique ID of the device </td></tr>
+    <tr><td class="paramname">features</td><td>Map of the device's features </td></tr>
   </table>
   </dd>
 </dl>
@@ -779,7 +779,7 @@ Tapi::compareDeviceNames </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Calles by a ros callback when a new timestamp on /Tapi/LastChanged is got. </p>
+<p>Called by a ros callback when a new timestamp on /Tapi/LastChanged is got. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">time</td><td>The message waiting in the ros message queue where the timestamp of the last change is stored </td></tr>
@@ -1125,7 +1125,7 @@ Tapi::TapiGui::addDeviceToApi </dd></dl>
 </div><div class="memdoc">
 
 <p>Time of last update from the core. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classTapi_1_1TapiGui.html#a2a78dae7068b233cf633a2c253daa345" title="Calles by a ros callback when a new timestamp on /Tapi/LastChanged is got. ">Tapi::TapiGui::updateAvailable</a> </dd>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classTapi_1_1TapiGui.html#a2a78dae7068b233cf633a2c253daa345" title="Called by a ros callback when a new timestamp on /Tapi/LastChanged is got. ">Tapi::TapiGui::updateAvailable</a> </dd>
 <dd>
 <a class="el" href="classTapi_1_1TapiGui.html#aba35714158e14771593dcf383156d2f0" title="Actually update all the data in the gui. ">Tapi::TapiGui::updateData</a> </dd></dl>
 
@@ -1154,7 +1154,7 @@ Tapi::TapiGui::addDeviceToApi </dd></dl>
 <p>Subscribes /Tapi/LastChanged to get information from the core about pending changes. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classTapi_1_1TapiGui.html#aa52e2119ff01a8c67b6fad51287eda49" title="Time of last update from the core. ">Tapi::TapiGui::lastUpdated</a> </dd>
 <dd>
-<a class="el" href="classTapi_1_1TapiGui.html#a2a78dae7068b233cf633a2c253daa345" title="Calles by a ros callback when a new timestamp on /Tapi/LastChanged is got. ">Tapi::TapiGui::updateAvailable</a> </dd></dl>
+<a class="el" href="classTapi_1_1TapiGui.html#a2a78dae7068b233cf633a2c253daa345" title="Called by a ros callback when a new timestamp on /Tapi/LastChanged is got. ">Tapi::TapiGui::updateAvailable</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="tapigui_8hpp_source.html#l00204">204</a> of file <a class="el" href="tapigui_8hpp_source.html">tapigui.hpp</a>.</p>
 
@@ -1313,7 +1313,7 @@ Tapi::TapiGui::addDeviceToApi </dd></dl>
 <dd>
 <a class="el" href="classTapi_1_1TapiGui.html#aba35714158e14771593dcf383156d2f0" title="Actually update all the data in the gui. ">Tapi::TapiGui::updateData</a> </dd>
 <dd>
-<a class="el" href="classTapi_1_1TapiGui.html#a2a78dae7068b233cf633a2c253daa345" title="Calles by a ros callback when a new timestamp on /Tapi/LastChanged is got. ">Tapi::TapiGui::updateAvailable</a> </dd>
+<a class="el" href="classTapi_1_1TapiGui.html#a2a78dae7068b233cf633a2c253daa345" title="Called by a ros callback when a new timestamp on /Tapi/LastChanged is got. ">Tapi::TapiGui::updateAvailable</a> </dd>
 <dd>
 <a class="el" href="classTapi_1_1TapiGui.html#a91106de6a1be89fdd10548658639801a" title="&quot;timer&quot; is called by a ros callback when the timer event occurs, it then checks if the gui should do ...">Tapi::TapiGui::timer</a> </dd></dl>
 
@@ -1533,7 +1533,7 @@ Tapi::TapiGui::addDeviceToApi </dd></dl>
 <hr size="1"><div style="align: right;">
 <a href="https://github.com/tobby88/ros-tapi-gui">tapi_gui</a><br />
 Author(s): tobby <tobby@tobby.eu></br />
-<small>autogenerated on Fri Sep 16 2016 23:03:23</small>
+<small>autogenerated on Mon Sep 19 2016 23:48:39</small>
 </div>
 </body>
 </html>
